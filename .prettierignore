@@ -31,6 +31,11 @@ yarn.lock
 *.db
 *.sqlite
 
+# Ignore Drizzle generated files
+db/drizzle/meta/
+db/drizzle/migrations/
+**/migrations.js
+
 # Ignore log files
 *.log
 
