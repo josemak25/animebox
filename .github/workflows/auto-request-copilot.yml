@@ -134,6 +134,79 @@ jobs:
               console.error('Error analyzing PR changes:', error);
             }
 
+      - name: 🔍 PR Template Compliance Check
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
+            
+            try {
+              const { data: pr } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number
+              });
+              
+              const body = pr.body || '';
+              const title = pr.title || '';
+              
+              // Check PR template compliance
+              const templateChecks = {
+                hasDescription: body.includes('## 📋 Description') || body.includes('Description'),
+                hasTypeOfChange: body.includes('## 🔄 Type of Change') || body.includes('Type of Change'),
+                hasTesting: body.includes('## 🧪 Testing') || body.includes('Testing'),
+                hasChecklist: body.includes('## ✅ Checklist') || body.includes('Checklist'),
+                hasCheckboxes: body.includes('- [ ]') || body.includes('- [x]'),
+                hasProperTitle: title.length > 10 && !title.includes('WIP') && !title.includes('Draft')
+              };
+              
+              const complianceScore = Object.values(templateChecks).filter(Boolean).length;
+              const totalChecks = Object.keys(templateChecks).length;
+              
+              console.log('📋 PR Template Compliance:');
+              console.log(`  Score: ${complianceScore}/${totalChecks}`);
+              Object.entries(templateChecks).forEach(([check, passed]) => {
+                console.log(`  ${check}: ${passed ? '✅' : '❌'}`);
+              });
+              
+              // Store compliance data for later use
+              const complianceData = {
+                score: complianceScore,
+                total: totalChecks,
+                percentage: Math.round((complianceScore / totalChecks) * 100),
+                checks: templateChecks
+              };
+              
+              // Add compliance comment if score is low
+              if (complianceScore < 4) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: pull_number,
+                  body: `## 📋 PR Template Compliance Alert
+
+                  **Compliance Score: ${complianceScore}/${totalChecks} (${complianceData.percentage}%)**
+
+                  Missing sections:
+                  ${Object.entries(templateChecks)
+                    .filter(([_, passed]) => !passed)
+                    .map(([check, _]) => `- ${check.replace(/([A-Z])/g, ' $1').toLowerCase()}`)
+                    .join('\n')}
+
+                  Please update your PR description to include all required sections from the template for better review quality.
+
+                  ---
+                  *This helps reviewers understand your changes better and ensures consistent PR quality.*`
+                });
+              }
+              
+            } catch (error) {
+              console.error('Error checking PR template compliance:', error);
+            }
+
       - name: 📥 Checkout code for quality checks
         uses: actions/checkout@v4
 
@@ -159,9 +232,17 @@ jobs:
           echo "✅ ESLint check passed"
 
       - name: 🧪 Test Suite
+        id: test-suite
         run: |
           echo "🧪 Running test suite..."
-          yarn test --coverage --watchAll=false
+          yarn test --coverage --watchAll=false 2>&1 | tee test-output.log
+          
+          # Extract test count from Jest output
+          TEST_RESULTS=$(grep -E "Tests:|Test Suites:" test-output.log | tail -2)
+          PASSED_TESTS=$(echo "$TEST_RESULTS" | grep "Tests:" | grep -o '[0-9]* passed' | head -1)
+          TOTAL_TESTS=$(echo "$TEST_RESULTS" | grep "Tests:" | grep -o '[0-9]* total' | head -1)
+          
+          echo "test-summary=$PASSED_TESTS, $TOTAL_TESTS" >> $GITHUB_OUTPUT
           echo "✅ All tests passed"
 
       - name: 📝 Markdown Lint Check
@@ -182,13 +263,36 @@ jobs:
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
             
+            // Get test results from previous step
+            const testSummary = `${{ steps.test-suite.outputs.test-summary }}` || 'tests completed';
+            
+            // Get PR data for enhanced Copilot guidance
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number
+            });
+            
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner,
+              repo,
+              pull_number
+            });
+            
+            // Analyze changed files for specific review focus
+            const hasTypeScriptChanges = files.some(f => f.filename.endsWith('.ts') || f.filename.endsWith('.tsx'));
+            const hasComponentChanges = files.some(f => f.filename.startsWith('components/'));
+            const hasDbChanges = files.some(f => f.filename.startsWith('db/'));
+            const hasTestChanges = files.some(f => f.filename.includes('test') || f.filename.includes('__tests__'));
+            const hasAppChanges = files.some(f => f.filename.startsWith('app/'));
+            
             const summaryComment = `## ✅ Automated Quality Gate Results
 
             All quality checks have passed successfully:
 
             - 🔍 **TypeScript Compilation**: ✅ Passed
             - 🎨 **ESLint Code Style**: ✅ Passed  
-            - 🧪 **Test Suite (112 tests)**: ✅ Passed
+            - 🧪 **Test Suite**: ✅ Passed (${testSummary})
             - 📝 **Markdown Documentation**: ✅ Passed
 
             ### 🤖 Copilot Review Status
@@ -204,4 +308,46 @@ jobs:
               repo,
               issue_number: pull_number,
               body: summaryComment
+            });
+
+            // Add comprehensive Copilot Review Guidance
+            const reviewGuidance = `## 🤖 @github-copilot - Review Guidance
+
+            Please review this PR focusing on the following areas based on our project standards:
+
+            ### 📋 Review Checklist
+            - [ ] **TypeScript**: Strict typing, no \`any\` types${hasTypeScriptChanges ? ' ⚠️ *TypeScript changes detected*' : ''}
+            - [ ] **React Native**: Following mobile best practices${hasComponentChanges || hasAppChanges ? ' ⚠️ *Component/App changes detected*' : ''}
+            - [ ] **Drizzle ORM**: Type-safe database operations${hasDbChanges ? ' ⚠️ *Database changes detected*' : ''}
+            - [ ] **Testing**: New tests for new functionality${hasTestChanges ? ' ✅ *Test changes detected*' : ' ⚠️ *No test changes - verify if needed*'}
+            - [ ] **Performance**: No unnecessary re-renders
+            - [ ] **Documentation**: Adequate code comments
+            - [ ] **Architecture**: Follows project structure
+
+            ### 🔍 Specific Focus Areas for This PR:
+            ${hasTypeScriptChanges ? '- **TypeScript Changes**: Ensure strict typing, proper interfaces, no `any` types\n' : ''}${hasComponentChanges ? '- **Component Changes**: Check StyleSheet usage, responsive design with size-matters\n' : ''}${hasDbChanges ? '- **Database Changes**: Verify Drizzle schema types, migration safety, live queries\n' : ''}${hasAppChanges ? '- **App/Routing Changes**: Confirm expo-router conventions, proper navigation\n' : ''}${!hasTestChanges && (hasTypeScriptChanges || hasComponentChanges || hasDbChanges) ? '- **Missing Tests**: Consider if new functionality needs test coverage\n' : ''}
+            ### 🚨 Common Issues to Flag:
+            - Console.log statements in production code
+            - Hardcoded strings (should use constants)
+            - Missing error handling
+            - Unused imports or variables
+            - Non-descriptive variable names
+            - Web-only CSS properties in React Native
+            - Missing accessibility labels
+            - Large bundle imports
+
+            ### 📱 Mobile Specific Checks:
+            - Cross-platform compatibility (iOS/Android)
+            - Responsive design using react-native-size-matters
+            - Proper safe area handling
+            - Keyboard avoidance considerations
+
+            ---
+            *Review based on [AnimeBOX Project Guidelines](.github/copilot-instructions.md)*`;
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: pull_number,
+              body: reviewGuidance
             });
