@@ -1,6 +1,7 @@
 # AnimeBOX - Project Structure Documentation
 
-Modern React Native application built with Expo, TypeScript, and Drizzle ORM for anime collection management.
+Modern React Native application built with Expo, TypeScript, and Drizzle ORM
+for anime collection management.
 
 ## 🏗️ Architecture Overview
 
@@ -13,7 +14,7 @@ Modern React Native application built with Expo, TypeScript, and Drizzle ORM for
 
 ## 📁 Project Structure
 
-```
+```text
 animebox/
 ├── app/                     # Expo Router - File-based routing
 │   ├── (tabs)/             # Tab navigation routes
@@ -255,4 +256,6 @@ const anime: AnimeInterface = await db.insert(schema.animes).values({
 - **Migration System**: Safe database updates
 - **Cross-platform**: iOS, Android, and Web support
 
-This architecture provides a solid foundation for building modern, performant React Native applications with excellent developer experience and maintainability.
+This architecture provides a solid foundation for building modern, performant
+React Native applications with excellent developer experience and
+maintainability.

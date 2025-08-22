@@ -37,3 +37,11 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Yarn Berry
+.yarn/cache
+.yarn/install-state.gz
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/patches
+.pnp.*
