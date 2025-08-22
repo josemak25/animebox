@@ -1,0 +1,122 @@
+name: 🤖 Auto-Request Copilot Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [develop, main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  auto-request-copilot:
+    name: 🤖 Request Copilot Review
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]' && github.actor != 'github-copilot[bot]'
+    
+    steps:
+      - name: 🤖 Auto-request Copilot as reviewer
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
+            
+            try {
+              // Check if Copilot is already a reviewer
+              const { data: reviews } = await github.rest.pulls.listRequestedReviewers({
+                owner,
+                repo,
+                pull_number
+              });
+              
+              const copilotAlreadyRequested = reviews.users.some(user => 
+                user.login === 'github-copilot' || user.login === 'copilot'
+              );
+              
+              if (!copilotAlreadyRequested) {
+                // Request Copilot as reviewer
+                await github.rest.pulls.requestReviewers({
+                  owner,
+                  repo,
+                  pull_number,
+                  reviewers: ['github-copilot']
+                });
+                
+                console.log('✅ Successfully requested Copilot as reviewer');
+                
+                // Add a comment to notify
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: pull_number,
+                  body: `🤖 **Copilot has been automatically requested as a reviewer**\n\nCopilot will review this PR based on our project standards and guidelines defined in \`.github/copilot-instructions.md\`.\n\n---\n*This is an automated action. Copilot reviews help maintain code quality and consistency.*`
+                });
+                
+              } else {
+                console.log('ℹ️ Copilot is already requested as a reviewer');
+              }
+              
+            } catch (error) {
+              console.error('Error requesting Copilot reviewer:', error);
+              
+              // Fallback: Add comment explaining the setup
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pull_number,
+                body: `🤖 **Copilot Auto-Review Setup**\n\nTo enable automatic Copilot reviews:\n\n1. Go to Repository Settings → General → Pull Requests\n2. Enable "Automatically request reviews from owners of the code being changed"\n3. Or manually request \`@github-copilot\` as a reviewer\n\n---\n*Copilot reviews are configured via \`.github/copilot-instructions.md\`*`
+              });
+            }
+
+      - name: 📊 Add PR Labels Based on Changes
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
+            
+            // Get changed files
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner,
+              repo,
+              pull_number
+            });
+            
+            const labels = [];
+            
+            // Categorize changes and add appropriate labels
+            for (const file of files) {
+              if (file.filename.startsWith('app/')) {
+                labels.push('🏗️ architecture');
+              } else if (file.filename.startsWith('components/')) {
+                labels.push('🎨 ui-components');
+              } else if (file.filename.startsWith('db/')) {
+                labels.push('🗄️ database');
+              } else if (file.filename.startsWith('helpers/')) {
+                labels.push('🛠️ utilities');
+              } else if (file.filename.includes('test') || file.filename.includes('__tests__')) {
+                labels.push('🧪 tests');
+              } else if (file.filename.endsWith('.md')) {
+                labels.push('📚 documentation');
+              } else if (file.filename.includes('.github/')) {
+                labels.push('⚙️ github-config');
+              }
+            }
+            
+            // Remove duplicates and add labels
+            const uniqueLabels = [...new Set(labels)];
+            
+            if (uniqueLabels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: pull_number,
+                labels: uniqueLabels
+              });
+              
+              console.log(`✅ Added labels: ${uniqueLabels.join(', ')}`);
+            }
