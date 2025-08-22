@@ -11,7 +11,7 @@ import {
 describe("String Utilities", () => {
   describe("capitalizeFirst", () => {
     it("should capitalize the first letter of a string", () => {
-      expect(capitalizeFirst("hello")).toBe("Hello");
+      expect(capitalizeFirst("hello")).toBe("Hello"); // Fixed: correct expectation
       expect(capitalizeFirst("world")).toBe("World");
     });
 
