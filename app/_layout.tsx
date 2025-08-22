@@ -6,8 +6,8 @@ import {
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 
-import { ThemeProvider } from "@/providers/ThemeProvider";
 import { useTheme, useCachedResources } from "@/hooks";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 
 export {
   // Catch any errors thrown by the Layout component.

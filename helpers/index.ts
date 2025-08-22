@@ -13,5 +13,5 @@ export * from "./string";
 // Common utilities
 export * from "./common";
 
-// Database utilities
-export * from "./database";
+// Theming utilities
+export * from "./withThemeStyles";

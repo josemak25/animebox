@@ -1,6 +1,6 @@
-import React from "react";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { AppState, AppStateStatus } from "react-native";
+
 import { isFunction, noop } from "@/helpers/common";
 
 export interface AppStateHookSettings {
@@ -46,6 +46,7 @@ export const useAppState = (
 
     // Clean up the listener and clear interval on unmount
     return () => subscription.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onBackground, onForeground, onChange, ...extraDeps]);
 
   return { appState };

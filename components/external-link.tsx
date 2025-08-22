@@ -10,6 +10,7 @@ export function ExternalLink(
     <Link
       target="_blank"
       {...props}
+      // @ts-expect-error - External links may not match router paths
       href={props.href}
       onPress={(e) => {
         if (Platform.OS !== "web") {

@@ -5,7 +5,8 @@ import {
   Text as RNText,
   View as RNView,
 } from "react-native";
-import { withThemeStyles } from "@/helpers/withThemeStyles";
+
+import { withThemeStyles } from "@/helpers";
 
 interface ThemedTextProps extends React.ComponentProps<typeof RNText> {
   variant?: "default" | "title" | "subtitle" | "caption" | "muted";
