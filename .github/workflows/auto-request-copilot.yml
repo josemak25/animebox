@@ -419,10 +419,13 @@ jobs:
                 const isWorkflowFile = file.filename.startsWith('.github/workflows/');
 
                 if (!isWorkflowFile) {
-                  if (content.includes('console.log') || content.includes('console.error') || content.includes('console.warn')) {
-                    analysis.commonIssues.failed.push(`${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`);
-                  } else {
-                    analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
+                  const isMarkdown = file.filename.endsWith('.md');
+                  if (!isMarkdown) {
+                    if (content.includes('console.log') || content.includes('console.error') || content.includes('console.warn')) {
+                      analysis.commonIssues.failed.push(`${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`);
+                    } else {
+                      analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
+                    }
                   }
 
                   // Check for hardcoded strings (skip for workflow files and config files)
