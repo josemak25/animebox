@@ -19,6 +19,11 @@ yarn.lock
 # Ignore environment files
 .env*
 
+# Ignore GitHub template files (they have specific formatting)
+.github/pull_request_template.md
+.github/CODEOWNERS
+.github/BRANCH_PROTECTION_SETUP.md
+
 # Ignore git files
 .git
 

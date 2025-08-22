@@ -1,0 +1,80 @@
+name: 🔄 Dependency Updates
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: "0 9 * * 1"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  dependency-update:
+    name: 📦 Update Dependencies
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'josemak25'
+
+    steps:
+      - name: 📚 Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: 🔍 Check for outdated packages
+        id: outdated
+        run: |
+          if npm outdated --json > outdated.json 2>/dev/null; then
+            echo "has-updates=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-updates=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📥 Install dependencies
+        if: steps.outdated.outputs.has-updates == 'true'
+        run: npm ci
+
+      - name: ⬆️ Update minor and patch versions
+        if: steps.outdated.outputs.has-updates == 'true'
+        run: |
+          npm update
+          npm audit fix --force
+
+      - name: 🧪 Run tests after update
+        if: steps.outdated.outputs.has-updates == 'true'
+        run: |
+          npm run type-check
+          npm run lint
+          npm run test:ci
+
+      - name: 📝 Create PR for dependency updates
+        if: steps.outdated.outputs.has-updates == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "⬆️ Update dependencies"
+          title: "⬆️ Automated dependency updates"
+          body: |
+            🔄 **Automated Dependency Updates**
+
+            This PR updates dependencies to their latest compatible versions.
+
+            ### Changes:
+            - Updated minor and patch versions
+            - Applied security fixes via `npm audit fix`
+
+            ### Testing:
+            - ✅ TypeScript compilation passes
+            - ✅ ESLint checks pass
+            - ✅ All tests pass
+
+            **Note**: This is an automated PR. Please review changes before merging.
+          branch: chore/dependency-updates
+          delete-branch: true
+          labels: |
+            dependencies
+            automated
+            chore
