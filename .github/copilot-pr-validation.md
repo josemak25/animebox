@@ -1,5 +1,21 @@
 # Copilot PR Template Validation Rules
 
+<!--
+This document defines the validation rules and patterns used by the automated
+GitHub Copilot code review system to ensure PR templates are properly filled
+and contain all necessary information for effective code reviews.
+
+Purpose:
+- Enforce consistent PR template usage across the AnimeBOX project
+- Ensure all critical information is provided for efficient reviews
+- Maintain high code quality standards through structured PR descriptions
+- Automate quality checks to reduce manual review overhead
+
+Usage:
+This file is referenced by the auto-request-copilot.yml workflow to validate
+incoming pull requests against established project standards.
+-->
+
 ## Required PR Template Sections
 
 When reviewing PRs, ensure the following sections are present and properly filled:

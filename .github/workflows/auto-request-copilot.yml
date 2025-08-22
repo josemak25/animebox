@@ -1,3 +1,40 @@
+# 🤖 Automated GitHub Copilot Code Review & Quality Automation
+#
+# This workflow provides comprehensive automated code review and quality assurance
+# for the AnimeBOX React Native application. It runs on every pull request to
+# ensure code quality, consistency, and adherence to pro      # Validate markdown documentation files for consistency and correctness
+      - name: 📝 Markdown Lint Check
+        run: |
+          echo "📝 Checking markdown documentation..."
+          if ls docs/**/*.md .github/**/*.md 1> /dev/null 2>&1; then
+            yarn markdownlint docs/**/*.md .github/**/*.md
+            echo "✅ Markdown linting passed"
+          else
+            echo "ℹ️ No markdown files to check"
+          fi
+
+      # Comprehensive automated code analysis including TypeScript, React Native,
+      # performance, testing, documentation, and architectural best practices
+      - name: 🔍 Automated Code Analysis
+        uses: actions/github-script@v7
+        id: code-analysis
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Initialize repository and PR context for comprehensive analysis
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;# Key Features:
+# - Automatic Copilot reviewer assignment
+# - Comprehensive code analysis (TypeScript, React Native, Performance, etc.)
+# - PR template compliance validation
+# - Mobile-specific best practices checking
+# - Documentation coverage analysis
+# - Automated quality scoring and feedback
+#
+# Workflow triggers on: pull_request [opened, synchronize, reopened]
+# Target branches: develop, main
+# Excludes: dependabot[bot], github-copilot[bot]
+
 name: 🤖 Copilot Review & Quality Automation
 
 on:
@@ -16,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     if: github.actor != 'dependabot[bot]' && github.actor != 'github-copilot[bot]'
-    
+
     steps:
       - name: 🤖 Auto-request Copilot as reviewer
         uses: actions/github-script@v7
@@ -25,46 +62,49 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
-            
+
             try {
-              // Check if Copilot is already a reviewer
+              // Check if Copilot is already a reviewer to avoid duplicate requests
               const { data: reviews } = await github.rest.pulls.listRequestedReviewers({
                 owner,
                 repo,
                 pull_number
               });
-              
-              const copilotAlreadyRequested = reviews.users.some(user => 
+
+              const copilotAlreadyRequested = reviews.users.some(user =>
                 user.login === 'github-copilot' || user.login === 'copilot'
               );
-              
+
               if (!copilotAlreadyRequested) {
-                // Request Copilot as reviewer
+                // Request Copilot as reviewer for automated code review
                 await github.rest.pulls.requestReviewers({
                   owner,
                   repo,
                   pull_number,
                   reviewers: ['github-copilot']
                 });
-                
-                console.log('✅ Successfully requested Copilot as reviewer');
-                
-                // Add a comment to notify
+
+                // Success: Copilot reviewer successfully requested
+                core.info('✅ Successfully requested Copilot as reviewer');
+
+                // Add informational comment to PR about automated Copilot review
                 await github.rest.issues.createComment({
                   owner,
                   repo,
                   issue_number: pull_number,
                   body: `🤖 **Copilot has been automatically requested as a reviewer**\n\nCopilot will review this PR based on our project standards and guidelines defined in \`.github/copilot-instructions.md\`.\n\n---\n*This is an automated action. Copilot reviews help maintain code quality and consistency.*`
                 });
-                
+
               } else {
-                console.log('ℹ️ Copilot is already requested as a reviewer');
+                // Info: Copilot already assigned, skipping duplicate request
+                core.info('ℹ️ Copilot is already requested as a reviewer');
               }
-              
+
             } catch (error) {
-              console.error('Error requesting Copilot reviewer:', error);
-              
-              // Fallback: Add comment explaining the setup
+              // Error: Failed to request Copilot reviewer - log for debugging
+              core.error('Error requesting Copilot reviewer: ' + error.message);
+
+              // Fallback: Add explanatory comment when automatic reviewer assignment fails
               try {
                 await github.rest.issues.createComment({
                   owner,
@@ -73,19 +113,23 @@ jobs:
                   body: `🤖 **Copilot Auto-Review Setup**\n\nTo enable automatic Copilot reviews:\n\n1. Go to Repository Settings → General → Pull Requests\n2. Enable "Automatically request reviews from owners of the code being changed"\n3. Or manually request \`@github-copilot\` as a reviewer\n\n---\n*Copilot reviews are configured via \`.github/copilot-instructions.md\`*`
                 });
               } catch (commentError) {
-                console.error('Error adding fallback comment:', commentError);
+                // Error: Failed to add fallback comment - log for debugging
+                core.error('Error adding fallback comment: ' + commentError.message);
               }
             }
 
+      # This step analyzes PR changes and categorizes files to provide context
+      # for reviewers about the scope and impact of the changes made
       - name: 📊 Log PR Changes (Info Only)
         uses: actions/github-script@v7
         continue-on-error: true
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            // Retrieve repository and PR context from GitHub Actions
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
-            
+
             try {
               // Get changed files for logging
               const { data: files } = await github.rest.pulls.listFiles({
@@ -93,7 +137,7 @@ jobs:
                 repo,
                 pull_number
               });
-              
+
               const categories = {
                 architecture: [],
                 components: [],
@@ -103,7 +147,7 @@ jobs:
                 documentation: [],
                 github: []
               };
-              
+
               // Categorize changes for logging
               for (const file of files) {
                 if (file.filename.startsWith('app/')) {
@@ -122,18 +166,22 @@ jobs:
                   categories.github.push(file.filename);
                 }
               }
-              
-              console.log('📊 PR Change Categories:');
+
+              // Log PR change analysis results for debugging
+              core.info('📊 PR Change Categories:');
               Object.entries(categories).forEach(([category, files]) => {
                 if (files.length > 0) {
-                  console.log(`  ${category}: ${files.length} file(s)`);
+                  core.info(`  ${category}: ${files.length} file(s)`);
                 }
               });
-              
+
             } catch (error) {
-              console.error('Error analyzing PR changes:', error);
+              // Error: Failed to analyze PR changes - log for debugging
+              core.error('Error analyzing PR changes: ' + error.message);
             }
 
+      # This step validates PR template compliance to ensure all required
+      # sections are filled out properly for effective code reviews
       - name: 🔍 PR Template Compliance Check
         uses: actions/github-script@v7
         continue-on-error: true
@@ -142,17 +190,17 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
-            
+
             try {
               const { data: pr } = await github.rest.pulls.get({
                 owner,
                 repo,
                 pull_number
               });
-              
+
               const body = pr.body || '';
               const title = pr.title || '';
-              
+
               // Check PR template compliance
               const templateChecks = {
                 hasDescription: body.includes('## 📋 Description') || body.includes('Description'),
@@ -162,24 +210,25 @@ jobs:
                 hasCheckboxes: body.includes('- [ ]') || body.includes('- [x]'),
                 hasProperTitle: title.length > 10 && !title.includes('WIP') && !title.includes('Draft')
               };
-              
+
               const complianceScore = Object.values(templateChecks).filter(Boolean).length;
               const totalChecks = Object.keys(templateChecks).length;
-              
-              console.log('📋 PR Template Compliance:');
-              console.log(`  Score: ${complianceScore}/${totalChecks}`);
+
+              // Log PR template compliance results for debugging
+              core.info('📋 PR Template Compliance:');
+              core.info(`  Score: ${complianceScore}/${totalChecks}`);
               Object.entries(templateChecks).forEach(([check, passed]) => {
-                console.log(`  ${check}: ${passed ? '✅' : '❌'}`);
+                core.info(`  ${check}: ${passed ? '✅' : '❌'}`);
               });
-              
-              // Store compliance data for later use
+
+              // Store compliance data for later use in automated analysis
               const complianceData = {
                 score: complianceScore,
                 total: totalChecks,
                 percentage: Math.round((complianceScore / totalChecks) * 100),
                 checks: templateChecks
               };
-              
+
               // Add compliance comment if score is low
               if (complianceScore < 4) {
                 await github.rest.issues.createComment({
@@ -202,9 +251,10 @@ jobs:
                   *This helps reviewers understand your changes better and ensures consistent PR quality.*`
                 });
               }
-              
+
             } catch (error) {
-              console.error('Error checking PR template compliance:', error);
+              // Error: Failed to check PR template compliance - log for debugging
+              core.error('Error checking PR template compliance: ' + error.message);
             }
 
       - name: 📥 Checkout code for quality checks
@@ -216,32 +266,36 @@ jobs:
           node-version: '18'
           cache: 'yarn'
 
+      # Install project dependencies using Yarn Berry for consistent builds
       - name: 📦 Install dependencies
         run: yarn install --immutable
 
+      # Validate TypeScript compilation to ensure type safety across the codebase
       - name: 🔍 TypeScript Check
         run: |
           echo "🔍 Running TypeScript compilation check..."
           yarn type-check
           echo "✅ TypeScript check passed"
 
-      - name: 🎨 ESLint Check  
+      # Run ESLint to ensure code quality and consistency with project standards
+      - name: 🎨 ESLint Check
         run: |
           echo "🎨 Running ESLint..."
           yarn lint
           echo "✅ ESLint check passed"
 
+      # Execute comprehensive test suite with coverage reporting
       - name: 🧪 Test Suite
         id: test-suite
         run: |
           echo "🧪 Running test suite..."
           yarn test --coverage --watchAll=false 2>&1 | tee test-output.log
-          
+
           # Extract test count from Jest output
           TEST_RESULTS=$(grep -E "Tests:|Test Suites:" test-output.log | tail -2)
           PASSED_TESTS=$(echo "$TEST_RESULTS" | grep "Tests:" | grep -o '[0-9]* passed' | head -1)
           TOTAL_TESTS=$(echo "$TEST_RESULTS" | grep "Tests:" | grep -o '[0-9]* total' | head -1)
-          
+
           echo "test-summary=$PASSED_TESTS, $TOTAL_TESTS" >> $GITHUB_OUTPUT
           echo "✅ All tests passed"
 
@@ -263,20 +317,20 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
-            
+
             // Get PR data and files
             const { data: pr } = await github.rest.pulls.get({
               owner,
               repo,
               pull_number
             });
-            
+
             const { data: files } = await github.rest.pulls.listFiles({
               owner,
               repo,
               pull_number
             });
-            
+
             // Initialize analysis results
             const analysis = {
               typeScript: { passed: [], failed: [] },
@@ -289,11 +343,11 @@ jobs:
               commonIssues: { passed: [], failed: [] },
               mobileSpecific: { passed: [], failed: [] }
             };
-            
+
             // Analyze each changed file
             for (const file of files) {
               if (file.status === 'removed') continue;
-              
+
               try {
                 // Get file content for analysis
                 const { data: fileData } = await github.rest.repos.getContent({
@@ -302,13 +356,13 @@ jobs:
                   path: file.filename,
                   ref: pr.head.sha
                 });
-                
+
                 const content = Buffer.from(fileData.content, 'base64').toString('utf8');
                 const isTypeScript = file.filename.endsWith('.ts') || file.filename.endsWith('.tsx');
                 const isComponent = file.filename.startsWith('components/') || file.filename.startsWith('app/');
                 const isDatabase = file.filename.startsWith('db/');
                 const isTest = file.filename.includes('test') || file.filename.includes('__tests__');
-                
+
                 // TypeScript Analysis
                 if (isTypeScript) {
                   // Check for 'any' types
@@ -317,13 +371,13 @@ jobs:
                   } else {
                     analysis.typeScript.passed.push(`${file.filename}: No 'any' types found`);
                   }
-                  
+
                   // Check for proper interfaces/types
                   if (content.includes('interface ') || content.includes('type ') || content.includes('enum ')) {
                     analysis.typeScript.passed.push(`${file.filename}: Uses proper TypeScript definitions`);
                   }
                 }
-                
+
                 // React Native Analysis
                 if (isComponent) {
                   // Check for StyleSheet usage
@@ -332,19 +386,19 @@ jobs:
                   } else if (content.includes('style={{') || content.includes('style={[')) {
                     analysis.reactNative.failed.push(`${file.filename}: Uses inline styles instead of StyleSheet`);
                   }
-                  
+
                   // Check for responsive design
                   if (content.includes('moderateScale') || content.includes('scale') || content.includes('verticalScale')) {
                     analysis.reactNative.passed.push(`${file.filename}: Uses react-native-size-matters for responsive design`);
                   }
-                  
+
                   // Check for accessibility
                   if (content.includes('accessibilityLabel') || content.includes('accessibilityHint')) {
                     analysis.mobileSpecific.passed.push(`${file.filename}: Includes accessibility labels`);
                   } else if (content.includes('<TouchableOpacity') || content.includes('<Pressable') || content.includes('<Button')) {
                     analysis.mobileSpecific.failed.push(`${file.filename}: Interactive elements missing accessibility labels`);
                   }
-                  
+
                   // Check for web-only CSS
                   const webOnlyProps = ['cursor:', 'user-select:', 'box-shadow:', 'outline:'];
                   const foundWebProps = webOnlyProps.filter(prop => content.includes(prop));
@@ -352,61 +406,61 @@ jobs:
                     analysis.mobileSpecific.failed.push(`${file.filename}: Contains web-only CSS properties: ${foundWebProps.join(', ')}`);
                   }
                 }
-                
+
                 // Database Analysis
                 if (isDatabase) {
                   // Check for Drizzle queries
                   if (content.includes('useLiveQuery') || content.includes('db.select') || content.includes('db.insert')) {
                     analysis.drizzleORM.passed.push(`${file.filename}: Uses type-safe Drizzle operations`);
                   }
-                  
+
                   // Check for proper schema definitions
                   if (content.includes('sqliteTable') || content.includes('text()') || content.includes('integer()')) {
                     analysis.drizzleORM.passed.push(`${file.filename}: Proper Drizzle schema definition`);
                   }
                 }
-                
+
                 // Testing Analysis
                 if (isTest) {
                   analysis.testing.passed.push(`${file.filename}: Test file present`);
-                  
+
                   if (content.includes('describe(') && content.includes('it(')) {
                     analysis.testing.passed.push(`${file.filename}: Proper test structure`);
                   }
                 }
-                
+
                 // Common Issues Check
                 if (content.includes('console.log') || content.includes('console.error') || content.includes('console.warn')) {
-                  analysis.commonIssues.failed.push(`${file.filename}: Contains console statements`);
+                  analysis.commonIssues.failed.push(`${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`);
                 } else {
                   analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
                 }
-                
+
                 // Check for hardcoded strings
                 const hardcodedStrings = content.match(/"[^"]{20,}"/g) || [];
                 if (hardcodedStrings.length > 0) {
                   analysis.commonIssues.failed.push(`${file.filename}: Contains potential hardcoded strings`);
                 }
-                
+
                 // Performance checks
                 if (content.includes('useMemo') || content.includes('useCallback')) {
                   analysis.performance.passed.push(`${file.filename}: Uses performance optimization hooks`);
                 }
-                
+
                 // Documentation checks
-                const commentLines = content.split('\n').filter(line => 
+                const commentLines = content.split('\n').filter(line =>
                   line.trim().startsWith('//') || line.trim().startsWith('/*') || line.trim().startsWith('*')
                 ).length;
-                const codeLines = content.split('\n').filter(line => 
+                const codeLines = content.split('\n').filter(line =>
                   line.trim() && !line.trim().startsWith('//') && !line.trim().startsWith('/*') && !line.trim().startsWith('*')
                 ).length;
-                
+
                 if (commentLines / Math.max(codeLines, 1) > 0.1) {
                   analysis.documentation.passed.push(`${file.filename}: Well documented (${commentLines} comment lines)`);
                 } else if (codeLines > 50) {
                   analysis.documentation.failed.push(`${file.filename}: Needs more documentation (${commentLines} comments for ${codeLines} code lines)`);
                 }
-                
+
                 // Architecture checks
                 const properPaths = {
                   'components/': isComponent,
@@ -415,26 +469,27 @@ jobs:
                   'helpers/': file.filename.startsWith('helpers/'),
                   'hooks/': file.filename.startsWith('hooks/')
                 };
-                
+
                 if (Object.values(properPaths).some(Boolean)) {
                   analysis.architecture.passed.push(`${file.filename}: Follows project structure`);
                 }
-                
+
               } catch (error) {
-                console.error(`Error analyzing ${file.filename}:`, error.message);
+                // Error: Failed to analyze individual file - log for debugging
+                core.error(`Error analyzing ${file.filename}: ${error.message}`);
               }
             }
-            
+
             // Check if tests exist for new functionality
             const hasNewCode = files.some(f => f.status === 'added' && (f.filename.endsWith('.ts') || f.filename.endsWith('.tsx')));
             const hasNewTests = files.some(f => f.status === 'added' && (f.filename.includes('test') || f.filename.includes('__tests__')));
-            
+
             if (hasNewCode && !hasNewTests) {
               analysis.testing.failed.push('New functionality added without corresponding tests');
             } else if (hasNewCode && hasNewTests) {
               analysis.testing.passed.push('New functionality includes tests');
             }
-            
+
             // Store analysis results for next step
             const analysisResults = JSON.stringify(analysis);
             return { analysis };
@@ -446,30 +501,30 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
-            
+
             // Get test results and analysis from previous steps
             const testSummary = `${{ steps.test-suite.outputs.test-summary }}` || 'tests completed';
             const analysis = ${{ steps.code-analysis.outputs.result }}.analysis;
-            
+
             // Get changed files for context
             const { data: files } = await github.rest.pulls.listFiles({
               owner,
               repo,
               pull_number
             });
-            
+
             const hasTypeScriptChanges = files.some(f => f.filename.endsWith('.ts') || f.filename.endsWith('.tsx'));
             const hasComponentChanges = files.some(f => f.filename.startsWith('components/'));
             const hasDbChanges = files.some(f => f.filename.startsWith('db/'));
             const hasTestChanges = files.some(f => f.filename.includes('test') || f.filename.includes('__tests__'));
             const hasAppChanges = files.some(f => f.filename.startsWith('app/'));
-            
+
             const summaryComment = `## ✅ Automated Quality Gate Results
 
             All quality checks have passed successfully:
 
             - 🔍 **TypeScript Compilation**: ✅ Passed
-            - 🎨 **ESLint Code Style**: ✅ Passed  
+            - 🎨 **ESLint Code Style**: ✅ Passed
             - 🧪 **Test Suite**: ✅ Passed (${testSummary})
             - 📝 **Markdown Documentation**: ✅ Passed
 
@@ -491,11 +546,11 @@ jobs:
             // Helper function to format analysis results
             const formatAnalysisSection = (sectionName, data, emoji) => {
               if (data.passed.length === 0 && data.failed.length === 0) return '';
-              
+
               const passedItems = data.passed.map(item => `  ✅ ${item}`).join('\n');
               const failedItems = data.failed.map(item => `  ❌ ${item}`).join('\n');
               const status = data.failed.length === 0 ? '✅' : '❌';
-              
+
               return `${emoji} **${sectionName}**: ${status} ${data.failed.length === 0 ? 'All checks passed' : `${data.failed.length} issue(s) found`}
             ${passedItems}${passedItems && failedItems ? '\n' : ''}${failedItems}
             `;
@@ -527,8 +582,8 @@ jobs:
             - **Issues Found**: ${Object.values(analysis).reduce((total, section) => total + section.failed.length, 0)}
             - **Best Practices Followed**: ${Object.values(analysis).reduce((total, section) => total + section.passed.length, 0)}
 
-            ${Object.values(analysis).some(section => section.failed.length > 0) ? 
-              '### 🔧 Action Required\nPlease address the flagged issues above before merging.' : 
+            ${Object.values(analysis).some(section => section.failed.length > 0) ?
+              '### 🔧 Action Required\nPlease address the flagged issues above before merging.' :
               '### ✅ Ready for Review\nAll automated checks passed! This PR follows project standards.'}
 
             ---
@@ -542,8 +597,8 @@ jobs:
             });
 
             // Enhanced Copilot Review Guidance with analysis context
-            const analysisContext = Object.values(analysis).some(section => section.failed.length > 0) ? 
-              'ATTENTION: Automated analysis found issues that need review.' : 
+            const analysisContext = Object.values(analysis).some(section => section.failed.length > 0) ?
+              'ATTENTION: Automated analysis found issues that need review.' :
               'Good news: Automated analysis shows this PR follows most best practices.';
 
             const reviewGuidance = `## 🤖 @github-copilot - Enhanced Review Guidance
