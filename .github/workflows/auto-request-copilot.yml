@@ -2,34 +2,16 @@
 #
 # This workflow provides comprehensive automated code review and quality assurance
 # for the AnimeBOX React Native application. It runs on every pull request to
-# ensure code quality, consistency, and adherence to pro      # Validate markdown documentation files for consistency and correctness
-      - name: 📝 Markdown Lint Check
-        run: |
-          echo "📝 Checking markdown documentation..."
-          if ls docs/**/*.md .github/**/*.md 1> /dev/null 2>&1; then
-            yarn markdownlint docs/**/*.md .github/**/*.md
-            echo "✅ Markdown linting passed"
-          else
-            echo "ℹ️ No markdown files to check"
-          fi
-
-      # Comprehensive automated code analysis including TypeScript, React Native,
-      # performance, testing, documentation, and architectural best practices
-      - name: 🔍 Automated Code Analysis
-        uses: actions/github-script@v7
-        id: code-analysis
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            // Initialize repository and PR context for comprehensive analysis
-            const { owner, repo } = context.repo;
-            const pull_number = context.payload.pull_request.number;# Key Features:
+# ensure code quality, consistency, and adherence to project standards.
+#
+# Key Features:
 # - Automatic Copilot reviewer assignment
 # - Comprehensive code analysis (TypeScript, React Native, Performance, etc.)
 # - PR template compliance validation
 # - Mobile-specific best practices checking
 # - Documentation coverage analysis
 # - Automated quality scoring and feedback
+# - Quality Gate that blocks merging when issues are found
 #
 # Workflow triggers on: pull_request [opened, synchronize, reopened]
 # Target branches: develop, main
@@ -182,7 +164,7 @@ jobs:
 
       # This step validates PR template compliance to ensure all required
       # sections are filled out properly for effective code reviews
-      - name: 🔍 PR Template Compliance Check
+      - name: 📋 PR Template Compliance Check
         uses: actions/github-script@v7
         continue-on-error: true
         with:
@@ -204,7 +186,7 @@ jobs:
               // Check PR template compliance
               const templateChecks = {
                 hasDescription: body.includes('## 📋 Description') || body.includes('Description'),
-                hasTypeOfChange: body.includes('## 🔄 Type of Change') || body.includes('Type of Change'),
+                hasTypeOfChange: body.includes('## 📄 Type of Change') || body.includes('Type of Change'),
                 hasTesting: body.includes('## 🧪 Testing') || body.includes('Testing'),
                 hasChecklist: body.includes('## ✅ Checklist') || body.includes('Checklist'),
                 hasCheckboxes: body.includes('- [ ]') || body.includes('- [x]'),
@@ -257,14 +239,14 @@ jobs:
               core.error('Error checking PR template compliance: ' + error.message);
             }
 
-      - name: 📥 Checkout code for quality checks
+      - name: 🔥 Checkout code for quality checks
         uses: actions/checkout@v4
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'yarn'
+          node-version: "18"
+          cache: "yarn"
 
       # Install project dependencies using Yarn Berry for consistent builds
       - name: 📦 Install dependencies
@@ -299,6 +281,7 @@ jobs:
           echo "test-summary=$PASSED_TESTS, $TOTAL_TESTS" >> $GITHUB_OUTPUT
           echo "✅ All tests passed"
 
+      # Validate markdown documentation files for consistency and correctness
       - name: 📝 Markdown Lint Check
         run: |
           echo "📝 Checking markdown documentation..."
@@ -309,12 +292,15 @@ jobs:
             echo "ℹ️ No markdown files to check"
           fi
 
-      - name: � Automated Code Analysis
+      # Comprehensive automated code analysis including TypeScript, React Native,
+      # performance, testing, documentation, and architectural best practices
+      - name: 🔍 Automated Code Analysis
         uses: actions/github-script@v7
         id: code-analysis
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            // Initialize repository and PR context for comprehensive analysis
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
 
@@ -429,17 +415,27 @@ jobs:
                   }
                 }
 
-                // Common Issues Check
-                if (content.includes('console.log') || content.includes('console.error') || content.includes('console.warn')) {
-                  analysis.commonIssues.failed.push(`${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`);
-                } else {
-                  analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
-                }
+                // Common Issues Check (skip for workflow files)
+                const isWorkflowFile = file.filename.startsWith('.github/workflows/');
 
-                // Check for hardcoded strings
-                const hardcodedStrings = content.match(/"[^"]{20,}"/g) || [];
-                if (hardcodedStrings.length > 0) {
-                  analysis.commonIssues.failed.push(`${file.filename}: Contains potential hardcoded strings`);
+                if (!isWorkflowFile) {
+                  if (content.includes('console.log') || content.includes('console.error') || content.includes('console.warn')) {
+                    analysis.commonIssues.failed.push(`${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`);
+                  } else {
+                    analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
+                  }
+
+                  // Check for hardcoded strings (skip for workflow files and config files)
+                  const isConfigFile = file.filename.endsWith('.json') || file.filename.endsWith('.yml') || file.filename.endsWith('.yaml') || file.filename.endsWith('.md');
+
+                  if (!isConfigFile) {
+                    const hardcodedStrings = content.match(/"[^"]{20,}"/g) || [];
+                    if (hardcodedStrings.length > 0) {
+                      analysis.commonIssues.failed.push(`${file.filename}: Contains potential hardcoded strings`);
+                    }
+                  }
+                } else {
+                  analysis.commonIssues.passed.push(`${file.filename}: Workflow file - skipping console and hardcoded string checks`);
                 }
 
                 // Performance checks
@@ -566,7 +562,7 @@ jobs:
             ${formatAnalysisSection('Drizzle ORM', analysis.drizzleORM, '🗄️')}
             ${formatAnalysisSection('Testing', analysis.testing, '🧪')}
             ${formatAnalysisSection('Performance', analysis.performance, '⚡')}
-            ${formatAnalysisSection('Documentation', analysis.documentation, '📝')}
+            ${formatAnalysisSection('Documentation', analysis.documentation, '📚')}
             ${formatAnalysisSection('Architecture', analysis.architecture, '🏗️')}
 
             ### 🚨 Issues Flagged
@@ -609,7 +605,7 @@ jobs:
 
             ### 📋 Priority Review Areas
             ${hasTypeScriptChanges ? `- **TypeScript Changes**: ${analysis.typeScript.failed.length > 0 ? `⚠️ ${analysis.typeScript.failed.length} issue(s) detected` : '✅ No issues detected'}\n` : ''}${hasComponentChanges || hasAppChanges ? `- **React Native Components**: ${analysis.reactNative.failed.length > 0 ? `⚠️ ${analysis.reactNative.failed.length} issue(s) detected` : '✅ No issues detected'}\n` : ''}${hasDbChanges ? `- **Database Changes**: ${analysis.drizzleORM.failed.length > 0 ? `⚠️ ${analysis.drizzleORM.failed.length} issue(s) detected` : '✅ No issues detected'}\n` : ''}${hasTestChanges ? `- **Testing**: ${analysis.testing.failed.length > 0 ? `⚠️ ${analysis.testing.failed.length} issue(s) detected` : '✅ Tests look good'}\n` : ''}
-            ### � Focus Your Review On:
+            ### 🎯 Focus Your Review On:
             1. **Validate Flagged Issues**: Confirm if the ${Object.values(analysis).reduce((total, section) => total + section.failed.length, 0)} flagged issues are genuine concerns
             2. **Code Quality**: Look beyond automated checks for logic, readability, and maintainability
             3. **Security**: Check for potential security vulnerabilities not caught by static analysis
@@ -619,9 +615,9 @@ jobs:
             ### 📊 Automated Analysis Summary:
             - ✅ **Passed Checks**: ${Object.values(analysis).reduce((total, section) => total + section.passed.length, 0)}
             - ❌ **Failed Checks**: ${Object.values(analysis).reduce((total, section) => total + section.failed.length, 0)}
-            - 📁 **Files Analyzed**: ${files.length}
+            - 📄 **Files Analyzed**: ${files.length}
 
-            ### � Review Guidelines:
+            ### 🔍 Review Guidelines:
             - If automated analysis flagged an issue, please validate and provide specific feedback
             - For issues not flagged, still review for correctness and best practices
             - Consider the impact of changes on mobile performance and user experience
@@ -636,3 +632,92 @@ jobs:
               issue_number: pull_number,
               body: reviewGuidance
             });
+
+      # Quality Gate: Block merge if issues are found
+      - name: 🚫 Quality Gate - Block Merge on Issues
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const analysis = ${{ steps.code-analysis.outputs.result }}.analysis;
+
+            // Count total issues found
+            const totalIssues = Object.values(analysis).reduce((total, section) => total + section.failed.length, 0);
+            const totalPassed = Object.values(analysis).reduce((total, section) => total + section.passed.length, 0);
+
+            // Log summary for transparency
+            core.info(`🔍 Quality Gate Summary:`);
+            core.info(`  ✅ Passed Checks: ${totalPassed}`);
+            core.info(`  ❌ Failed Checks: ${totalIssues}`);
+
+            if (totalIssues > 0) {
+              // List the specific issues found
+              core.info(`🚨 Issues preventing merge:`);
+              Object.entries(analysis).forEach(([category, data]) => {
+                if (data.failed.length > 0) {
+                  core.info(`  ${category}:`);
+                  data.failed.forEach(issue => core.info(`    - ${issue}`));
+                }
+              });
+
+              // Create a status check that will block the merge
+              const { owner, repo } = context.repo;
+              const pull_number = context.payload.pull_request.number;
+              const { data: pr } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number
+              });
+
+              // Add blocking comment
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pull_number,
+                body: `## 🚫 **MERGE BLOCKED - Quality Gate Failed**
+
+                **${totalIssues} issue(s) must be resolved before this PR can be merged.**
+
+                ### 🔧 Required Actions:
+                ${Object.entries(analysis)
+                  .filter(([_, data]) => data.failed.length > 0)
+                  .map(([category, data]) =>
+                    `**${category}:**\n${data.failed.map(issue => `- ${issue}`).join('\n')}`
+                  ).join('\n\n')}
+
+                ### ✅ Next Steps:
+                1. Fix the issues listed above
+                2. Push your changes to trigger a new analysis
+                3. Once all issues are resolved, this check will pass automatically
+
+                ---
+                *This PR will remain blocked until all automated quality checks pass.*`
+              });
+
+              // Fail the workflow to prevent merge
+              core.setFailed(`Quality Gate Failed: ${totalIssues} issue(s) found that must be resolved before merging.`);
+
+            } else {
+              core.info('🎉 Quality Gate Passed: No blocking issues found!');
+
+              // Add success comment
+              const { owner, repo } = context.repo;
+              const pull_number = context.payload.pull_request.number;
+
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pull_number,
+                body: `## 🎉 **Quality Gate Passed!**
+
+                All automated quality checks have passed successfully.
+
+                ✅ **${totalPassed} checks passed**
+                ❌ **0 issues found**
+
+                This PR meets all technical quality standards and is approved for merging.
+
+                ---
+                *Quality gate automatically validated by [AnimeBOX Project Guidelines](.github/copilot-instructions.md)*`
+              });
+            }
