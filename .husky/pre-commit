@@ -5,14 +5,14 @@ echo "🔍 Running pre-commit checks..."
 
 # Run type checking
 echo "🔎 Checking TypeScript..."
-npm run type-check
+yarn type-check
 
 # Run tests
 echo "🧪 Running tests..."
-npm run test:ci
+yarn test:ci
 
 # Run linting and formatting on staged files
 echo "🧹 Running ESLint and Prettier..."
-npx lint-staged
+yarn lint-staged
 
 echo "✅ All checks passed!"

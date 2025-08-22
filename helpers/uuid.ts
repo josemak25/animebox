@@ -26,5 +26,10 @@ export function generateShortId(length: number = 8): string {
  * Generate a timestamp-based ID
  */
 export function generateTimestampId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let suffix = "";
+  for (let i = 0; i < 9; i++) {
+    suffix += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `${Date.now()}-${suffix}`;
 }

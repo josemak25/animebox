@@ -25,19 +25,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "18"
-          cache: "npm"
+          cache: "yarn"
 
       - name: 📥 Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: 🔎 TypeScript type checking
-        run: npm run type-check
+        run: yarn type-check
 
       - name: 🧹 ESLint check
-        run: npm run lint
+        run: yarn lint
 
       - name: 🎨 Prettier format check
-        run: npm run format:check
+        run: yarn format:check
 
   # 🧪 Test Suite
   test:
@@ -53,13 +53,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "18"
-          cache: "npm"
+          cache: "yarn"
 
       - name: 📥 Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: 🧪 Run tests
-        run: npm run test:ci
+        run: yarn test:ci
 
       - name: 📊 Upload test coverage
         uses: codecov/codecov-action@v4
@@ -82,17 +82,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "18"
-          cache: "npm"
+          cache: "yarn"
 
       - name: 📥 Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: 🔒 Run security audit
-        run: npm audit --audit-level=moderate
+        run: yarn audit --audit-level=moderate
         continue-on-error: true
 
       - name: 📋 Check for vulnerable dependencies
-        run: npx better-npm-audit audit --level moderate
+        run: yarn dlx better-npm-audit audit --level moderate
         continue-on-error: true
 
   # ✅ All Checks Status

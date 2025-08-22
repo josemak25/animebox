@@ -24,7 +24,7 @@
     "*.{ts,tsx,js,jsx}": [
       "eslint --fix",
       "prettier --write",
-      "npm run test:ci -- --findRelatedTests --passWithNoTests"
+      "yarn test:ci --findRelatedTests --passWithNoTests"
     ],
     "*.{json,md}": [
       "prettier --write"
@@ -76,5 +76,9 @@
     "react-test-renderer": "19.0.0",
     "typescript": "~5.8.3"
   },
-  "private": true
+  "engines": {
+    "node": ">=20"
+  },
+  "private": true,
+  "packageManager": "yarn@4.9.3"
 }

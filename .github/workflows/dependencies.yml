@@ -22,12 +22,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "18"
-          cache: "npm"
+          cache: "yarn"
 
       - name: 🔍 Check for outdated packages
         id: outdated
         run: |
-          if npm outdated --json > outdated.json 2>/dev/null; then
+          if yarn outdated --json > outdated.json 2>/dev/null; then
             echo "has-updates=true" >> $GITHUB_OUTPUT
           else
             echo "has-updates=false" >> $GITHUB_OUTPUT
@@ -35,20 +35,20 @@ jobs:
 
       - name: 📥 Install dependencies
         if: steps.outdated.outputs.has-updates == 'true'
-        run: npm ci
+        run: yarn install --immutable
 
       - name: ⬆️ Update minor and patch versions
         if: steps.outdated.outputs.has-updates == 'true'
         run: |
-          npm update
-          npm audit fix --force
+          yarn up
+          yarn audit fix
 
       - name: 🧪 Run tests after update
         if: steps.outdated.outputs.has-updates == 'true'
         run: |
-          npm run type-check
-          npm run lint
-          npm run test:ci
+          yarn type-check
+          yarn lint
+          yarn test:ci
 
       - name: 📝 Create PR for dependency updates
         if: steps.outdated.outputs.has-updates == 'true'
@@ -64,7 +64,7 @@ jobs:
 
             ### Changes:
             - Updated minor and patch versions
-            - Applied security fixes via `npm audit fix`
+            - Applied security fixes via `yarn audit fix`
 
             ### Testing:
             - ✅ TypeScript compilation passes
