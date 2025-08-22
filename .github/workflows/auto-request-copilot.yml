@@ -8,11 +8,13 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  issues: write
 
 jobs:
   auto-request-copilot:
     name: 🤖 Request Copilot Review
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: github.actor != 'dependabot[bot]' && github.actor != 'github-copilot[bot]'
     
     steps:
@@ -63,60 +65,71 @@ jobs:
               console.error('Error requesting Copilot reviewer:', error);
               
               // Fallback: Add comment explaining the setup
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: pull_number,
-                body: `🤖 **Copilot Auto-Review Setup**\n\nTo enable automatic Copilot reviews:\n\n1. Go to Repository Settings → General → Pull Requests\n2. Enable "Automatically request reviews from owners of the code being changed"\n3. Or manually request \`@github-copilot\` as a reviewer\n\n---\n*Copilot reviews are configured via \`.github/copilot-instructions.md\`*`
-              });
+              try {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: pull_number,
+                  body: `🤖 **Copilot Auto-Review Setup**\n\nTo enable automatic Copilot reviews:\n\n1. Go to Repository Settings → General → Pull Requests\n2. Enable "Automatically request reviews from owners of the code being changed"\n3. Or manually request \`@github-copilot\` as a reviewer\n\n---\n*Copilot reviews are configured via \`.github/copilot-instructions.md\`*`
+                });
+              } catch (commentError) {
+                console.error('Error adding fallback comment:', commentError);
+              }
             }
 
-      - name: 📊 Add PR Labels Based on Changes
+      - name: 📊 Log PR Changes (Info Only)
         uses: actions/github-script@v7
+        continue-on-error: true
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
             
-            // Get changed files
-            const { data: files } = await github.rest.pulls.listFiles({
-              owner,
-              repo,
-              pull_number
-            });
-            
-            const labels = [];
-            
-            // Categorize changes and add appropriate labels
-            for (const file of files) {
-              if (file.filename.startsWith('app/')) {
-                labels.push('🏗️ architecture');
-              } else if (file.filename.startsWith('components/')) {
-                labels.push('🎨 ui-components');
-              } else if (file.filename.startsWith('db/')) {
-                labels.push('🗄️ database');
-              } else if (file.filename.startsWith('helpers/')) {
-                labels.push('🛠️ utilities');
-              } else if (file.filename.includes('test') || file.filename.includes('__tests__')) {
-                labels.push('🧪 tests');
-              } else if (file.filename.endsWith('.md')) {
-                labels.push('📚 documentation');
-              } else if (file.filename.includes('.github/')) {
-                labels.push('⚙️ github-config');
-              }
-            }
-            
-            // Remove duplicates and add labels
-            const uniqueLabels = [...new Set(labels)];
-            
-            if (uniqueLabels.length > 0) {
-              await github.rest.issues.addLabels({
+            try {
+              // Get changed files for logging
+              const { data: files } = await github.rest.pulls.listFiles({
                 owner,
                 repo,
-                issue_number: pull_number,
-                labels: uniqueLabels
+                pull_number
               });
               
-              console.log(`✅ Added labels: ${uniqueLabels.join(', ')}`);
+              const categories = {
+                architecture: [],
+                components: [],
+                database: [],
+                utilities: [],
+                tests: [],
+                documentation: [],
+                github: []
+              };
+              
+              // Categorize changes for logging
+              for (const file of files) {
+                if (file.filename.startsWith('app/')) {
+                  categories.architecture.push(file.filename);
+                } else if (file.filename.startsWith('components/')) {
+                  categories.components.push(file.filename);
+                } else if (file.filename.startsWith('db/')) {
+                  categories.database.push(file.filename);
+                } else if (file.filename.startsWith('helpers/')) {
+                  categories.utilities.push(file.filename);
+                } else if (file.filename.includes('test') || file.filename.includes('__tests__')) {
+                  categories.tests.push(file.filename);
+                } else if (file.filename.endsWith('.md')) {
+                  categories.documentation.push(file.filename);
+                } else if (file.filename.includes('.github/')) {
+                  categories.github.push(file.filename);
+                }
+              }
+              
+              console.log('📊 PR Change Categories:');
+              Object.entries(categories).forEach(([category, files]) => {
+                if (files.length > 0) {
+                  console.log(`  ${category}: ${files.length} file(s)`);
+                }
+              });
+              
+            } catch (error) {
+              console.error('Error analyzing PR changes:', error);
             }
