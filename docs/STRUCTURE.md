@@ -35,7 +35,7 @@ animebox/
 │   ├── color.ts           # Color manipulation utilities
 │   ├── common.ts          # Common utilities (isFunction, noop)
 │   ├── date.ts            # Date formatting helpers
-│   ├── makeUseStyles.ts   # Custom styling hooks
+│   ├── withThemeStyles.ts   # Theme-aware styling HOF
 │   ├── performance.ts     # Performance utilities
 │   ├── reportError.ts     # Error reporting
 │   ├── string.ts          # String manipulation

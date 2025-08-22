@@ -1,6 +1,6 @@
 import { Link, Stack } from "expo-router";
 
-import { makeUseStyles } from "@/helpers/makeUseStyles";
+import { withThemeStyles } from "@/helpers/withThemeStyles";
 import { ThemedText, ThemedView } from "@/components/themed-components";
 
 export default function NotFoundScreen() {
@@ -19,7 +19,7 @@ export default function NotFoundScreen() {
   );
 }
 
-const useStyles = makeUseStyles(({ ms, palette, layout }) => ({
+const useStyles = withThemeStyles(({ ms, palette, layout }) => ({
   container: {
     flex: 1,
     alignItems: "center",

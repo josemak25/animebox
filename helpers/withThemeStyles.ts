@@ -22,7 +22,7 @@ type DefaultTheme = {
   layout: { radius: number; gutter: number; screen: ScaledSize };
 };
 
-export function makeUseStyles<
+export function withThemeStyles<
   T extends StyleSheet.NamedStyles<T> | StyleSheet.NamedStyles<any>
 >(getStyles: (payload: DefaultTheme) => T): () => DefaultTheme & { styles: T } {
   return () => {
