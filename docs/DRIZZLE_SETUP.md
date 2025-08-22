@@ -1,10 +1,13 @@
 # Drizzle ORM Setup Guide
 
-This guide explains how Drizzle ORM is set up and used in the AnimeBox React Native app for type-safe database operations.
+This guide explains how Drizzle ORM is set up and used in the AnimeBox React
+Native app for type-safe database operations.
 
 ## 🚀 What is Drizzle ORM?
 
-Drizzle is a lightweight TypeScript ORM that provides type-safe database operations while maintaining close-to-SQL syntax. It generates TypeScript types from your database schema and provides excellent IntelliSense support.
+Drizzle is a lightweight TypeScript ORM that provides type-safe database
+operations while maintaining close-to-SQL syntax. It generates TypeScript types
+from your database schema and provides excellent IntelliSense support.
 
 ## 📦 Dependencies
 
@@ -20,7 +23,7 @@ The project uses these Drizzle-related packages:
 
 ## 📁 Database Structure
 
-```
+```text
 /db/
   ├── index.ts              # Database connection and utilities
   ├── schema.ts             # Database schema definitions
@@ -112,7 +115,8 @@ export * from "./schema";
 
 ## 🎯 Live Queries with useLiveQuery
 
-One of Drizzle's most powerful features is live queries that automatically update your UI when data changes:
+One of Drizzle's most powerful features is live queries that automatically
+update your UI when data changes:
 
 ```typescript
 // hooks/useAnimes.ts
@@ -322,7 +326,7 @@ export default {
 
 ## 🎯 Key Benefits
 
-### Type Safety
+### Enhanced Type Safety
 
 - **Compile-time Error Checking**: TypeScript catches database errors before runtime
 - **Auto-completion**: Full IntelliSense support for all database operations
@@ -349,4 +353,5 @@ In the AnimeBox app, Drizzle powers:
 - **Live Updates**: UI automatically updates when data changes
 - **Type Safety**: All database operations are fully type-checked
 
-This setup provides a robust, type-safe database layer that scales with your app's complexity while maintaining excellent developer experience.
+This setup provides a robust, type-safe database layer that scales with your
+app's complexity while maintaining excellent developer experience.

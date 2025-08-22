@@ -1,10 +1,13 @@
 # Drizzle Migration Guide
 
-This guide covers how Drizzle migrations work in the AnimeBox app and how to add new columns or tables safely.
+This guide covers how Drizzle migrations work in the AnimeBox app and how to
+add new columns or tables safely.
 
 ## 🔄 How Drizzle Migrations Work
 
-Drizzle migrations are automatically generated SQL files that track changes to your database schema. They ensure your database structure stays in sync across all environments (development, testing, production).
+Drizzle migrations are automatically generated SQL files that track changes to
+your database schema. They ensure your database structure stays in sync
+across all environments (development, testing, production).
 
 ### Migration Process
 
@@ -15,13 +18,13 @@ Drizzle migrations are automatically generated SQL files that track changes to y
 
 ### Migration Lifecycle
 
-```
+```text
 Schema Change → Generate → Apply → Database Updated
 ```
 
 ## 📁 Migration Files Structure
 
-```
+```text
 /db/migrations/
   ├── 0000_initial_migration.sql        # Initial schema
   ├── 0001_add_completed_column.sql     # Added completed column
@@ -97,7 +100,7 @@ export const reviews = sqliteTable("reviews", {
 export type ReviewInterface = typeof reviews.$inferSelect;
 ```
 
-### Step 2: Generate Migration
+### Step 2: Generate Table Migration
 
 ```bash
 npx drizzle-kit generate
@@ -114,7 +117,8 @@ CREATE TABLE `reviews` (
   `comment` text,
   `created_at` text NOT NULL,
   `updated_at` text NOT NULL,
-  FOREIGN KEY (`anime_id`) REFERENCES `animes`(`id`) ON UPDATE no action ON DELETE no action
+  FOREIGN KEY (`anime_id`) REFERENCES `animes`(`id`)
+    ON UPDATE no action ON DELETE no action
 );
 ```
 
@@ -280,4 +284,5 @@ export const useUserPreferences = () => {
 };
 ```
 
-This migration system ensures your database evolves safely while maintaining data integrity and providing automatic UI updates through live queries.
+This migration system ensures your database evolves safely while maintaining
+data integrity and providing automatic UI updates through live queries.

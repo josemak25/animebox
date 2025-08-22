@@ -1,46 +1,58 @@
 # 👥 Code Owners
-# This file defines who is responsible for code reviews in specific areas
 
-# Default owner for everything in the repo
-# This will be used as a fallback for files not covered by other rules
+## This file defines who is responsible for code reviews in specific areas
+
+## Default owner for everything in the repo
+
+## This will be used as a fallback for files not covered by other rules
+
 * @josemak25
 
-# Core App Structure
+## Core App Structure
+
 /app/ @josemak25
 /components/ @josemak25
 /constants/ @josemak25
 /providers/ @josemak25
 
-# Helper Functions & Utilities
+## Helper Functions & Utilities
+
 /helpers/ @josemak25
 /hooks/ @josemak25
 
-# Database & Data Layer
+## Database & Data Layer
+
 /db/ @josemak25
 
-# Configuration Files
+## Configuration Files
+
 *.config.* @josemak25
 *.json @josemak25
 *.yml @josemak25
 *.yaml @josemak25
 
-# TypeScript Configuration
+## TypeScript Configuration
+
 tsconfig.json @josemak25
 *.d.ts @josemak25
 
-# Development Tools
-.eslintrc* @josemak25
+## Development Tools
+
+.eslintrc*@josemak25
 .prettierrc* @josemak25
 .gitignore @josemak25
 
-# GitHub Configuration
+## GitHub Configuration
+
 /.github/ @josemak25
 
-# Documentation
+## Documentation
+
 *.md @josemak25
 /docs/ @josemak25
 
-# Tests
+## Tests
+
 **/__tests__/ @josemak25
 **/*.test.* @josemak25
 **/*.spec.* @josemak25
