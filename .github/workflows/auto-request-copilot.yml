@@ -2,28 +2,9 @@
 #
 # This workflow provides comprehensive automated code review and quality assurance
 # for the AnimeBOX React Native application. It runs on every pull request to
-# ensure code quality, consistency, and adherence to pro      # Validate markdown documentation files for consistency and correctness
-      - name: 📝 Markdown Lint Check
-        run: |
-          echo "📝 Checking markdown documentation..."
-          if ls docs/**/*.md .github/**/*.md 1> /dev/null 2>&1; then
-            yarn markdownlint docs/**/*.md .github/**/*.md
-            echo "✅ Markdown linting passed"
-          else
-            echo "ℹ️ No markdown files to check"
-          fi
-
-      # Comprehensive automated code analysis including TypeScript, React Native,
-      # performance, testing, documentation, and architectural best practices
-      - name: 🔍 Automated Code Analysis
-        uses: actions/github-script@v7
-        id: code-analysis
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            // Initialize repository and PR context for comprehensive analysis
-            const { owner, repo } = context.repo;
-            const pull_number = context.payload.pull_request.number;# Key Features:
+# ensure code quality, consistency, and adherence to project standards.
+#
+# Key Features:
 # - Automatic Copilot reviewer assignment
 # - Comprehensive code analysis (TypeScript, React Native, Performance, etc.)
 # - PR template compliance validation
@@ -182,7 +163,7 @@ jobs:
 
       # This step validates PR template compliance to ensure all required
       # sections are filled out properly for effective code reviews
-      - name: 🔍 PR Template Compliance Check
+      - name: 📋 PR Template Compliance Check
         uses: actions/github-script@v7
         continue-on-error: true
         with:
@@ -204,7 +185,7 @@ jobs:
               // Check PR template compliance
               const templateChecks = {
                 hasDescription: body.includes('## 📋 Description') || body.includes('Description'),
-                hasTypeOfChange: body.includes('## 🔄 Type of Change') || body.includes('Type of Change'),
+                hasTypeOfChange: body.includes('## 📄 Type of Change') || body.includes('Type of Change'),
                 hasTesting: body.includes('## 🧪 Testing') || body.includes('Testing'),
                 hasChecklist: body.includes('## ✅ Checklist') || body.includes('Checklist'),
                 hasCheckboxes: body.includes('- [ ]') || body.includes('- [x]'),
@@ -257,14 +238,14 @@ jobs:
               core.error('Error checking PR template compliance: ' + error.message);
             }
 
-      - name: 📥 Checkout code for quality checks
+      - name: 🔥 Checkout code for quality checks
         uses: actions/checkout@v4
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'yarn'
+          node-version: "18"
+          cache: "yarn"
 
       # Install project dependencies using Yarn Berry for consistent builds
       - name: 📦 Install dependencies
@@ -299,6 +280,7 @@ jobs:
           echo "test-summary=$PASSED_TESTS, $TOTAL_TESTS" >> $GITHUB_OUTPUT
           echo "✅ All tests passed"
 
+      # Validate markdown documentation files for consistency and correctness
       - name: 📝 Markdown Lint Check
         run: |
           echo "📝 Checking markdown documentation..."
@@ -309,12 +291,15 @@ jobs:
             echo "ℹ️ No markdown files to check"
           fi
 
-      - name: � Automated Code Analysis
+      # Comprehensive automated code analysis including TypeScript, React Native,
+      # performance, testing, documentation, and architectural best practices
+      - name: 🔍 Automated Code Analysis
         uses: actions/github-script@v7
         id: code-analysis
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            // Initialize repository and PR context for comprehensive analysis
             const { owner, repo } = context.repo;
             const pull_number = context.payload.pull_request.number;
 
@@ -566,7 +551,7 @@ jobs:
             ${formatAnalysisSection('Drizzle ORM', analysis.drizzleORM, '🗄️')}
             ${formatAnalysisSection('Testing', analysis.testing, '🧪')}
             ${formatAnalysisSection('Performance', analysis.performance, '⚡')}
-            ${formatAnalysisSection('Documentation', analysis.documentation, '📝')}
+            ${formatAnalysisSection('Documentation', analysis.documentation, '📚')}
             ${formatAnalysisSection('Architecture', analysis.architecture, '🏗️')}
 
             ### 🚨 Issues Flagged
@@ -609,7 +594,7 @@ jobs:
 
             ### 📋 Priority Review Areas
             ${hasTypeScriptChanges ? `- **TypeScript Changes**: ${analysis.typeScript.failed.length > 0 ? `⚠️ ${analysis.typeScript.failed.length} issue(s) detected` : '✅ No issues detected'}\n` : ''}${hasComponentChanges || hasAppChanges ? `- **React Native Components**: ${analysis.reactNative.failed.length > 0 ? `⚠️ ${analysis.reactNative.failed.length} issue(s) detected` : '✅ No issues detected'}\n` : ''}${hasDbChanges ? `- **Database Changes**: ${analysis.drizzleORM.failed.length > 0 ? `⚠️ ${analysis.drizzleORM.failed.length} issue(s) detected` : '✅ No issues detected'}\n` : ''}${hasTestChanges ? `- **Testing**: ${analysis.testing.failed.length > 0 ? `⚠️ ${analysis.testing.failed.length} issue(s) detected` : '✅ Tests look good'}\n` : ''}
-            ### � Focus Your Review On:
+            ### 🎯 Focus Your Review On:
             1. **Validate Flagged Issues**: Confirm if the ${Object.values(analysis).reduce((total, section) => total + section.failed.length, 0)} flagged issues are genuine concerns
             2. **Code Quality**: Look beyond automated checks for logic, readability, and maintainability
             3. **Security**: Check for potential security vulnerabilities not caught by static analysis
@@ -619,9 +604,9 @@ jobs:
             ### 📊 Automated Analysis Summary:
             - ✅ **Passed Checks**: ${Object.values(analysis).reduce((total, section) => total + section.passed.length, 0)}
             - ❌ **Failed Checks**: ${Object.values(analysis).reduce((total, section) => total + section.failed.length, 0)}
-            - 📁 **Files Analyzed**: ${files.length}
+            - 📄 **Files Analyzed**: ${files.length}
 
-            ### � Review Guidelines:
+            ### 🔍 Review Guidelines:
             - If automated analysis flagged an issue, please validate and provide specific feedback
             - For issues not flagged, still review for correctness and best practices
             - Consider the impact of changes on mobile performance and user experience
