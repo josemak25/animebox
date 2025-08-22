@@ -11,6 +11,7 @@
 # - Mobile-specific best practices checking
 # - Documentation coverage analysis
 # - Automated quality scoring and feedback
+# - Quality Gate that blocks merging when issues are found
 #
 # Workflow triggers on: pull_request [opened, synchronize, reopened]
 # Target branches: develop, main
@@ -414,17 +415,27 @@ jobs:
                   }
                 }
 
-                // Common Issues Check
-                if (content.includes('console.log') || content.includes('console.error') || content.includes('console.warn')) {
-                  analysis.commonIssues.failed.push(`${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`);
-                } else {
-                  analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
-                }
+                // Common Issues Check (skip for workflow files)
+                const isWorkflowFile = file.filename.startsWith('.github/workflows/');
 
-                // Check for hardcoded strings
-                const hardcodedStrings = content.match(/"[^"]{20,}"/g) || [];
-                if (hardcodedStrings.length > 0) {
-                  analysis.commonIssues.failed.push(`${file.filename}: Contains potential hardcoded strings`);
+                if (!isWorkflowFile) {
+                  if (content.includes('console.log') || content.includes('console.error') || content.includes('console.warn')) {
+                    analysis.commonIssues.failed.push(`${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`);
+                  } else {
+                    analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
+                  }
+
+                  // Check for hardcoded strings (skip for workflow files and config files)
+                  const isConfigFile = file.filename.endsWith('.json') || file.filename.endsWith('.yml') || file.filename.endsWith('.yaml') || file.filename.endsWith('.md');
+
+                  if (!isConfigFile) {
+                    const hardcodedStrings = content.match(/"[^"]{20,}"/g) || [];
+                    if (hardcodedStrings.length > 0) {
+                      analysis.commonIssues.failed.push(`${file.filename}: Contains potential hardcoded strings`);
+                    }
+                  }
+                } else {
+                  analysis.commonIssues.passed.push(`${file.filename}: Workflow file - skipping console and hardcoded string checks`);
                 }
 
                 // Performance checks
@@ -621,3 +632,92 @@ jobs:
               issue_number: pull_number,
               body: reviewGuidance
             });
+
+      # Quality Gate: Block merge if issues are found
+      - name: 🚫 Quality Gate - Block Merge on Issues
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const analysis = ${{ steps.code-analysis.outputs.result }}.analysis;
+
+            // Count total issues found
+            const totalIssues = Object.values(analysis).reduce((total, section) => total + section.failed.length, 0);
+            const totalPassed = Object.values(analysis).reduce((total, section) => total + section.passed.length, 0);
+
+            // Log summary for transparency
+            core.info(`🔍 Quality Gate Summary:`);
+            core.info(`  ✅ Passed Checks: ${totalPassed}`);
+            core.info(`  ❌ Failed Checks: ${totalIssues}`);
+
+            if (totalIssues > 0) {
+              // List the specific issues found
+              core.info(`🚨 Issues preventing merge:`);
+              Object.entries(analysis).forEach(([category, data]) => {
+                if (data.failed.length > 0) {
+                  core.info(`  ${category}:`);
+                  data.failed.forEach(issue => core.info(`    - ${issue}`));
+                }
+              });
+
+              // Create a status check that will block the merge
+              const { owner, repo } = context.repo;
+              const pull_number = context.payload.pull_request.number;
+              const { data: pr } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number
+              });
+
+              // Add blocking comment
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pull_number,
+                body: `## 🚫 **MERGE BLOCKED - Quality Gate Failed**
+
+                **${totalIssues} issue(s) must be resolved before this PR can be merged.**
+
+                ### 🔧 Required Actions:
+                ${Object.entries(analysis)
+                  .filter(([_, data]) => data.failed.length > 0)
+                  .map(([category, data]) =>
+                    `**${category}:**\n${data.failed.map(issue => `- ${issue}`).join('\n')}`
+                  ).join('\n\n')}
+
+                ### ✅ Next Steps:
+                1. Fix the issues listed above
+                2. Push your changes to trigger a new analysis
+                3. Once all issues are resolved, this check will pass automatically
+
+                ---
+                *This PR will remain blocked until all automated quality checks pass.*`
+              });
+
+              // Fail the workflow to prevent merge
+              core.setFailed(`Quality Gate Failed: ${totalIssues} issue(s) found that must be resolved before merging.`);
+
+            } else {
+              core.info('🎉 Quality Gate Passed: No blocking issues found!');
+
+              // Add success comment
+              const { owner, repo } = context.repo;
+              const pull_number = context.payload.pull_request.number;
+
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pull_number,
+                body: `## 🎉 **Quality Gate Passed!**
+
+                All automated quality checks have passed successfully.
+
+                ✅ **${totalPassed} checks passed**
+                ❌ **0 issues found**
+
+                This PR meets all technical quality standards and is approved for merging.
+
+                ---
+                *Quality gate automatically validated by [AnimeBOX Project Guidelines](.github/copilot-instructions.md)*`
+              });
+            }
