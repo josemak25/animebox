@@ -5,11 +5,11 @@ for anime collection management.
 
 ## 🏗️ Architecture Overview
 
-**Framework**: React Native with Expo (~53.0.20)  
-**Language**: TypeScript (~5.8.3)  
-**Database**: SQLite with Drizzle ORM (^0.44.4)  
-**Navigation**: Expo Router (~5.1.4)  
-**State Management**: React Hooks + Drizzle Live Queries  
+**Framework**: React Native with Expo (~53.0.20)
+**Language**: TypeScript (~5.8.3)
+**Database**: SQLite with Drizzle ORM (^0.44.4)
+**Navigation**: Expo Router (~5.1.4)
+**State Management**: React Hooks + Drizzle Live Queries
 **Styling**: React Native StyleSheet + react-native-size-matters
 
 ## 📁 Project Structure

@@ -419,10 +419,13 @@ jobs:
                 const isWorkflowFile = file.filename.startsWith('.github/workflows/');
 
                 if (!isWorkflowFile) {
-                  if (content.includes('console.log') || content.includes('console.error') || content.includes('console.warn')) {
-                    analysis.commonIssues.failed.push(`${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`);
-                  } else {
-                    analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
+                  const isMarkdown = file.filename.endsWith('.md');
+                  if (!isMarkdown) {
+                    if (content.includes('console.log') || content.includes('console.error') || content.includes('console.warn')) {
+                      analysis.commonIssues.failed.push(`${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`);
+                    } else {
+                      analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
+                    }
                   }
 
                   // Check for hardcoded strings (skip for workflow files and config files)
@@ -443,18 +446,21 @@ jobs:
                   analysis.performance.passed.push(`${file.filename}: Uses performance optimization hooks`);
                 }
 
-                // Documentation checks
-                const commentLines = content.split('\n').filter(line =>
-                  line.trim().startsWith('//') || line.trim().startsWith('/*') || line.trim().startsWith('*')
-                ).length;
-                const codeLines = content.split('\n').filter(line =>
-                  line.trim() && !line.trim().startsWith('//') && !line.trim().startsWith('/*') && !line.trim().startsWith('*')
-                ).length;
+                // Documentation checks (skip for markdown files)
+                const isMarkdown = file.filename.endsWith('.md');
+                if (!isMarkdown) {
+                  const commentLines = content.split('\n').filter(line =>
+                    line.trim().startsWith('//') || line.trim().startsWith('/*') || line.trim().startsWith('*')
+                  ).length;
+                  const codeLines = content.split('\n').filter(line =>
+                    line.trim() && !line.trim().startsWith('//') && !line.trim().startsWith('/*') && !line.trim().startsWith('*')
+                  ).length;
 
-                if (commentLines / Math.max(codeLines, 1) > 0.1) {
-                  analysis.documentation.passed.push(`${file.filename}: Well documented (${commentLines} comment lines)`);
-                } else if (codeLines > 50) {
-                  analysis.documentation.failed.push(`${file.filename}: Needs more documentation (${commentLines} comments for ${codeLines} code lines)`);
+                  if (commentLines / Math.max(codeLines, 1) > 0.1) {
+                    analysis.documentation.passed.push(`${file.filename}: Well documented (${commentLines} comment lines)`);
+                  } else if (codeLines > 50) {
+                    analysis.documentation.failed.push(`${file.filename}: Needs more documentation (${commentLines} comments for ${codeLines} code lines)`);
+                  }
                 }
 
                 // Architecture checks
