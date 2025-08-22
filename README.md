@@ -1,209 +1,152 @@
-<!--
-   AnimeBOX README
-   This file provides an overview of the project, setup instructions, and contribution guidelines.
-   For more details, see the docs/STRUCTURE.md and docs/CONTRIBUTING.md files.
--->
-
-# AnimeBOX
+# Contributing to AnimeBOX
 
 <!--
-   Project Description:
-   AnimeBOX is a modern React Native application built with Expo, TypeScript, and Drizzle ORM, designed for anime collection management and seamless mobile consumption of anime content. The project focuses on building an advanced HTML data parser that takes PHP-based web responses from animepahe.ru and converts them into a clean JSON format, making the data easier to consume within a mobile app.
+   Introduction:
+   Thank you for your interest in contributing to AnimeBOX! Your help is
+   essential for building a robust, high-quality anime data parser and mobile
+   app. This guide will help you get started and ensure a smooth contribution
+   process.
 -->
 
-AnimeBOX is a modern React Native application built with Expo, TypeScript, and
-Drizzle ORM, designed for anime collection management and seamless mobile
-consumption of anime content. The project focuses on building an advanced HTML
-data parser that takes PHP-based web responses from animepahe.ru and converts
-them into a clean JSON format, making the data easier to consume within a mobile
-app.
+Thank you for your interest in contributing to AnimeBOX! Your help is essential
+for building a robust, high-quality anime data parser and mobile app. This guide
+will help you get started and ensure a smooth contribution process.
 
-<!--
-   🚀 Project Goal
-   Explains the main objective of the project and what it aims to achieve.
--->
+## 🚦 Quick Start
 
-## 🚀 Project Goal
-
-AnimeBOX aims to reverse engineer the data flow of
-[animepahe.ru](https://animepahe.ru), a web-only anime streaming site with
-secure video streaming and no open API. The core objective is to:
-
-- Parse and extract anime data from PHP-based HTML responses
-- Convert extracted data into structured, consumable JSON
-- Enable mobile-friendly access to anime content and metadata
-- Maintain secure, reliable, and efficient data handling
-
-<!--
-   🌐 Why This Approach?
-   Describes the motivation for reverse engineering animepahe.ru and the benefits for mobile users.
--->
-
-## 🌐 Why This Approach?
-
-Animepahe.ru does not provide a public API, making it inaccessible for mobile
-apps by default. By reverse engineering the site’s data flow and parsing its
-HTML responses, AnimeBOX bridges this gap, allowing users to:
-
-- Browse, search, and bookmark anime titles
-- Access episode lists, streaming links, and metadata
-- Enjoy a native mobile experience with offline and responsive features
-
-<!--
-   🏗️ Project Structure
-   Outlines the folder structure and provides a high-level overview of the codebase organization.
--->
-
-## 🏗️ Project Structure
-
-The project follows a modular, scalable architecture. For detailed structure, see [`docs/STRUCTURE.md`](docs/STRUCTURE.md).
-
-<!--
-   Directory structure for quick reference.
--->
-
-```text
-animebox/
-├── app/          # Expo Router - File-based routing
-├── components/   # Reusable UI components
-├── constants/    # App-wide constants
-├── db/           # Database schema and utilities
-├── docs/         # Documentation
-├── helpers/      # Utility functions
-├── hooks/        # Custom React hooks
-├── providers/    # Context providers
-└── drizzle.config.ts # Drizzle ORM config
-```
-
-- **app/**: Navigation, screens, and layouts (Expo Router)
-- **components/**: UI elements (e.g., bounceable, themed-components)
-- **db/**: SQLite/Drizzle ORM schema, migrations, and config
-- **helpers/**: Utility functions for parsing, formatting, error handling
-- **hooks/**: Custom React hooks for state, data, and UI logic
-- **providers/**: Context providers (e.g., ThemeProvider)
-- **docs/**: Project documentation and contribution guides
-
-<!--
-   🛠️ Key Technologies
-   Lists the main technologies and libraries used in the project.
--->
-
-## 🛠️ Key Technologies
-
-- **React Native** (Expo)
-- **TypeScript** (strict mode)
-- **Drizzle ORM** (SQLite)
-- **Expo Router** (file-based navigation)
-- **react-native-size-matters** (responsive design)
-- **Jest** (testing)
-
-<!--
-   📦 Getting Started
-   Step-by-step instructions for setting up the project locally.
--->
-
-## 📦 Getting Started
-
-1. **Clone the repository:**
+1. **Fork the repository** and clone your fork:
 
    ```sh
-   git clone https://github.com/josemak25/animebox.git
+   # Clone your fork of the repository
+   git clone https://github.com/<your-username>/animebox.git
    cd animebox
    ```
 
-2. **Install dependencies:**
+2. **Create a new branch** for your feature or fix:
+
+   ```sh
+   git checkout -b feat/your-feature-name
+   ```
+
+3. **Install dependencies:**
 
    ```sh
    yarn install
    ```
 
-3. **Run the app:**
+4. **Make your changes** and commit with a descriptive message:
 
    ```sh
-   yarn start
+   # Stage and commit your changes
+   git add .
+   git commit -m "feat: add new parser for episode list"
    ```
 
-<!--
-   🧩 HTML Data Parsing Approach
-   Explains how the app parses and transforms data from animepahe.ru.
--->
+5. **Push your branch** and open a pull request (PR) against `develop`:
 
-## 🧩 HTML Data Parsing Approach
+   ```sh
+   # Push your branch to your fork
+   git push origin feat/your-feature-name
+   ```
 
-- Uses custom helpers to fetch and parse HTML from animepahe.ru
-- Extracts relevant data (titles, episodes, streams) from PHP-based responses
-- Converts to JSON for use in the app’s state and UI
-- Handles anti-bot and security measures where possible
+6. **Fill out the PR template** and ensure all checks pass.
 
-<!--
-   📚 Documentation
-   Links to additional documentation and guides for contributors and maintainers.
--->
+---
 
-## 📚 Documentation
-
-- **Project Structure:** [`docs/STRUCTURE.md`](docs/STRUCTURE.md)
-- **Contribution Guide:** [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) _(if available)_
-- **Code Review Standards:** [`.github/copilot-instructions.md`](.github/copilot-instructions.md)
+## 📝 Contribution Guidelines
 
 <!--
-   🤝 Contributing
-   Guidelines for contributing to the project and submitting pull requests.
+   Contribution Guidelines:
+   Essential rules and standards for contributing to the project including
+   branching strategy, code style, testing requirements, and commit conventions.
 -->
 
-## 🤝 Contributing
+- **Base branch:** Always branch from and target `develop` for new features and
+  fixes.
+- **Code style:** Follow the existing TypeScript, ESLint, and Prettier rules.
+  Run `yarn lint` and `yarn format` before committing.
+- **Testing:** All new features and bug fixes must include tests. Use Jest and
+  follow examples in `helpers/__tests__/`.
+- **Documentation:** Update or add documentation as needed (see
+  `docs/STRUCTURE.md`).
+- **Commits:** Use [Conventional Commits](https://www.conventionalcommits.org/)
+  for commit messages (e.g., `feat:`, `fix:`, `chore:`).
+- **PR template:** Complete all sections of the pull request template for
+  clarity and review efficiency.
+- **No debug output:** Use proper error handling and logging patterns (see
+  `.github/copilot-instructions.md`).
 
-Contributions are welcome! Please read the
-[contribution guidelines](docs/CONTRIBUTING.md) and
-[code of conduct](.github/CODEOWNERS) before submitting a pull request.
-
-- Fork the repo and create your branch from `develop`
-- Ensure code passes all lint, type, and test checks
-- Write tests for new features (see `/helpers/__tests__/` for examples)
-- Follow the PR template and code review checklist
+## 🧪 Running Tests
 
 <!--
-   🧪 Testing
-   Instructions for running tests and ensuring code quality.
+   Testing:
+   Instructions for running tests and checking coverage to ensure code quality
+   and maintain project stability.
 -->
-
-## 🧪 Testing
 
 - Run all tests:
 
   ```sh
-  yarn test
+   yarn test
   ```
 
-- Test coverage is enforced for all helpers and utilities
+- Check test coverage:
 
-<!--
-   🛡️ Quality & Code Review
-   Describes the automated review process and quality standards.
--->
+  ```sh
+   yarn test --coverage
+  ```
 
 ## 🛡️ Quality & Code Review
 
-- Automated code review via GitHub Copilot and custom workflow
-- PRs are blocked if flagged issues are found (see workflow in
-  `.github/workflows/auto-request-copilot.yml`)
-- Follow [project standards](.github/copilot-instructions.md) for code,
-  documentation, and testing
-
 <!--
-   📄 License
-   Licensing information for the project.
+   Quality & Code Review:
+   Explains the automated review process and how to resolve flagged issues
+   to maintain high code standards across the project.
 -->
 
-## 📄 License
+- All PRs are subject to automated code review via GitHub Copilot and custom
+  workflows.
+- PRs with flagged issues will be blocked from merging until resolved.
+- Review the [code review standards](../.github/copilot-instructions.md) before
+  submitting.
 
-MIT License. See [LICENSE](LICENSE) for details.
+## 🤝 Code of Conduct
+
+<!--
+   Code of Conduct:
+   Reference to CODEOWNERS for collaboration and review responsibilities
+   to ensure respectful and productive teamwork.
+-->
+
+Please read and follow our [CODEOWNERS](../.github/CODEOWNERS) for
+collaboration and review responsibilities.
+
+## 💡 Suggestions & Issues
+
+<!--
+   Suggestions & Issues:
+   How to open issues, request features, or ask questions to improve the
+   project and get help from the community.
+-->
+
+- For feature requests or bug reports, open an issue with clear details and
+  steps to reproduce.
+- For questions or ideas, start a discussion or join the project chat (if
+  available).
+
+## 📚 Resources
+
+<!--
+   Resources:
+   Helpful links for contributors and maintainers to understand the project
+   structure, standards, and related technologies.
+-->
+
+- [Project Structure](./docs/STRUCTURE.md)
+- [Code Review Standards](../.github/copilot-instructions.md)
+- [Expo Documentation](https://docs.expo.dev/)
+- [Drizzle ORM Docs](https://orm.drizzle.team/docs)
 
 ---
 
-<!--
-   Disclaimer: This project is not affiliated with animepahe.ru. Use responsibly and respect the site’s terms of service.
--->
-
-_This project is not affiliated with animepahe.ru. Use responsibly and respect
-the site’s terms of service._
+Thank you for helping make AnimeBOX better!

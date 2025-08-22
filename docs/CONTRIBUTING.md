@@ -2,7 +2,10 @@
 
 <!--
    Introduction:
-   Thank you for your interest in contributing to AnimeBOX! Your help is essential for building a robust, high-quality anime data parser and mobile app. This guide will help you get started and ensure a smooth contribution process.
+   Thank you for your interest in contributing to AnimeBOX! Your help is
+   essential for building a robust, high-quality anime data parser and mobile
+   app. This guide will help you get started and ensure a smooth contribution
+   process.
 -->
 
 Thank you for your interest in contributing to AnimeBOX! Your help is essential
@@ -52,19 +55,33 @@ will help you get started and ensure a smooth contribution process.
 
 ## 📝 Contribution Guidelines
 
-- **Base branch:** Always branch from and target `develop` for new features and fixes.
-- **Code style:** Follow the existing TypeScript, ESLint, and Prettier rules. Run `yarn lint` and `yarn format` before committing.
-- **Testing:** All new features and bug fixes must include tests. Use Jest and follow examples in `helpers/__tests__/`.
-- **Documentation:** Update or add documentation as needed (see `docs/STRUCTURE.md`).
-- **Commits:** Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages (e.g., `feat:`, `fix:`, `chore:`).
-- **PR template:** Complete all sections of the pull request template for clarity and review efficiency.
-- **No console.log:** Use proper error handling and logging patterns (see `.github/copilot-instructions.md`).
+<!--
+   Contribution Guidelines:
+   Essential rules and standards for contributing to the project including
+   branching strategy, code style, testing requirements, and commit conventions.
+-->
+
+- **Base branch:** Always branch from and target `develop` for new features and
+  fixes.
+- **Code style:** Follow the existing TypeScript, ESLint, and Prettier rules.
+  Run `yarn lint` and `yarn format` before committing.
+- **Testing:** All new features and bug fixes must include tests. Use Jest and
+  follow examples in `helpers/__tests__/`.
+- **Documentation:** Update or add documentation as needed (see
+  `docs/STRUCTURE.md`).
+- **Commits:** Use [Conventional Commits](https://www.conventionalcommits.org/)
+  for commit messages (e.g., `feat:`, `fix:`, `chore:`).
+- **PR template:** Complete all sections of the pull request template for
+  clarity and review efficiency.
+- **No debug output:** Use proper error handling and logging patterns (see
+  `.github/copilot-instructions.md`).
 
 ## 🧪 Running Tests
 
 <!--
    Testing:
-   Instructions for running tests and checking coverage.
+   Instructions for running tests and checking coverage to ensure code quality
+   and maintain project stability.
 -->
 
 - Run all tests:
@@ -83,7 +100,8 @@ will help you get started and ensure a smooth contribution process.
 
 <!--
    Quality & Code Review:
-   Explains the automated review process and how to resolve flagged issues.
+   Explains the automated review process and how to resolve flagged issues
+   to maintain high code standards across the project.
 -->
 
 - All PRs are subject to automated code review via GitHub Copilot and custom
@@ -96,7 +114,8 @@ will help you get started and ensure a smooth contribution process.
 
 <!--
    Code of Conduct:
-   Reference to CODEOWNERS for collaboration and review responsibilities.
+   Reference to CODEOWNERS for collaboration and review responsibilities
+   to ensure respectful and productive teamwork.
 -->
 
 Please read and follow our [CODEOWNERS](../.github/CODEOWNERS) for
@@ -106,11 +125,12 @@ collaboration and review responsibilities.
 
 <!--
    Suggestions & Issues:
-   How to open issues, request features, or ask questions.
+   How to open issues, request features, or ask questions to improve the
+   project and get help from the community.
 -->
 
-- For feature requests or bug reports, open an issue with clear details and steps
-  to reproduce.
+- For feature requests or bug reports, open an issue with clear details and
+  steps to reproduce.
 - For questions or ideas, start a discussion or join the project chat (if
   available).
 
@@ -118,7 +138,8 @@ collaboration and review responsibilities.
 
 <!--
    Resources:
-   Helpful links for contributors and maintainers.
+   Helpful links for contributors and maintainers to understand the project
+   structure, standards, and related technologies.
 -->
 
 - [Project Structure](./docs/STRUCTURE.md)
