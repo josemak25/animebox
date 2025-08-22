@@ -19,12 +19,22 @@ yarn.lock
 # Ignore environment files
 .env*
 
+# Ignore GitHub template files (they have specific formatting)
+.github/pull_request_template.md
+.github/CODEOWNERS
+.github/BRANCH_PROTECTION_SETUP.md
+
 # Ignore git files
 .git
 
 # Ignore database files
 *.db
 *.sqlite
+
+# Ignore Drizzle generated files
+db/drizzle/meta/
+db/drizzle/migrations/
+**/migrations.js
 
 # Ignore log files
 *.log
