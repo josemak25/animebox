@@ -11,6 +11,7 @@ export const reportError = (error: Error | string): void => {
   // Report error to external service like sentry or firebase crashlytics
 
   if (__DEV__) {
+    // eslint-disable-next-line no-console
     console.error("Reported Error to our external service:", error);
   }
 };

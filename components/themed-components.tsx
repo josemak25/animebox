@@ -5,7 +5,8 @@ import {
   Text as RNText,
   View as RNView,
 } from "react-native";
-import { makeUseStyles } from "@/helpers/makeUseStyles";
+
+import { withThemeStyles } from "@/helpers/withThemeStyles";
 
 interface ThemedTextProps extends React.ComponentProps<typeof RNText> {
   variant?: "default" | "title" | "subtitle" | "caption" | "muted";
@@ -68,4 +69,4 @@ export function ThemedView({
   return <RNView style={[viewStyle, style]} {...rest} />;
 }
 
-const useStyles = makeUseStyles(() => ({}));
+const useStyles = withThemeStyles(() => ({}));

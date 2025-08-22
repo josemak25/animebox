@@ -1,7 +1,8 @@
-import { useFonts } from "expo-font";
-import { useCallback, useEffect } from "react";
-import * as SplashScreen from "expo-splash-screen";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { useCallback, useEffect } from "react";
+
 import { useMigrations } from "./useMigrations";
 
 // Keep the splash screen visible while we fetch resources
