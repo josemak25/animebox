@@ -17,36 +17,49 @@ will help you get started and ensure a smooth contribution process.
 1. **Fork the repository** and clone your fork:
 
    ```sh
-   # Clone your fork of the repository
+   # Clone your fork of the AnimeBOX repository
    git clone https://github.com/<your-username>/animebox.git
+   # Navigate to the project directory
    cd animebox
    ```
 
 2. **Create a new branch** for your feature or fix:
 
    ```sh
+   # Create and checkout a new feature branch
    git checkout -b feat/your-feature-name
+   # Alternative: Create a bugfix branch
+   # git checkout -b fix/your-bug-fix
    ```
 
 3. **Install dependencies:**
 
    ```sh
+   # Install all project dependencies using Yarn
    yarn install
+   # Verify installation completed successfully
+   yarn --version
    ```
 
 4. **Make your changes** and commit with a descriptive message:
 
    ```sh
-   # Stage and commit your changes
+   # Stage all changes for commit
    git add .
+   # Commit with conventional commit message
    git commit -m "feat: add new parser for episode list"
+   # Alternative examples:
+   # git commit -m "fix: resolve parsing error in episode data"
+   # git commit -m "docs: update API documentation"
    ```
 
 5. **Push your branch** and open a pull request (PR) against `develop`:
 
    ```sh
-   # Push your branch to your fork
+   # Push your feature branch to your fork
    git push origin feat/your-feature-name
+   # If this is the first push, set upstream tracking
+   # git push -u origin feat/your-feature-name
    ```
 
 6. **Fill out the PR template** and ensure all checks pass.
@@ -87,13 +100,23 @@ will help you get started and ensure a smooth contribution process.
 - Run all tests:
 
   ```sh
-   yarn test
+  # Execute the complete test suite
+  yarn test
+  # Run tests with detailed coverage report
+  yarn test --coverage
+  # Run tests in watch mode for active development
+  yarn test --watch
+  # Run specific test file
+  # yarn test helpers/__tests__/parser.test.ts
   ```
 
 - Check test coverage:
 
   ```sh
-   yarn test --coverage
+  # Generate and display coverage report
+  yarn test --coverage
+  # Open coverage report in browser (if available)
+  # open coverage/lcov-report/index.html
   ```
 
 ## 🛡️ Quality & Code Review
