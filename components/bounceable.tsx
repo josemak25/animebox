@@ -8,7 +8,7 @@ import React, {
 import { Pressable, PressableProps, TouchableOpacityProps } from "react-native";
 import Animated, { AnimatedProps } from "react-native-reanimated";
 
-import { useBounceable } from "@/hooks";
+import { useBounceable } from "@/hooks/useBounceable";
 
 type AnimatedComponentProps = {
   createAnimatedComponent?: ComponentClass<any> | FunctionComponent<any>;

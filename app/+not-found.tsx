@@ -1,7 +1,7 @@
 import { Link, Stack } from "expo-router";
 
 import { ThemedText, ThemedView } from "@/components/themed-components";
-import { withThemeStyles } from "@/helpers";
+import { withThemeStyles } from "@/helpers/withThemeStyles";
 
 export default function NotFoundScreen() {
   const { styles } = useStyles();

@@ -6,7 +6,8 @@ import {
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 
-import { useTheme, useCachedResources } from "@/hooks";
+import { useCachedResources } from "@/hooks/useCachedResources";
+import { useTheme } from "@/hooks/useTheme";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 
 export {

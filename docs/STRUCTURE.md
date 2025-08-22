@@ -92,7 +92,8 @@ animebox/
 
 ```typescript
 // Real-time data with automatic UI updates
-import { useAnimes, useBookmarks } from "@/hooks";
+import { useAnimes } from "@/hooks/useAnimes";
+import { useBookmarks } from "@/hooks/useBookmarks";
 
 function MyComponent() {
   const { data: animes } = useAnimes();
@@ -106,7 +107,7 @@ function MyComponent() {
 ### Theme Management
 
 ```typescript
-import { useTheme } from "@/hooks";
+import { useTheme } from "@/hooks/useTheme";
 
 function ThemedComponent() {
   const { theme, isDark, toggleTheme } = useTheme();
@@ -122,7 +123,7 @@ function ThemedComponent() {
 ### App Lifecycle
 
 ```typescript
-import { useAppState } from "@/hooks";
+import { useAppState } from "@/hooks/useAppState";
 
 function App() {
   useAppState({
@@ -146,7 +147,7 @@ const throttledScroll = throttle(onScroll, 16);
 ### Date Formatting
 
 ```typescript
-import { formatDate, timeSince } from "@/helpers";
+import { formatDate, timeSince } from "@/helpers/date";
 
 const formatted = formatDate(new Date(), "YYYY-MM-DD");
 const relative = timeSince(date); // "2 hours ago"

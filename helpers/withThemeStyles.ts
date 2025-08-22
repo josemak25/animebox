@@ -4,7 +4,7 @@ import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 import { s, vs, ms, mvs } from "react-native-size-matters";
 
 import { DARK_MODE_COLORS, LIGHT_MODE_COLORS, Theme } from "@/constants/colors";
-import { useTheme } from "@/hooks";
+import { useTheme } from "@/hooks/useTheme";
 
 import { adjustColorBrightness, hexToRGB } from "./color";
 
