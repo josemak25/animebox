@@ -1,6 +1,22 @@
+<!--
+   AnimeBOX README
+   This file provides an overview of the project, setup instructions, and contribution guidelines.
+   For more details, see the docs/STRUCTURE.md and docs/CONTRIBUTING.md files.
+-->
+
 # AnimeBOX
 
+<!--
+   Project Description:
+   AnimeBOX is a modern React Native application built with Expo, TypeScript, and Drizzle ORM, designed for anime collection management and seamless mobile consumption of anime content. The project focuses on building an advanced HTML data parser that takes PHP-based web responses from animepahe.ru and converts them into a clean JSON format, making the data easier to consume within a mobile app.
+-->
+
 AnimeBOX is a modern React Native application built with Expo, TypeScript, and Drizzle ORM, designed for anime collection management and seamless mobile consumption of anime content. The project focuses on building an advanced HTML data parser that takes PHP-based web responses from animepahe.ru and converts them into a clean JSON format, making the data easier to consume within a mobile app.
+
+<!--
+   🚀 Project Goal
+   Explains the main objective of the project and what it aims to achieve.
+-->
 
 ## 🚀 Project Goal
 
@@ -11,6 +27,11 @@ AnimeBOX aims to reverse engineer the data flow of [animepahe.ru](https://animep
 - Enable mobile-friendly access to anime content and metadata
 - Maintain secure, reliable, and efficient data handling
 
+<!--
+   🌐 Why This Approach?
+   Describes the motivation for reverse engineering animepahe.ru and the benefits for mobile users.
+-->
+
 ## 🌐 Why This Approach?
 
 Animepahe.ru does not provide a public API, making it inaccessible for mobile apps by default. By reverse engineering the site’s data flow and parsing its HTML responses, AnimeBOX bridges this gap, allowing users to:
@@ -19,9 +40,18 @@ Animepahe.ru does not provide a public API, making it inaccessible for mobile ap
 - Access episode lists, streaming links, and metadata
 - Enjoy a native mobile experience with offline and responsive features
 
+<!--
+   🏗️ Project Structure
+   Outlines the folder structure and provides a high-level overview of the codebase organization.
+-->
+
 ## 🏗️ Project Structure
 
 The project follows a modular, scalable architecture. For detailed structure, see [`docs/STRUCTURE.md`](docs/STRUCTURE.md).
+
+<!--
+   Directory structure for quick reference.
+-->
 
 ```text
 animebox/
@@ -44,6 +74,11 @@ animebox/
 - **providers/**: Context providers (e.g., ThemeProvider)
 - **docs/**: Project documentation and contribution guides
 
+<!--
+   🛠️ Key Technologies
+   Lists the main technologies and libraries used in the project.
+-->
+
 ## 🛠️ Key Technologies
 
 - **React Native** (Expo)
@@ -52,6 +87,11 @@ animebox/
 - **Expo Router** (file-based navigation)
 - **react-native-size-matters** (responsive design)
 - **Jest** (testing)
+
+<!--
+   📦 Getting Started
+   Step-by-step instructions for setting up the project locally.
+-->
 
 ## 📦 Getting Started
 
@@ -74,6 +114,11 @@ animebox/
    yarn start
    ```
 
+<!--
+   🧩 HTML Data Parsing Approach
+   Explains how the app parses and transforms data from animepahe.ru.
+-->
+
 ## 🧩 HTML Data Parsing Approach
 
 - Uses custom helpers to fetch and parse HTML from animepahe.ru
@@ -81,11 +126,21 @@ animebox/
 - Converts to JSON for use in the app’s state and UI
 - Handles anti-bot and security measures where possible
 
+<!--
+   📚 Documentation
+   Links to additional documentation and guides for contributors and maintainers.
+-->
+
 ## 📚 Documentation
 
 - **Project Structure:** [`docs/STRUCTURE.md`](docs/STRUCTURE.md)
 - **Contribution Guide:** [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) _(if available)_
 - **Code Review Standards:** [`.github/copilot-instructions.md`](.github/copilot-instructions.md)
+
+<!--
+   🤝 Contributing
+   Guidelines for contributing to the project and submitting pull requests.
+-->
 
 ## 🤝 Contributing
 
@@ -95,6 +150,11 @@ Contributions are welcome! Please read the [contribution guidelines](docs/CONTRI
 - Ensure code passes all lint, type, and test checks
 - Write tests for new features (see `/helpers/__tests__/` for examples)
 - Follow the PR template and code review checklist
+
+<!--
+   🧪 Testing
+   Instructions for running tests and ensuring code quality.
+-->
 
 ## 🧪 Testing
 
@@ -106,16 +166,30 @@ Contributions are welcome! Please read the [contribution guidelines](docs/CONTRI
 
 - Test coverage is enforced for all helpers and utilities
 
+<!--
+   🛡️ Quality & Code Review
+   Describes the automated review process and quality standards.
+-->
+
 ## 🛡️ Quality & Code Review
 
 - Automated code review via GitHub Copilot and custom workflow
 - PRs are blocked if flagged issues are found (see workflow in `.github/workflows/auto-request-copilot.yml`)
 - Follow [project standards](.github/copilot-instructions.md) for code, documentation, and testing
 
+<!--
+   📄 License
+   Licensing information for the project.
+-->
+
 ## 📄 License
 
 MIT License. See [LICENSE](LICENSE) for details.
 
 ---
+
+<!--
+   Disclaimer: This project is not affiliated with animepahe.ru. Use responsibly and respect the site’s terms of service.
+-->
 
 _This project is not affiliated with animepahe.ru. Use responsibly and respect the site’s terms of service._

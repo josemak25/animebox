@@ -1,4 +1,14 @@
+<!--
+   Contributing Guide for AnimeBOX
+   This file explains how to contribute, coding standards, and review process.
+-->
+
 # Contributing to AnimeBOX
+
+<!--
+   Introduction:
+   Thank you for your interest in contributing to AnimeBOX! Your help is essential for building a robust, high-quality anime data parser and mobile app. This guide will help you get started and ensure a smooth contribution process.
+-->
 
 Thank you for your interest in contributing to AnimeBOX! Your help is essential for building a robust, high-quality anime data parser and mobile app. This guide will help you get started and ensure a smooth contribution process.
 
@@ -7,6 +17,7 @@ Thank you for your interest in contributing to AnimeBOX! Your help is essential 
 1. **Fork the repository** and clone your fork:
 
    ```sh
+   # Clone your fork of the repository
    git clone https://github.com/<your-username>/animebox.git
    cd animebox
    ```
@@ -26,6 +37,7 @@ Thank you for your interest in contributing to AnimeBOX! Your help is essential 
 4. **Make your changes** and commit with a descriptive message:
 
    ```sh
+   # Stage and commit your changes
    git add .
    git commit -m "feat: add new parser for episode list"
    ```
@@ -33,6 +45,7 @@ Thank you for your interest in contributing to AnimeBOX! Your help is essential 
 5. **Push your branch** and open a pull request (PR) against `develop`:
 
    ```sh
+   # Push your branch to your fork
    git push origin feat/your-feature-name
    ```
 
@@ -52,19 +65,29 @@ Thank you for your interest in contributing to AnimeBOX! Your help is essential 
 
 ## 🧪 Running Tests
 
+<!--
+   Testing:
+   Instructions for running tests and checking coverage.
+-->
+
 - Run all tests:
 
   ```sh
-  yarn test
+   yarn test
   ```
 
 - Check test coverage:
 
   ```sh
-  yarn test --coverage
+   yarn test --coverage
   ```
 
 ## 🛡️ Quality & Code Review
+
+<!--
+   Quality & Code Review:
+   Explains the automated review process and how to resolve flagged issues.
+-->
 
 - All PRs are subject to automated code review via GitHub Copilot and custom workflows.
 - PRs with flagged issues will be blocked from merging until resolved.
@@ -72,14 +95,29 @@ Thank you for your interest in contributing to AnimeBOX! Your help is essential 
 
 ## 🤝 Code of Conduct
 
+<!--
+   Code of Conduct:
+   Reference to CODEOWNERS for collaboration and review responsibilities.
+-->
+
 Please read and follow our [CODEOWNERS](../.github/CODEOWNERS) for collaboration and review responsibilities.
 
 ## 💡 Suggestions & Issues
+
+<!--
+   Suggestions & Issues:
+   How to open issues, request features, or ask questions.
+-->
 
 - For feature requests or bug reports, open an issue with clear details and steps to reproduce.
 - For questions or ideas, start a discussion or join the project chat (if available).
 
 ## 📚 Resources
+
+<!--
+   Resources:
+   Helpful links for contributors and maintainers.
+-->
 
 - [Project Structure](./docs/STRUCTURE.md)
 - [Code Review Standards](../.github/copilot-instructions.md)
