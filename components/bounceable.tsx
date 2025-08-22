@@ -1,12 +1,12 @@
+import * as Haptics from "expo-haptics";
 import React, {
   useMemo,
   ComponentClass,
   FunctionComponent,
   PropsWithChildren,
 } from "react";
-import * as Haptics from "expo-haptics";
-import Animated, { AnimatedProps } from "react-native-reanimated";
 import { Pressable, PressableProps, TouchableOpacityProps } from "react-native";
+import Animated, { AnimatedProps } from "react-native-reanimated";
 
 import { useBounceable } from "@/hooks";
 

@@ -1,5 +1,12 @@
-import React, { createContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useColorScheme } from "react-native";
+
 import colors, { Theme } from "@/constants/colors";
 
 type ColorScheme = "light" | "dark" | null;
@@ -40,7 +47,10 @@ export function ThemeProvider({
   const theme = colors[effectiveColorScheme];
   const isDark = effectiveColorScheme === "dark";
 
-  const toggleTheme = () => setColorScheme(isDark ? "light" : "dark");
+  const toggleTheme = useCallback(
+    () => setColorScheme(isDark ? "light" : "dark"),
+    [isDark]
+  );
 
   const value = useMemo(
     () => ({
@@ -50,7 +60,7 @@ export function ThemeProvider({
       setColorScheme,
       colorScheme: effectiveColorScheme,
     }),
-    [theme, isDark, effectiveColorScheme]
+    [theme, isDark, effectiveColorScheme, toggleTheme]
   );
 
   return (

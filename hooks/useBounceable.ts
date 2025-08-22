@@ -1,14 +1,17 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 import {
   withSpring,
   useSharedValue,
   useAnimatedStyle,
   WithSpringConfig,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
 
 type BounceableParam = Partial<WithSpringConfig & { scaleInValue: number }>;
 
-export function useBounceable({ scaleInValue = 0.95, ...config }: Partial<BounceableParam> = {}) {
+export function useBounceable({
+  scaleInValue = 0.95,
+  ...config
+}: Partial<BounceableParam> = {}) {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({

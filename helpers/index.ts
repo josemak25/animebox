@@ -12,6 +12,3 @@ export * from "./string";
 
 // Common utilities
 export * from "./common";
-
-// Database utilities
-export * from "./database";

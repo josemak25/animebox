@@ -1,11 +1,12 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { ScaledSize, StyleSheet, useWindowDimensions } from "react-native";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 import { s, vs, ms, mvs } from "react-native-size-matters";
 
-import { useTheme } from "@/hooks";
-import { adjustColorBrightness, hexToRGB } from "./color";
 import { DARK_MODE_COLORS, LIGHT_MODE_COLORS, Theme } from "@/constants/colors";
+import { useTheme } from "@/hooks";
+
+import { adjustColorBrightness, hexToRGB } from "./color";
 
 type DefaultTheme = {
   palette: Theme;
@@ -23,7 +24,7 @@ type DefaultTheme = {
 };
 
 export function withThemeStyles<
-  T extends StyleSheet.NamedStyles<T> | StyleSheet.NamedStyles<any>
+  T extends StyleSheet.NamedStyles<T> | StyleSheet.NamedStyles<any>,
 >(getStyles: (payload: DefaultTheme) => T): () => DefaultTheme & { styles: T } {
   return () => {
     const { isDark } = useTheme();
