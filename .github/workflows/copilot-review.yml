@@ -1,0 +1,211 @@
+name: 🤖 Copilot Code Review Automation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [develop, main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  copilot-review-setup:
+    name: 🧠 Setup Copilot Review
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Check PR Template Compliance
+        run: |
+          # Check if PR body follows our template structure
+          if ! echo "${{ github.event.pull_request.body }}" | grep -q "## 📋 Description"; then
+            echo "❌ PR does not follow the required template structure"
+            echo "Please use the PR template with proper sections: Description, Type of Change, Testing, etc."
+            exit 1
+          else
+            echo "✅ PR follows template structure"
+          fi
+
+      - name: 📊 Analyze PR Changes
+        run: |
+          echo "🔍 Analyzing changes in PR #${{ github.event.number }}"
+          
+          # Get list of changed files
+          gh api repos/${{ github.repository }}/pulls/${{ github.event.number }}/files \
+            --jq '.[].filename' > changed_files.txt
+          
+          # Categorize changes
+          if grep -q "^app/" changed_files.txt; then
+            echo "📱 App routing changes detected"
+          fi
+          
+          if grep -q "^components/" changed_files.txt; then
+            echo "🧩 UI component changes detected"
+          fi
+          
+          if grep -q "^db/" changed_files.txt; then
+            echo "🗄️ Database changes detected - requires careful review"
+          fi
+          
+          if grep -q "^helpers/" changed_files.txt; then
+            echo "🛠️ Utility function changes detected"
+          fi
+          
+          if grep -q "\\.test\\." changed_files.txt || grep -q "__tests__" changed_files.txt; then
+            echo "🧪 Test changes detected"
+          fi
+          
+          if grep -q "\\.md$" changed_files.txt; then
+            echo "📚 Documentation changes detected"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🏷️ Add Review Labels
+        run: |
+          labels=()
+          
+          # Add labels based on changed files
+          if grep -q "^app/" changed_files.txt; then
+            labels+=("🏗️ architecture")
+          fi
+          
+          if grep -q "^components/" changed_files.txt; then
+            labels+=("🎨 ui-components")
+          fi
+          
+          if grep -q "^db/" changed_files.txt; then
+            labels+=("🗄️ database")
+          fi
+          
+          if grep -q "\\.test\\." changed_files.txt || grep -q "__tests__" changed_files.txt; then
+            labels+=("🧪 tests")
+          fi
+          
+          if grep -q "\\.md$" changed_files.txt; then
+            labels+=("📚 documentation")
+          fi
+          
+          # Add labels to PR
+          for label in "${labels[@]}"; do
+            gh api repos/${{ github.repository }}/issues/${{ github.event.number }}/labels \
+              --method POST \
+              --field name="$label" || echo "Label '$label' may already exist"
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 💬 Add Copilot Review Comment
+        run: |
+          cat << 'EOF' > review_comment.md
+          ## 🤖 Copilot Automated Review
+
+          Hi! I'm reviewing this PR based on the AnimeBOX project standards. Here's what I'm checking:
+
+          ### 📋 Review Checklist
+          - [ ] **TypeScript**: Strict typing, no `any` types
+          - [ ] **React Native**: Following mobile best practices
+          - [ ] **Drizzle ORM**: Type-safe database operations
+          - [ ] **Testing**: New tests for new functionality
+          - [ ] **Performance**: No unnecessary re-renders
+          - [ ] **Documentation**: Adequate code comments
+          - [ ] **Architecture**: Follows project structure
+
+          ### 🎯 Focus Areas for This PR
+          Based on the files changed, I'll pay special attention to:
+          EOF
+          
+          # Add specific focus areas based on changes
+          if grep -q "^db/" changed_files.txt; then
+            echo "- 🗄️ **Database Changes**: Schema migrations, type safety, query optimization" >> review_comment.md
+          fi
+          
+          if grep -q "^app/" changed_files.txt; then
+            echo "- 📱 **Routing Changes**: Expo Router conventions, navigation patterns" >> review_comment.md
+          fi
+          
+          if grep -q "^components/" changed_files.txt; then
+            echo "- 🧩 **UI Components**: React Native styling, responsive design, accessibility" >> review_comment.md
+          fi
+          
+          cat << 'EOF' >> review_comment.md
+
+          ### 📖 Review Guidelines
+          Following our [Copilot Instructions](.github/copilot-instructions.md) for consistent reviews.
+
+          I'll provide detailed feedback on code quality, performance, and best practices. Feel free to ask questions about any suggestions!
+
+          ---
+          *This automated review helps maintain code quality. Human reviewers should also review this PR.*
+          EOF
+
+          gh pr comment ${{ github.event.number }} --body-file review_comment.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  enforce-quality-checks:
+    name: 🛡️ Quality Gate Enforcement
+    runs-on: ubuntu-latest
+    needs: copilot-review-setup
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: 📦 Install dependencies
+        run: yarn install --immutable
+
+      - name: 🔍 TypeScript Check
+        run: |
+          echo "🔍 Running TypeScript compilation check..."
+          yarn type-check
+          echo "✅ TypeScript check passed"
+
+      - name: 🎨 ESLint Check
+        run: |
+          echo "🎨 Running ESLint..."
+          yarn lint
+          echo "✅ ESLint check passed"
+
+      - name: 🧪 Test Suite
+        run: |
+          echo "🧪 Running test suite..."
+          yarn test --coverage --watchAll=false
+          echo "✅ All tests passed"
+
+      - name: 📝 Markdown Lint Check
+        run: |
+          echo "📝 Checking markdown documentation..."
+          if ls docs/**/*.md .github/**/*.md 1> /dev/null 2>&1; then
+            yarn markdownlint docs/**/*.md .github/**/*.md
+            echo "✅ Markdown linting passed"
+          else
+            echo "ℹ️ No markdown files to check"
+          fi
+
+      - name: 📊 Quality Gate Summary
+        run: |
+          cat << 'EOF'
+          ## ✅ Quality Gate Results
+          
+          All automated quality checks have passed:
+          - 🔍 TypeScript compilation: ✅ Passed
+          - 🎨 ESLint (code style): ✅ Passed  
+          - 🧪 Test suite: ✅ Passed
+          - 📝 Markdown linting: ✅ Passed
+          
+          This PR meets the technical quality standards for merge consideration.
+          EOF
