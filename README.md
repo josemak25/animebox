@@ -11,7 +11,12 @@
    AnimeBOX is a modern React Native application built with Expo, TypeScript, and Drizzle ORM, designed for anime collection management and seamless mobile consumption of anime content. The project focuses on building an advanced HTML data parser that takes PHP-based web responses from animepahe.ru and converts them into a clean JSON format, making the data easier to consume within a mobile app.
 -->
 
-AnimeBOX is a modern React Native application built with Expo, TypeScript, and Drizzle ORM, designed for anime collection management and seamless mobile consumption of anime content. The project focuses on building an advanced HTML data parser that takes PHP-based web responses from animepahe.ru and converts them into a clean JSON format, making the data easier to consume within a mobile app.
+AnimeBOX is a modern React Native application built with Expo, TypeScript, and
+Drizzle ORM, designed for anime collection management and seamless mobile
+consumption of anime content. The project focuses on building an advanced HTML
+data parser that takes PHP-based web responses from animepahe.ru and converts
+them into a clean JSON format, making the data easier to consume within a mobile
+app.
 
 <!--
    🚀 Project Goal
@@ -20,7 +25,9 @@ AnimeBOX is a modern React Native application built with Expo, TypeScript, and D
 
 ## 🚀 Project Goal
 
-AnimeBOX aims to reverse engineer the data flow of [animepahe.ru](https://animepahe.ru), a web-only anime streaming site with secure video streaming and no open API. The core objective is to:
+AnimeBOX aims to reverse engineer the data flow of
+[animepahe.ru](https://animepahe.ru), a web-only anime streaming site with
+secure video streaming and no open API. The core objective is to:
 
 - Parse and extract anime data from PHP-based HTML responses
 - Convert extracted data into structured, consumable JSON
@@ -34,7 +41,9 @@ AnimeBOX aims to reverse engineer the data flow of [animepahe.ru](https://animep
 
 ## 🌐 Why This Approach?
 
-Animepahe.ru does not provide a public API, making it inaccessible for mobile apps by default. By reverse engineering the site’s data flow and parsing its HTML responses, AnimeBOX bridges this gap, allowing users to:
+Animepahe.ru does not provide a public API, making it inaccessible for mobile
+apps by default. By reverse engineering the site’s data flow and parsing its
+HTML responses, AnimeBOX bridges this gap, allowing users to:
 
 - Browse, search, and bookmark anime titles
 - Access episode lists, streaming links, and metadata
@@ -144,7 +153,9 @@ animebox/
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read the [contribution guidelines](docs/CONTRIBUTING.md) and [code of conduct](.github/CODEOWNERS) before submitting a pull request.
+Contributions are welcome! Please read the
+[contribution guidelines](docs/CONTRIBUTING.md) and
+[code of conduct](.github/CODEOWNERS) before submitting a pull request.
 
 - Fork the repo and create your branch from `develop`
 - Ensure code passes all lint, type, and test checks
@@ -174,8 +185,10 @@ Contributions are welcome! Please read the [contribution guidelines](docs/CONTRI
 ## 🛡️ Quality & Code Review
 
 - Automated code review via GitHub Copilot and custom workflow
-- PRs are blocked if flagged issues are found (see workflow in `.github/workflows/auto-request-copilot.yml`)
-- Follow [project standards](.github/copilot-instructions.md) for code, documentation, and testing
+- PRs are blocked if flagged issues are found (see workflow in
+  `.github/workflows/auto-request-copilot.yml`)
+- Follow [project standards](.github/copilot-instructions.md) for code,
+  documentation, and testing
 
 <!--
    📄 License
@@ -192,4 +205,5 @@ MIT License. See [LICENSE](LICENSE) for details.
    Disclaimer: This project is not affiliated with animepahe.ru. Use responsibly and respect the site’s terms of service.
 -->
 
-_This project is not affiliated with animepahe.ru. Use responsibly and respect the site’s terms of service._
+_This project is not affiliated with animepahe.ru. Use responsibly and respect
+the site’s terms of service._

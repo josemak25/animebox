@@ -1,8 +1,3 @@
-<!--
-   Contributing Guide for AnimeBOX
-   This file explains how to contribute, coding standards, and review process.
--->
-
 # Contributing to AnimeBOX
 
 <!--
@@ -10,7 +5,9 @@
    Thank you for your interest in contributing to AnimeBOX! Your help is essential for building a robust, high-quality anime data parser and mobile app. This guide will help you get started and ensure a smooth contribution process.
 -->
 
-Thank you for your interest in contributing to AnimeBOX! Your help is essential for building a robust, high-quality anime data parser and mobile app. This guide will help you get started and ensure a smooth contribution process.
+Thank you for your interest in contributing to AnimeBOX! Your help is essential
+for building a robust, high-quality anime data parser and mobile app. This guide
+will help you get started and ensure a smooth contribution process.
 
 ## 🚦 Quick Start
 
@@ -89,9 +86,11 @@ Thank you for your interest in contributing to AnimeBOX! Your help is essential 
    Explains the automated review process and how to resolve flagged issues.
 -->
 
-- All PRs are subject to automated code review via GitHub Copilot and custom workflows.
+- All PRs are subject to automated code review via GitHub Copilot and custom
+  workflows.
 - PRs with flagged issues will be blocked from merging until resolved.
-- Review the [code review standards](../.github/copilot-instructions.md) before submitting.
+- Review the [code review standards](../.github/copilot-instructions.md) before
+  submitting.
 
 ## 🤝 Code of Conduct
 
@@ -100,7 +99,8 @@ Thank you for your interest in contributing to AnimeBOX! Your help is essential 
    Reference to CODEOWNERS for collaboration and review responsibilities.
 -->
 
-Please read and follow our [CODEOWNERS](../.github/CODEOWNERS) for collaboration and review responsibilities.
+Please read and follow our [CODEOWNERS](../.github/CODEOWNERS) for
+collaboration and review responsibilities.
 
 ## 💡 Suggestions & Issues
 
@@ -109,8 +109,10 @@ Please read and follow our [CODEOWNERS](../.github/CODEOWNERS) for collaboration
    How to open issues, request features, or ask questions.
 -->
 
-- For feature requests or bug reports, open an issue with clear details and steps to reproduce.
-- For questions or ideas, start a discussion or join the project chat (if available).
+- For feature requests or bug reports, open an issue with clear details and steps
+  to reproduce.
+- For questions or ideas, start a discussion or join the project chat (if
+  available).
 
 ## 📚 Resources
 
