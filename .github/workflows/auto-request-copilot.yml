@@ -40,6 +40,15 @@ jobs:
       - name: 🔥 Checkout code for quality checks
         uses: actions/checkout@v4
 
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: 📦 Install dependencies
+        run: yarn install --immutable
+
       - name: 🤖 Auto-request Copilot as reviewer
         run: node .github/scripts/auto-request-copilot.js
         env:
@@ -60,16 +69,6 @@ jobs:
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-          cache: "yarn"
-
-      # Install project dependencies using Yarn Berry for consistent builds
-      - name: 📦 Install dependencies
-        run: yarn install --immutable
 
       # Validate TypeScript compilation to ensure type safety across the codebase
       - name: 🔍 TypeScript Check
