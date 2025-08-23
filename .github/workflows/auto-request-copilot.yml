@@ -37,6 +37,9 @@ jobs:
     if: github.actor != 'dependabot[bot]' && github.actor != 'github-copilot[bot]'
 
     steps:
+      - name: 🔥 Checkout code for quality checks
+        uses: actions/checkout@v4
+
       - name: 🤖 Auto-request Copilot as reviewer
         run: node .github/scripts/auto-request-copilot.js
         env:
@@ -57,9 +60,6 @@ jobs:
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🔥 Checkout code for quality checks
-        uses: actions/checkout@v4
 
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
