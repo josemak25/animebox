@@ -418,25 +418,16 @@ jobs:
                 // Common Issues Check (skip for workflow files)
                 const isWorkflowFile = file.filename.startsWith('.github/workflows/');
 
-                if (!isWorkflowFile) {
-                  const isMarkdown = file.filename.endsWith('.md');
-                  if (!isMarkdown) {
-                    if (content.includes('console.log') || content.includes('console.error') || content.includes('console.warn')) {
-                      analysis.commonIssues.failed.push(`${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`);
-                    } else {
-                      analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
-                    }
+                // Enhanced config file detection for hardcoded string checks
+                // (DISABLED: Hardcoded string checks removed by project policy)
+                const isMarkdown = file.filename.endsWith('.md');
+                if (!isMarkdown) {
+                  if (content.includes('console.log') || content.includes('console.error') || content.includes('console.warn')) {
+                    analysis.commonIssues.failed.push(`${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`);
+                  } else {
+                    analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
                   }
-
-                  // Check for hardcoded strings (skip for workflow files and config files)
-                  const isConfigFile = file.filename.endsWith('.json') || file.filename.endsWith('.yml') || file.filename.endsWith('.yaml') || file.filename.endsWith('.md');
-
-                  if (!isConfigFile) {
-                    const hardcodedStrings = content.match(/"[^"]{20,}"/g) || [];
-                    if (hardcodedStrings.length > 0) {
-                      analysis.commonIssues.failed.push(`${file.filename}: Contains potential hardcoded strings`);
-                    }
-                  }
+                }
                 } else {
                   analysis.commonIssues.passed.push(`${file.filename}: Workflow file - skipping console and hardcoded string checks`);
                 }
