@@ -1,0 +1,56 @@
+# 📝 Automated Markdown-to-GitHub Issues Sync
+#
+# This workflow keeps your .github/issues.md file and GitHub Issues in sync.
+#
+# Key Features:
+# - Creates GitHub Issues for new markdown entries
+# - Marks synced issues in the markdown file
+# - Removes closed issues from the markdown file
+# - Can be triggered on push to .github/issues.md or manually
+#
+# Usage:
+# - Add or edit issues in .github/issues.md
+# - Push changes to trigger the workflow
+# - Issues are created/closed automatically and markdown is updated
+
+name: 📝 Sync Issues from Markdown
+
+on:
+  push:
+    paths:
+      - ".github/issues.md"
+  workflow_dispatch:
+
+jobs:
+  sync-issues:
+    name: 📝 Sync Markdown Issues
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout repository code
+      - name: 🔥 Checkout code
+        uses: actions/checkout@v4
+
+      # Setup Node.js for running the sync script
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Install Octokit for GitHub API access
+      - name: 📦 Install Octokit
+        run: npm install @octokit/rest
+
+      # Run the sync script to create/remove issues as needed
+      - name: 🔄 Sync Issues from Markdown
+        run: node .github/scripts/sync-issues.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Commit and push any changes to issues.md (e.g., closed issues removed)
+      - name: 💾 Commit changes to issues.md
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add .github/issues.md
+          git commit -m 'chore: update issues.md after sync' || echo 'No changes'
+          git push

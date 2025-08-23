@@ -44,6 +44,7 @@ const github = require("@actions/github");
       hasCheckboxes: body.includes("- [ ]") || body.includes("- [x]"),
       hasProperTitle:
         title.length > 10 && !title.includes("WIP") && !title.includes("Draft"),
+      hasIssueId: /Closes\s+#\d+/i.test(body),
     };
 
     const complianceScore =
