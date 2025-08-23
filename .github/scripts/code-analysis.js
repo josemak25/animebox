@@ -16,24 +16,36 @@ const github = require("@actions/github");
  */
 function analyzeReactNative({ content, file, isComponent, isTest, analysis }) {
   if (!isComponent) return;
+
   if (content.includes("withThemeStyles")) {
     analysis.reactNative.passed.push(
       `${file.filename}: Uses withThemeStyles for styles`
     );
-  } else if (content.includes("StyleSheet.create")) {
-    analysis.reactNative.failed.push(
-      `${file.filename}: Uses StyleSheet.create instead of withThemeStyles`
-    );
   } else {
-    // Flag style={{ ... }}
-    const inlineObjectStyle = /style\s*=\s*\{\{[^}]+\}\}/g.test(content);
-    // Flag style={[..., {...}]} (array with any object literal)
-    const arrayWithObjectStyle = /style\s*=\s*\[[^\]]*\{[^\}]+\}[^\]]*\]/g.test(
-      content
+    analysis.reactNative.failed.push(
+      `${file.filename}: Does not use withThemeStyles for styles`
     );
-    if (inlineObjectStyle || arrayWithObjectStyle) {
+  }
+
+  // Responsive design: Only flag if direct numeric values are used in style objects (not wrapped in s(), ms(), etc.)
+  if (!isTest) {
+    const directNumberInStyle = /\b(\w+):\s*(\d+)(?!\s*[),])/g;
+    const scalingHelpers = /\b(s|ms|vs|mvs)\s*\(/g;
+    let flagDirectNumber = false;
+    const styleBlocks =
+      content.match(/(StyleSheet\.create|withThemeStyles)\s*\(([^)]*)\)/gs) ||
+      [];
+    for (const block of styleBlocks) {
+      const blockWithoutScaling = block.replace(scalingHelpers, "");
+      if (directNumberInStyle.test(blockWithoutScaling)) {
+        flagDirectNumber = true;
+        break;
+      }
+    }
+    const inlineDirectNumber = /style=\{\{[^}]*:\s*\d+[^}]*\}\}/g.test(content);
+    if (flagDirectNumber || inlineDirectNumber) {
       analysis.reactNative.failed.push(
-        `${file.filename}: Uses inline style object(s) instead of withThemeStyles`
+        `${file.filename}: Uses direct numeric values in styles instead of react-native-size-matters scaling helpers`
       );
     }
   }
@@ -60,53 +72,6 @@ function analyzeReactNative({ content, file, isComponent, isTest, analysis }) {
         `${file.filename}: Uses Text from react-native instead of ThemedText from themed-components.tsx`
       );
     }
-  }
-
-  // Responsive design: Only flag if direct numeric values are used in style objects (not wrapped in s(), ms(), etc.)
-  const directNumberInStyle = /\b(\w+):\s*(\d+)(?!\s*[),])/g;
-  const scalingHelpers = /\b(s|ms|vs|mvs)\s*\(/g;
-  let flagDirectNumber = false;
-  const styleBlocks =
-    content.match(/(StyleSheet\.create|withThemeStyles)\s*\(([^)]*)\)/gs) || [];
-  for (const block of styleBlocks) {
-    const blockWithoutScaling = block.replace(scalingHelpers, "");
-    if (directNumberInStyle.test(blockWithoutScaling)) {
-      flagDirectNumber = true;
-      break;
-    }
-  }
-  const inlineDirectNumber = /style=\{\{[^}]*:\s*\d+[^}]*\}\}/g.test(content);
-  if (flagDirectNumber || inlineDirectNumber) {
-    analysis.reactNative.failed.push(
-      `${file.filename}: Uses direct numeric values in styles instead of react-native-size-matters scaling helpers`
-    );
-  }
-
-  // Accessibility
-  if (
-    content.includes("accessibilityLabel") ||
-    content.includes("accessibilityHint")
-  ) {
-    analysis.mobileSpecific.passed.push(
-      `${file.filename}: Includes accessibility labels`
-    );
-  } else if (
-    content.includes("<TouchableOpacity") ||
-    content.includes("<Pressable") ||
-    content.includes("<Button")
-  ) {
-    analysis.mobileSpecific.failed.push(
-      `${file.filename}: Interactive elements missing accessibility labels`
-    );
-  }
-
-  // Web-only CSS
-  const webOnlyProps = ["cursor:", "user-select:", "box-shadow:", "outline:"];
-  const foundWebProps = webOnlyProps.filter((prop) => content.includes(prop));
-  if (foundWebProps.length > 0) {
-    analysis.mobileSpecific.failed.push(
-      `${file.filename}: Contains web-only CSS properties: ${foundWebProps.join(", ")}`
-    );
   }
 }
 

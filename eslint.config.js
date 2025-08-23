@@ -3,6 +3,7 @@ const tseslint = require("@typescript-eslint/eslint-plugin");
 const tsParser = require("@typescript-eslint/parser");
 const { defineConfig } = require("eslint/config");
 const expoConfig = require("eslint-config-expo/flat");
+const rneslint = require("eslint-plugin-react-native");
 const eslintPluginPrettierRecommended = require("eslint-plugin-prettier/recommended");
 
 module.exports = defineConfig([
@@ -26,9 +27,14 @@ module.exports = defineConfig([
       parser: tsParser,
     },
     plugins: {
+      "react-native": rneslint,
       "@typescript-eslint": tseslint,
     },
     rules: {
+      // React Native best practices
+      "react-native/no-inline-styles": "error",
+      "react-native/no-color-literals": "error",
+      "react-native/no-raw-text": ["error", { "skip": ["ThemedText"] }],
       // Prettier integration
       "prettier/prettier": "error",
 
@@ -54,7 +60,7 @@ module.exports = defineConfig([
       ],
 
       // General code quality
-      "no-console": "warn",
+      "no-console": "error",
       "prefer-const": "error",
 
       // TypeScript rules - explicitly configure them
