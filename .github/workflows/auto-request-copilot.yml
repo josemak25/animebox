@@ -427,7 +427,6 @@ jobs:
                   } else {
                     analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
                   }
-                }
                 } else {
                   analysis.commonIssues.passed.push(`${file.filename}: Workflow file - skipping console and hardcoded string checks`);
                 }
@@ -438,7 +437,6 @@ jobs:
                 }
 
                 // Documentation checks (skip for markdown and test files)
-                const isMarkdown = file.filename.endsWith('.md');
                 const isTestFile = file.filename.includes('test') || file.filename.includes('__tests__');
                 if (!isMarkdown && !isTestFile) {
                   const commentLines = content.split('\n').filter(line =>
