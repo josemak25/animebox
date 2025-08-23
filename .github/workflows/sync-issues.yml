@@ -36,9 +36,9 @@ jobs:
         with:
           node-version: 20
 
-      # Install Octokit for GitHub API access
-      - name: 📦 Install Octokit
-        run: npm install @octokit/rest
+      # Install dependencies
+      - name: 📦 Install dependencies
+        run: yarn install --immutable
 
       # Run the sync script to create/remove issues as needed
       - name: 🔄 Sync Issues from Markdown
