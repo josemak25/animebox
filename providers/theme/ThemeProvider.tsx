@@ -70,8 +70,8 @@ export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
       toggleTheme,
       adjustColorBrightness,
       fonts: { variants: FONTS },
-      layout: { radius: 8, gutter: 16, screen: dimension },
       palette: isDarkMode ? DARK_MODE_COLORS : LIGHT_MODE_COLORS,
+      layout: { radius: ms(8), gutter: ms(16), screen: dimension },
       colors: { light: LIGHT_MODE_COLORS, dark: DARK_MODE_COLORS },
     }),
     [dimension, insets, isDarkMode, toggleTheme]
