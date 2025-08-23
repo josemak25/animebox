@@ -4,18 +4,6 @@ const core = require("@actions/core");
 const github = require("@actions/github");
 
 /**
- * @file code-analysis.js
- * @description
- * GitHub Actions script to perform static code analysis on PR files for AnimeBOX project standards.
- * Checks for theming, responsive design, accessibility, Drizzle ORM usage, test coverage, documentation, and more.
- * Outputs a JSON summary for downstream workflow steps.
- *
- * Usage: Run as a Node.js script in a GitHub Actions workflow with GITHUB_TOKEN in env.
- * Main execution block for code analysis.
- * Analyzes each changed file for project standards and outputs a summary.
- */
-
-/**
  * Analyzes React Native files for theming, responsive design, accessibility, and web-only CSS usage.
  * Flags usage of direct numeric values in styles, missing Themed components, and accessibility issues.
  *
@@ -188,9 +176,11 @@ function analyzeCommonIssues({ content, file, analysis }) {
     file.filename.endsWith(ext)
   );
   const isMarkdown = file.filename.endsWith(".md");
-  if (!isMarkdown && !isWorkflowFile && !isOmittedExtension) {
-    const logger = ["console.log", "console.error", "console.warn"];
+  // Skip console check for this script itself to avoid false positives
+  const isSelf = file.filename.includes("code-analysis");
 
+  if (!isMarkdown && !isWorkflowFile && !isOmittedExtension && !isSelf) {
+    const logger = ["console.log", "console.error", "console.warn"];
     if (logger.some((log) => content.includes(log))) {
       analysis.commonIssues.failed.push(
         `${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`
@@ -294,6 +284,17 @@ function analyzeArchitecture({ file, isComponent, analysis }) {
   }
 }
 
+/**
+ * @file code-analysis.js
+ * @description
+ * GitHub Actions script to perform static code analysis on PR files for AnimeBOX project standards.
+ * Checks for theming, responsive design, accessibility, Drizzle ORM usage, test coverage, documentation, and more.
+ * Outputs a JSON summary for downstream workflow steps.
+ *
+ * Usage: Run as a Node.js script in a GitHub Actions workflow with GITHUB_TOKEN in env.
+ * Main execution block for code analysis.
+ * Analyzes each changed file for project standards and outputs a summary.
+ */
 (async () => {
   try {
     const token = process.env.GITHUB_TOKEN;
