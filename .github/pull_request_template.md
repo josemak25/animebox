@@ -77,10 +77,18 @@
 - [ ] Responsive design verified
 - [ ] Accessibility considerations addressed
 
-## 🔗 Related Issues
-<!-- Link any related issues -->
+
+## 🔗 Related Issue (Required)
+<!-- Specify the main issue this PR addresses. Use the format 'Closes #<issue_number>' to enable automation. -->
 Closes #
-Related to #
+<!-- Example: Closes #42 -->
+
+> **Note:**
+>
+> - Every PR must reference an issue ID using `Closes #<issue_number>`.
+> - The workflow will use this ID to automatically close the issue and keep `.github/issues.md` in sync.
+> - If you are addressing multiple issues, list each with `Closes #` or `Related to #` as needed.
+>
 
 ## 🚨 Breaking Changes
 <!-- If this is a breaking change, describe what breaks and migration steps -->
