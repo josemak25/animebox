@@ -43,8 +43,12 @@ jobs:
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "18"
           cache: "yarn"
+
+      - name: Add GitHub Actions modules to package.json
+        run: |
+          yarn add @actions/core @actions/github --dev
 
       - name: 📦 Install dependencies
         run: yarn install --immutable
