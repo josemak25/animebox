@@ -349,33 +349,27 @@ jobs:
                 const isDatabase = file.filename.startsWith('db/');
                 const isTest = file.filename.includes('test') || file.filename.includes('__tests__');
 
-                // TypeScript Analysis
-                if (isTypeScript) {
-                  // Check for 'any' types
-                  if (content.includes(': any') || content.includes('any[]') || content.includes('any>')) {
-                    analysis.typeScript.failed.push(`${file.filename}: Contains 'any' types`);
-                  } else {
-                    analysis.typeScript.passed.push(`${file.filename}: No 'any' types found`);
-                  }
-
-                  // Check for proper interfaces/types
-                  if (content.includes('interface ') || content.includes('type ') || content.includes('enum ')) {
-                    analysis.typeScript.passed.push(`${file.filename}: Uses proper TypeScript definitions`);
-                  }
-                }
-
                 // React Native Analysis
                 if (isComponent) {
-                  // Check for StyleSheet usage
-                  if (content.includes('StyleSheet.create')) {
-                    analysis.reactNative.passed.push(`${file.filename}: Uses StyleSheet.create`);
+                  // Enforce withThemeStyles usage for styles
+                  if (content.includes('withThemeStyles')) {
+                    analysis.reactNative.passed.push(`${file.filename}: Uses withThemeStyles for styles`);
+                  } else if (content.includes('StyleSheet.create')) {
+                    analysis.reactNative.failed.push(`${file.filename}: Uses StyleSheet.create instead of withThemeStyles`);
                   } else if (content.includes('style={{') || content.includes('style={[')) {
-                    analysis.reactNative.failed.push(`${file.filename}: Uses inline styles instead of StyleSheet`);
+                    analysis.reactNative.failed.push(`${file.filename}: Uses inline styles instead of withThemeStyles`);
                   }
 
-                  // Check for responsive design
-                  if (content.includes('moderateScale') || content.includes('scale') || content.includes('verticalScale')) {
+                  // Check for responsive design (enforce s, vs, ms, mvs from react-native-size-matters)
+                  if (
+                    content.includes('s(') ||
+                    content.includes('vs(') ||
+                    content.includes('ms(') ||
+                    content.includes('mvs(')
+                  ) {
                     analysis.reactNative.passed.push(`${file.filename}: Uses react-native-size-matters for responsive design`);
+                  } else {
+                    analysis.reactNative.failed.push(`${file.filename}: Does not use react-native-size-matters for responsive design`);
                   }
 
                   // Check for accessibility
@@ -557,7 +551,6 @@ jobs:
 
             ### 📋 Review Checklist Results
 
-            ${formatAnalysisSection('TypeScript', analysis.typeScript, '🔷')}
             ${formatAnalysisSection('React Native', analysis.reactNative, '📱')}
             ${formatAnalysisSection('Drizzle ORM', analysis.drizzleORM, '🗄️')}
             ${formatAnalysisSection('Testing', analysis.testing, '🧪')}
