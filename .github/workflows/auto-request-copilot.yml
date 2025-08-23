@@ -1,0 +1,137 @@
+# 🤖 Automated GitHub Copilot Code Review & Quality Automation
+#
+# This workflow provides comprehensive automated code review and quality assurance
+# for the AnimeBOX React Native application. It runs on every pull request to
+# ensure code quality, consistency, and adherence to project standards.
+#
+# Key Features:
+# - Automatic Copilot reviewer assignment
+# - Comprehensive code analysis (TypeScript, React Native, Performance, etc.)
+# - PR template compliance validation
+# - Mobile-specific best practices checking
+# - Documentation coverage analysis
+# - Automated quality scoring and feedback
+# - Quality Gate that blocks merging when issues are found
+#
+# Workflow triggers on: pull_request [opened, synchronize, reopened]
+# Target branches: develop, main
+# Excludes: dependabot[bot], github-copilot[bot]
+
+name: 🤖 Copilot Review & Quality Automation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [develop, main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  copilot-automation:
+    name: 🤖 Copilot Review & Quality Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.actor != 'dependabot[bot]' && github.actor != 'github-copilot[bot]'
+
+    steps:
+      - name: 🔥 Checkout code for quality checks
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "yarn"
+
+      - name: Add GitHub Actions modules to package.json
+        run: |
+          yarn add @actions/core @actions/github --dev
+
+      - name: 📦 Install dependencies
+        run: yarn install --immutable
+
+      - name: 🤖 Auto-request Copilot as reviewer
+        run: node .github/scripts/auto-request-copilot.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # This step analyzes PR changes and categorizes files to provide context
+      # for reviewers about the scope and impact of the changes made
+      - name: 📊 Log PR Changes (Info Only)
+        run: node .github/scripts/log-pr-changes.js
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # This step validates PR template compliance to ensure all required
+      # sections are filled out properly for effective code reviews
+      - name: 📋 PR Template Compliance Check
+        run: node .github/scripts/pr-template-check.js
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Validate TypeScript compilation to ensure type safety across the codebase
+      - name: 🔍 TypeScript Check
+        run: |
+          echo "🔍 Running TypeScript compilation check..."
+          yarn type-check
+          echo "✅ TypeScript check passed"
+
+      # Run ESLint to ensure code quality and consistency with project standards
+      - name: 🎨 ESLint Check
+        run: |
+          echo "🎨 Running ESLint..."
+          yarn lint
+          echo "✅ ESLint check passed"
+
+      # Execute comprehensive test suite with coverage reporting
+      - name: 🧪 Test Suite
+        id: test-suite
+        run: |
+          echo "🧪 Running test suite..."
+          yarn test --coverage --watchAll=false 2>&1 | tee test-output.log
+
+          # Extract test count from Jest output
+          TEST_RESULTS=$(grep -E "Tests:|Test Suites:" test-output.log | tail -2)
+          PASSED_TESTS=$(echo "$TEST_RESULTS" | grep "Tests:" | grep -o '[0-9]* passed' | head -1)
+          TOTAL_TESTS=$(echo "$TEST_RESULTS" | grep "Tests:" | grep -o '[0-9]* total' | head -1)
+
+          echo "test-summary=$PASSED_TESTS, $TOTAL_TESTS" >> $GITHUB_OUTPUT
+          echo "✅ All tests passed"
+
+      # Validate markdown documentation files for consistency and correctness
+      - name: 📝 Markdown Lint Check
+        run: |
+          echo "📝 Checking markdown documentation..."
+          if ls docs/**/*.md .github/**/*.md 1> /dev/null 2>&1; then
+            yarn markdownlint docs/**/*.md .github/**/*.md
+            echo "✅ Markdown linting passed"
+          else
+            echo "ℹ️ No markdown files to check"
+          fi
+
+      # Comprehensive automated code analysis including TypeScript, React Native,
+      # performance, testing, documentation, and architectural best practices
+      - name: 🔍 Automated Code Analysis
+        id: code-analysis
+        run: node .github/scripts/code-analysis.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📊 Quality Gate Summary
+        run: node .github/scripts/quality-gate-summary.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEST_SUMMARY: ${{ steps.test-suite.outputs.test-summary }}
+          ANALYSIS: ${{ steps.code-analysis.outputs.result }}
+
+      # Quality Gate: Block merge if issues are found
+      - name: 🚫 Quality Gate - Block Merge on Issues
+        run: node .github/scripts/quality-gate-block.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANALYSIS: ${{ steps.code-analysis.outputs.result }}

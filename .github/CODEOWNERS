@@ -6,23 +6,23 @@
 
 ## This will be used as a fallback for files not covered by other rules
 
-* @josemak25
+* @josemak25 @github-copilot
 
 ## Core App Structure
 
-/app/ @josemak25
-/components/ @josemak25
-/constants/ @josemak25
-/providers/ @josemak25
+/app/ @josemak25 @github-copilot
+/components/ @josemak25 @github-copilot
+/constants/ @josemak25 @github-copilot
+/providers/ @josemak25 @github-copilot
 
 ## Helper Functions & Utilities
 
-/helpers/ @josemak25
-/hooks/ @josemak25
+/helpers/ @josemak25 @github-copilot
+/hooks/ @josemak25 @github-copilot
 
 ## Database & Data Layer
 
-/db/ @josemak25
+/db/ @josemak25 @github-copilot
 
 ## Configuration Files
 
@@ -33,26 +33,26 @@
 
 ## TypeScript Configuration
 
-tsconfig.json @josemak25
-*.d.ts @josemak25
+tsconfig.json @josemak25 @github-copilot
+*.d.ts @josemak25 @github-copilot
 
 ## Development Tools
 
-.eslintrc*@josemak25
-.prettierrc* @josemak25
-.gitignore @josemak25
+.eslintrc*@josemak25 @github-copilot
+.prettierrc* @josemak25 @github-copilot
+.gitignore @josemak25 @github-copilot
 
 ## GitHub Configuration
 
-/.github/ @josemak25
+/.github/ @josemak25 @github-copilot
 
 ## Documentation
 
-*.md @josemak25
-/docs/ @josemak25
+*.md @josemak25 @github-copilot
+/docs/ @josemak25 @github-copilot
 
 ## Tests
 
-**/__tests__/ @josemak25
-**/*.test.* @josemak25
-**/*.spec.* @josemak25
+**/__tests__/ @josemak25 @github-copilot
+**/*.test.* @josemak25 @github-copilot
+**/*.spec.* @josemak25 @github-copilot

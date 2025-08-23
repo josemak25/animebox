@@ -42,3 +42,8 @@ db/drizzle/migrations/
 # Ignore OS files
 .DS_Store
 Thumbs.db
+
+
+# Config files (if you want to exclude them)
+eslint.config.js
+.prettierrc

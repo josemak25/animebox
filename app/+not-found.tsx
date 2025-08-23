@@ -1,8 +1,22 @@
 import { Link, Stack } from "expo-router";
 
 import { ThemedText, ThemedView } from "@/components/themed-components";
-import { withThemeStyles } from "@/helpers";
+import { withThemeStyles } from "@/helpers/withThemeStyles";
 
+/**
+ * NotFoundScreen - Displays a user-friendly 404 page for unknown routes.
+ *
+ * Shows a themed message and a link to return to the home screen.
+ *
+ * Implementation notes:
+ * - Uses ThemedView and ThemedText for consistent styling
+ * - Integrates with expo-router's Stack.Screen for title
+ * - Provides a styled link back to the root route
+ *
+ * @example
+ * // Used as the catch-all route in Expo Router
+ * <NotFoundScreen />
+ */
 export default function NotFoundScreen() {
   const { styles } = useStyles();
 

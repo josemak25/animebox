@@ -1,29 +1,18 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider as NavigationThemeProvider,
-} from "@react-navigation/native";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 
-import { useTheme, useCachedResources } from "@/hooks";
-import { ThemeProvider } from "@/providers/ThemeProvider";
+import { useCachedResources } from "@/hooks/useCachedResources";
+import { Providers } from "@/providers";
 
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from "expo-router";
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(tabs)",
-};
-
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { isDark, colorScheme } = useTheme();
   const { appIsReady } = useCachedResources();
 
   if (!appIsReady) {
@@ -31,12 +20,10 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider initialColorScheme={colorScheme}>
-      <NavigationThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-      </NavigationThemeProvider>
-    </ThemeProvider>
+    <Providers>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    </Providers>
   );
 }

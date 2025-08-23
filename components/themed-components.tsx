@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
 import {
-  TextStyle,
   ViewStyle,
+  TextStyle,
   Text as RNText,
   View as RNView,
 } from "react-native";
 
-import { withThemeStyles } from "@/helpers";
+import { withThemeStyles } from "@/helpers/withThemeStyles";
 
 interface ThemedTextProps extends React.ComponentProps<typeof RNText> {
   variant?: "default" | "title" | "subtitle" | "caption" | "muted";
@@ -17,22 +17,32 @@ interface ThemedViewProps extends React.ComponentProps<typeof RNView> {
   backgroundColor?: keyof ReturnType<typeof useStyles>["palette"];
 }
 
+/**
+ * ThemedText - A text component with theme-based styles, font, and color variants.
+ *
+ * Implementation notes:
+ * - Computes text styles for each variant using theme palette and scaling
+ *
+ * @param {ThemedTextProps} props - Accepts all RNText props plus variant and color.
+ * @example
+ * <ThemedText variant="title">Title</ThemedText>
+ */
 export function ThemedText({
   style,
   color,
   variant = "default",
   ...rest
 }: ThemedTextProps) {
-  const { palette, ms } = useStyles();
+  const { styles, palette, ms } = useStyles();
 
   const textStyles: Record<
     NonNullable<ThemedTextProps["variant"]>,
     TextStyle
   > = useMemo(
     () => ({
+      muted: { fontSize: ms(16), color: palette[color || "text"] },
       default: { fontSize: ms(16), color: palette[color || "text"] },
-      muted: { fontSize: ms(16), color: palette[color || "textMuted"] },
-      caption: { fontSize: ms(14), color: palette[color || "textSecondary"] },
+      caption: { fontSize: ms(14), color: palette[color || "quaternary"] },
       title: {
         fontSize: ms(24),
         fontWeight: "bold",
@@ -47,14 +57,20 @@ export function ThemedText({
     [color, ms, palette]
   );
 
-  return (
-    <RNText
-      style={[textStyles[variant], { fontFamily: "SpaceMono" }, style]}
-      {...rest}
-    />
-  );
+  return <RNText style={[textStyles[variant], styles.text, style]} {...rest} />;
 }
 
+/**
+ * ThemedView - A view component with theme-based background color.
+ *
+ * Implementation notes:
+ * - Uses theme palette for background color
+ * - Provides theme styles via withThemeStyles HOC
+ *
+ * @param {ThemedViewProps} props - Accepts all RNView props plus backgroundColor.
+ * @example
+ * <ThemedView backgroundColor="primary">...</ThemedView>
+ */
 export function ThemedView({
   style,
   backgroundColor,
@@ -62,11 +78,15 @@ export function ThemedView({
 }: ThemedViewProps) {
   const { palette } = useStyles();
 
-  const viewStyle: ViewStyle = {
+  const bgStyle: ViewStyle = {
     backgroundColor: palette[backgroundColor || "background"],
   };
 
-  return <RNView style={[viewStyle, style]} {...rest} />;
+  return <RNView style={[bgStyle, style]} {...rest} />;
 }
 
-const useStyles = withThemeStyles(() => ({}));
+const useStyles = withThemeStyles(({ fonts }) => ({
+  text: {
+    fontFamily: fonts.variants.spaceMonoRegular,
+  },
+}));

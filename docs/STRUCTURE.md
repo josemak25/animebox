@@ -5,11 +5,11 @@ for anime collection management.
 
 ## 🏗️ Architecture Overview
 
-**Framework**: React Native with Expo (~53.0.20)  
-**Language**: TypeScript (~5.8.3)  
-**Database**: SQLite with Drizzle ORM (^0.44.4)  
-**Navigation**: Expo Router (~5.1.4)  
-**State Management**: React Hooks + Drizzle Live Queries  
+**Framework**: React Native with Expo (~53.0.20)
+**Language**: TypeScript (~5.8.3)
+**Database**: SQLite with Drizzle ORM (^0.44.4)
+**Navigation**: Expo Router (~5.1.4)
+**State Management**: React Hooks + Drizzle Live Queries
 **Styling**: React Native StyleSheet + react-native-size-matters
 
 ## 📁 Project Structure
@@ -92,7 +92,8 @@ animebox/
 
 ```typescript
 // Real-time data with automatic UI updates
-import { useAnimes, useBookmarks } from "@/hooks";
+import { useAnimes } from "@/hooks/useAnimes";
+import { useBookmarks } from "@/hooks/useBookmarks";
 
 function MyComponent() {
   const { data: animes } = useAnimes();
@@ -106,7 +107,7 @@ function MyComponent() {
 ### Theme Management
 
 ```typescript
-import { useTheme } from "@/hooks";
+import { useTheme } from "@/hooks/useTheme";
 
 function ThemedComponent() {
   const { theme, isDark, toggleTheme } = useTheme();
@@ -122,7 +123,7 @@ function ThemedComponent() {
 ### App Lifecycle
 
 ```typescript
-import { useAppState } from "@/hooks";
+import { useAppState } from "@/hooks/useAppState";
 
 function App() {
   useAppState({
@@ -146,7 +147,7 @@ const throttledScroll = throttle(onScroll, 16);
 ### Date Formatting
 
 ```typescript
-import { formatDate, timeSince } from "@/helpers";
+import { formatDate, timeSince } from "@/helpers/date";
 
 const formatted = formatDate(new Date(), "YYYY-MM-DD");
 const relative = timeSince(date); // "2 hours ago"
