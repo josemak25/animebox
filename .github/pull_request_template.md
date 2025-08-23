@@ -4,7 +4,13 @@
 
 <!-- Briefly describe what this PR does and why it's needed -->
 
-## 🔄 Type of Change
+## � Linked Issue
+
+<!-- REQUIRED: Reference the issue this PR closes. Use the format 'Closes #<issue_number>' -->
+
+Closes #
+
+## �🔄 Type of Change
 
 <!-- Check the relevant option(s) -->
 - [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
@@ -22,11 +28,16 @@
 
 <!-- Describe the tests you ran and how reviewers can test this -->
 
+
 ### Test Cases
 
 - [ ] All existing tests pass
 - [ ] New tests added for new functionality
 - [ ] Manual testing completed
+
+### PR Compliance
+
+- [ ] This PR references an issue using 'Closes #<issue_number>' in the body
 
 ### How to Test
 
@@ -77,10 +88,18 @@
 - [ ] Responsive design verified
 - [ ] Accessibility considerations addressed
 
-## 🔗 Related Issues
-<!-- Link any related issues -->
+
+## 🔗 Related Issue (Required)
+<!-- Specify the main issue this PR addresses. Use the format 'Closes #<issue_number>' to enable automation. -->
 Closes #
-Related to #
+<!-- Example: Closes #42 -->
+
+> **Note:**
+>
+> - Every PR must reference an issue ID using `Closes #<issue_number>`.
+> - The workflow will use this ID to automatically close the issue and keep `.github/issues.md` in sync.
+> - If you are addressing multiple issues, list each with `Closes #` or `Related to #` as needed.
+>
 
 ## 🚨 Breaking Changes
 <!-- If this is a breaking change, describe what breaks and migration steps -->
