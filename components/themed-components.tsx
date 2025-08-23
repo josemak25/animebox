@@ -1,5 +1,10 @@
 import React, { useMemo } from "react";
-import { TextStyle, Text as RNText, View as RNView } from "react-native";
+import {
+  ViewStyle,
+  TextStyle,
+  Text as RNText,
+  View as RNView,
+} from "react-native";
 
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 
@@ -28,7 +33,7 @@ export function ThemedText({
   variant = "default",
   ...rest
 }: ThemedTextProps) {
-  const { fonts, palette, ms } = useStyles();
+  const { styles, palette, ms } = useStyles();
 
   const textStyles: Record<
     NonNullable<ThemedTextProps["variant"]>,
@@ -52,16 +57,7 @@ export function ThemedText({
     [color, ms, palette]
   );
 
-  return (
-    <RNText
-      style={[
-        textStyles[variant],
-        { fontFamily: fonts.variants.spaceMonoRegular },
-        style,
-      ]}
-      {...rest}
-    />
-  );
+  return <RNText style={[textStyles[variant], styles.text, style]} {...rest} />;
 }
 
 /**
@@ -82,15 +78,15 @@ export function ThemedView({
 }: ThemedViewProps) {
   const { palette } = useStyles();
 
-  return (
-    <RNView
-      style={[
-        { backgroundColor: palette[backgroundColor || "background"] },
-        style,
-      ]}
-      {...rest}
-    />
-  );
+  const bgStyle: ViewStyle = {
+    backgroundColor: palette[backgroundColor || "background"],
+  };
+
+  return <RNView style={[bgStyle, style]} {...rest} />;
 }
 
-const useStyles = withThemeStyles(() => ({}));
+const useStyles = withThemeStyles(({ fonts }) => ({
+  text: {
+    fontFamily: fonts.variants.spaceMonoRegular,
+  },
+}));

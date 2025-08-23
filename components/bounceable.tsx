@@ -104,7 +104,7 @@ const BounceableComponent: React.FC<PropsWithChildren<BounceableProps>> = ({
       onPressOut={handlePressOut}
       style={[style, animatedStyle]}
       disabled={rest?.disabled || !onPress}
-      accessibilityRole={onPress ? "button" : "none"}
+      accessibilityRole={rest?.accessibilityRole || onPress ? "button" : "none"}
       accessibilityLabel={
         rest?.accessibilityLabel ||
         (typeof children === "string" ? children : undefined)
