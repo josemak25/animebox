@@ -19,6 +19,7 @@ on:
   push:
     paths:
       - ".github/issues.md"
+      - ".github/workflows/sync-issues.yml"
   workflow_dispatch:
 
 jobs:
