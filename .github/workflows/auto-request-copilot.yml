@@ -446,9 +446,10 @@ jobs:
                   analysis.performance.passed.push(`${file.filename}: Uses performance optimization hooks`);
                 }
 
-                // Documentation checks (skip for markdown files)
+                // Documentation checks (skip for markdown and test files)
                 const isMarkdown = file.filename.endsWith('.md');
-                if (!isMarkdown) {
+                const isTestFile = file.filename.includes('test') || file.filename.includes('__tests__');
+                if (!isMarkdown && !isTestFile) {
                   const commentLines = content.split('\n').filter(line =>
                     line.trim().startsWith('//') || line.trim().startsWith('/*') || line.trim().startsWith('*')
                   ).length;

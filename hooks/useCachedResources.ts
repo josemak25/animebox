@@ -3,6 +3,8 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect } from "react";
 
+import { FONTS } from "@/providers/theme/colors";
+
 import { useMigrations } from "./useMigrations";
 
 // Keep the splash screen visible while we fetch resources
@@ -12,7 +14,7 @@ export const useCachedResources = () => {
   const { success, error } = useMigrations();
 
   const [isLoaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    [FONTS.spaceMonoRegular]: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
 

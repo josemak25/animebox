@@ -13,12 +13,12 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
-  const { theme } = useTheme();
+  const { palette } = useTheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: theme.tabIconSelected,
+        tabBarActiveTintColor: palette.light_blue,
       }}
     >
       <Tabs.Screen

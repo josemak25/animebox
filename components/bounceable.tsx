@@ -10,8 +10,10 @@ import Animated, { AnimatedProps } from "react-native-reanimated";
 
 import { useBounceable } from "@/hooks/useBounceable";
 
-type AnimatedComponentProps = {
-  createAnimatedComponent?: ComponentClass<any> | FunctionComponent<any>;
+type AnimatedComponentType<P> = ComponentClass<P> | FunctionComponent<P>;
+
+type AnimatedComponentProps<P = PressableProps | TouchableOpacityProps> = {
+  createAnimatedComponent?: AnimatedComponentType<P>;
 };
 
 type BounceableProps = Omit<
@@ -41,13 +43,14 @@ const BounceableComponent: React.FC<PropsWithChildren<BounceableProps>> = ({
     onPressOut: animatedOnPressOut,
   } = useBounceable(animationProps);
 
-  const AnimatedComponent = useMemo(
-    () =>
-      Animated.createAnimatedComponent(
-        createAnimatedComponent as React.ComponentType<any>
-      ),
-    [createAnimatedComponent]
-  );
+  const AnimatedComponent = useMemo(() => {
+    // Type-safe creation of animated component
+    return Animated.createAnimatedComponent(
+      createAnimatedComponent as React.ComponentType<
+        PressableProps | TouchableOpacityProps
+      >
+    );
+  }, [createAnimatedComponent]);
 
   const handlePress: typeof onPress = (e) => {
     if (isWithHaptics) {

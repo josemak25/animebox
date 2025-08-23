@@ -1,10 +1,5 @@
 import React, { useMemo } from "react";
-import {
-  TextStyle,
-  ViewStyle,
-  Text as RNText,
-  View as RNView,
-} from "react-native";
+import { TextStyle, Text as RNText, View as RNView } from "react-native";
 
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 
@@ -30,9 +25,9 @@ export function ThemedText({
     TextStyle
   > = useMemo(
     () => ({
+      muted: { fontSize: ms(16), color: palette[color || "text"] },
       default: { fontSize: ms(16), color: palette[color || "text"] },
-      muted: { fontSize: ms(16), color: palette[color || "textMuted"] },
-      caption: { fontSize: ms(14), color: palette[color || "textSecondary"] },
+      caption: { fontSize: ms(14), color: palette[color || "quaternary"] },
       title: {
         fontSize: ms(24),
         fontWeight: "bold",
@@ -62,11 +57,15 @@ export function ThemedView({
 }: ThemedViewProps) {
   const { palette } = useStyles();
 
-  const viewStyle: ViewStyle = {
-    backgroundColor: palette[backgroundColor || "background"],
-  };
-
-  return <RNView style={[viewStyle, style]} {...rest} />;
+  return (
+    <RNView
+      style={[
+        { backgroundColor: palette[backgroundColor || "background"] },
+        style,
+      ]}
+      {...rest}
+    />
+  );
 }
 
 const useStyles = withThemeStyles(() => ({}));
