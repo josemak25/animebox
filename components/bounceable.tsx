@@ -25,6 +25,26 @@ type BounceableProps = Omit<
   animationProps?: Parameters<typeof useBounceable>[0];
 } & AnimatedComponentProps;
 
+/**
+ * Bounceable - A Pressable/Touchable wrapper with bounce animation and optional haptics.
+ *
+ * Provides a reusable animated button-like component for React Native, with:
+ * - Bounce animation on press (using react-native-reanimated)
+ * - Optional haptic feedback (using expo-haptics)
+ * - Accessibility role/label support
+ * - Can wrap any Pressable or Touchable component
+ *
+ * Implementation notes:
+ * - Controls animation, haptics, and underlying component
+ * - Memoizes the animated component to avoid recreation on every render
+ * - Handles press, press-in, and press-out events for animation and haptics
+ * - Renders the animated component with all props, accessibility, and animation
+ *
+ * @example
+ * <Bounceable onPress={...}>Click me</Bounceable>
+ *
+ * @param {BounceableProps} props - See type for all options.
+ */
 const BounceableComponent: React.FC<PropsWithChildren<BounceableProps>> = ({
   style,
   onPress,

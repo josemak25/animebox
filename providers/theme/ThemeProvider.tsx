@@ -28,6 +28,24 @@ import {
 
 export const ThemeContext = createContext<DefaultTheme>({} as DefaultTheme);
 
+/**
+ * ThemeProvider - Provides theme context and navigation theming for the app.
+ *
+ * Supplies a theme object (colors, fonts, layout, palette, etc.) to all children via React context,
+ * and integrates with React Navigation's theme provider for consistent navigation theming.
+ *
+ * Implementation notes:
+ * - Uses system color scheme to determine dark/light mode
+ * - Exposes theme utilities (palette, fonts, layout, safe area insets, etc.)
+ * - Wraps children with both ThemeContext and NavigationThemeProvider
+ *
+ * @example
+ * <ThemeProvider>
+ *   <App />
+ * </ThemeProvider>
+ *
+ * @param children - React children to receive theme context
+ */
 export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const insets = useSafeAreaInsets();
   const systemTheme = useColorScheme();

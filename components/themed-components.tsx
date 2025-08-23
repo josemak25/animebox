@@ -12,6 +12,16 @@ interface ThemedViewProps extends React.ComponentProps<typeof RNView> {
   backgroundColor?: keyof ReturnType<typeof useStyles>["palette"];
 }
 
+/**
+ * ThemedText - A text component with theme-based styles, font, and color variants.
+ *
+ * Implementation notes:
+ * - Computes text styles for each variant using theme palette and scaling
+ *
+ * @param {ThemedTextProps} props - Accepts all RNText props plus variant and color.
+ * @example
+ * <ThemedText variant="title">Title</ThemedText>
+ */
 export function ThemedText({
   style,
   color,
@@ -54,6 +64,17 @@ export function ThemedText({
   );
 }
 
+/**
+ * ThemedView - A view component with theme-based background color.
+ *
+ * Implementation notes:
+ * - Uses theme palette for background color
+ * - Provides theme styles via withThemeStyles HOC
+ *
+ * @param {ThemedViewProps} props - Accepts all RNView props plus backgroundColor.
+ * @example
+ * <ThemedView backgroundColor="primary">...</ThemedView>
+ */
 export function ThemedView({
   style,
   backgroundColor,
