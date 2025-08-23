@@ -38,7 +38,7 @@ jobs:
 
       - name: Add GitHub Actions modules to package.json
         run: |
-          yarn add @actions/core @actions/github --dev
+          yarn add @actions/core @actions/github @octokit/rest --dev
 
       # Install dependencies
       - name: 📦 Install dependencies
