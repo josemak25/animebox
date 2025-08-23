@@ -415,20 +415,24 @@ jobs:
                   }
                 }
 
-                // Common Issues Check (skip for workflow files)
+                // Common Issues Check (skip for workflow files, package.json, yarn.lock)
+
                 const isWorkflowFile = file.filename.startsWith('.github/workflows/');
+                // Array of extensions to omit from console and documentation checks
+                const omittedExtensions = ['.lock', '.json'];
+                const isOmittedExtension = omittedExtensions.some(ext => file.filename.endsWith(ext));
 
                 // Enhanced config file detection for hardcoded string checks
                 // (DISABLED: Hardcoded string checks removed by project policy)
                 const isMarkdown = file.filename.endsWith('.md');
-                if (!isMarkdown) {
+                if (!isMarkdown && !isWorkflowFile && !isOmittedExtension) {
                   if (content.includes('console.log') || content.includes('console.error') || content.includes('console.warn')) {
                     analysis.commonIssues.failed.push(`${file.filename}: Contains console statements (should use core.info/core.error/core.warning)`);
                   } else {
                     analysis.commonIssues.passed.push(`${file.filename}: No console statements`);
                   }
                 } else {
-                  analysis.commonIssues.passed.push(`${file.filename}: Workflow file - skipping console and hardcoded string checks`);
+                  analysis.commonIssues.passed.push(`${file.filename}: Skipped console check (excluded file type)`);
                 }
 
                 // Performance checks
@@ -436,9 +440,9 @@ jobs:
                   analysis.performance.passed.push(`${file.filename}: Uses performance optimization hooks`);
                 }
 
-                // Documentation checks (skip for markdown and test files)
+                // Documentation checks (skip for markdown, test files, workflow files, *.lock, *.json)
                 const isTestFile = file.filename.includes('test') || file.filename.includes('__tests__');
-                if (!isMarkdown && !isTestFile) {
+                if (!isMarkdown && !isTestFile && !isWorkflowFile && !isOmittedExtension) {
                   const commentLines = content.split('\n').filter(line =>
                     line.trim().startsWith('//') || line.trim().startsWith('/*') || line.trim().startsWith('*')
                   ).length;
