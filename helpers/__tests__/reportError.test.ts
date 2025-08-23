@@ -1,6 +1,5 @@
 import { reportError } from "../reportError";
 
-// Mock console.error to track calls
 const mockConsoleError = jest.fn();
 
 // Mock __DEV__ global
