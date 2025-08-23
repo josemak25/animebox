@@ -1,29 +1,28 @@
 import { reportError } from "../reportError";
 
-// Mock console.error to track calls
 const mockConsoleError = jest.fn();
-// eslint-disable-next-line no-console
-const originalConsoleError = console.error;
 
 // Mock __DEV__ global
-const originalDev = (global as any).__DEV__;
+interface DevGlobal {
+  __DEV__?: boolean;
+}
+
+const originalDev = (globalThis as DevGlobal).__DEV__;
 
 describe("reportError", () => {
   beforeEach(() => {
     mockConsoleError.mockClear();
     // eslint-disable-next-line no-console
-    console.error = mockConsoleError;
+    console["error"] = mockConsoleError;
   });
 
   afterEach(() => {
-    // eslint-disable-next-line no-console
-    console.error = originalConsoleError;
-    (global as any).__DEV__ = originalDev;
+    (globalThis as DevGlobal).__DEV__ = originalDev;
   });
 
   describe("in development mode", () => {
     beforeEach(() => {
-      (global as any).__DEV__ = true;
+      (globalThis as DevGlobal).__DEV__ = true;
     });
 
     it("should log Error objects to console in development", () => {
@@ -37,12 +36,9 @@ describe("reportError", () => {
         testError
       );
     });
-
     it("should log string errors to console in development", () => {
       const testErrorMessage = "String error message";
-
       reportError(testErrorMessage);
-
       expect(mockConsoleError).toHaveBeenCalledTimes(1);
       expect(mockConsoleError).toHaveBeenCalledWith(
         "Reported Error to our external service:",
@@ -94,7 +90,7 @@ describe("reportError", () => {
 
   describe("in production mode", () => {
     beforeEach(() => {
-      (global as any).__DEV__ = false;
+      (globalThis as DevGlobal).__DEV__ = false;
     });
 
     it("should not log to console in production", () => {
@@ -124,7 +120,7 @@ describe("reportError", () => {
 
   describe("function behavior", () => {
     beforeEach(() => {
-      (global as any).__DEV__ = true;
+      (globalThis as DevGlobal).__DEV__ = true;
     });
 
     it("should return void (undefined)", () => {
