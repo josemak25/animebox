@@ -6,7 +6,11 @@ const mockConsoleError = jest.fn();
 const originalConsoleError = console.error;
 
 // Mock __DEV__ global
-const originalDev = (global as any).__DEV__;
+interface DevGlobal {
+  __DEV__?: boolean;
+}
+
+const originalDev = (globalThis as DevGlobal).__DEV__;
 
 describe("reportError", () => {
   beforeEach(() => {
@@ -18,12 +22,12 @@ describe("reportError", () => {
   afterEach(() => {
     // eslint-disable-next-line no-console
     console.error = originalConsoleError;
-    (global as any).__DEV__ = originalDev;
+    (globalThis as DevGlobal).__DEV__ = originalDev;
   });
 
   describe("in development mode", () => {
     beforeEach(() => {
-      (global as any).__DEV__ = true;
+      (globalThis as DevGlobal).__DEV__ = true;
     });
 
     it("should log Error objects to console in development", () => {
@@ -94,7 +98,7 @@ describe("reportError", () => {
 
   describe("in production mode", () => {
     beforeEach(() => {
-      (global as any).__DEV__ = false;
+      (globalThis as DevGlobal).__DEV__ = false;
     });
 
     it("should not log to console in production", () => {
@@ -124,7 +128,7 @@ describe("reportError", () => {
 
   describe("function behavior", () => {
     beforeEach(() => {
-      (global as any).__DEV__ = true;
+      (globalThis as DevGlobal).__DEV__ = true;
     });
 
     it("should return void (undefined)", () => {

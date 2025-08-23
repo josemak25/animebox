@@ -27,14 +27,10 @@ describe("helper / buildProvidersTree", () => {
       </View>
     );
 
-    const ExtraComponent: React.FC = () => (
-      <Text testID="extra">Extra Component</Text>
-    );
-
     const Providers = buildProvidersTree([
       [ProviderA, { value: "react-native" }],
-      [ProviderB, { count: 99 }, ExtraComponent],
-    ]);
+      [ProviderB, { count: 99 }],
+    ] as const);
 
     render(
       <Providers>
@@ -47,7 +43,6 @@ describe("helper / buildProvidersTree", () => {
     expect(screen.getByText("A-react-native")).toBeTruthy();
     expect(screen.getByText("B-99")).toBeTruthy();
     expect(screen.getByText("Hello RN")).toBeTruthy();
-    expect(screen.getByTestId("extra")).toHaveTextContent("Extra Component");
   });
 
   it("handles a single provider as a plain component", () => {

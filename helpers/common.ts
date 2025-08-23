@@ -8,7 +8,16 @@ export function isNotNullish<T>(value: T | null | undefined): value is T {
 /**
  * Check if value is empty (null, undefined, empty string, or empty array)
  */
-export function isEmpty(value: any): boolean {
+export function isEmpty(
+  value:
+    | number
+    | string
+    | null
+    | boolean
+    | undefined
+    | unknown[]
+    | Record<string, unknown>
+): boolean {
   if (value === null || value === undefined) return true;
   if (typeof value === "string") return value.trim() === "";
   if (Array.isArray(value)) return value.length === 0;
@@ -21,43 +30,47 @@ export function isEmpty(value: any): boolean {
  */
 export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== "object") return obj;
-  if (obj instanceof Date) return new Date(obj.getTime()) as any;
-  if (Array.isArray(obj)) return obj.map((item) => deepClone(item)) as any;
+  if (obj instanceof Date) return new Date(obj.getTime()) as T;
+  if (Array.isArray(obj)) {
+    return obj.map((item) => deepClone(item)) as unknown as T;
+  }
 
-  const cloned: any = {};
-  for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      cloned[key] = deepClone((obj as any)[key]);
+  const cloned: Record<string, unknown> = {};
+  for (const key in obj as object) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      cloned[key] = deepClone((obj as Record<string, unknown>)[key]);
     }
   }
-  return cloned;
+  return cloned as T;
 }
 
 /**
  * Get nested object property safely
  */
 export function safeGet<T>(
-  obj: any,
+  obj: Record<string, unknown> | null | undefined,
   path: string,
   defaultValue?: T
 ): T | undefined {
   const keys = path.split(".");
-  let result = obj;
+  let result: unknown = obj;
 
   for (const key of keys) {
     if (result === null || result === undefined || typeof result !== "object") {
       return defaultValue;
     }
-    result = result[key];
+    result = (result as Record<string, unknown>)[key];
   }
 
-  return result === undefined ? defaultValue : result;
+  return result === undefined ? defaultValue : (result as T);
 }
 
 /**
  * Check if value is a function
  */
-export function isFunction(value: any): value is Function {
+export function isFunction<T extends (...args: unknown[]) => unknown>(
+  value: unknown
+): value is T {
   return typeof value === "function";
 }
 

@@ -82,7 +82,7 @@ describe("Common Utilities", () => {
     });
 
     it("should handle circular references gracefully", () => {
-      const obj: any = { name: "test" };
+      const obj: { name: string; self?: unknown } = { name: "test" };
       obj.self = obj;
       // This would cause infinite recursion, so we expect the function to handle it
       // Note: Our current implementation doesn't handle circular refs, so this test documents the limitation

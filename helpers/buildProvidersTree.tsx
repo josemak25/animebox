@@ -1,11 +1,11 @@
 import React, { PropsWithChildren, ComponentType } from "react";
 
 // Strongly typed provider tuple
-type ProviderTuple<P = object> =
+type ProviderTuple<P = unknown> =
   | ComponentType<PropsWithChildren<P>>
-  | [ComponentType<PropsWithChildren<P>>, P]
-  | [ComponentType<PropsWithChildren<P>>, P, ComponentType];
+  | [ComponentType<PropsWithChildren<P>>, P];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ProvidersArray = ProviderTuple<any>[];
 
 const initialComponent: React.FC<PropsWithChildren> = ({ children }) =>
@@ -16,14 +16,13 @@ export function buildProvidersTree<T extends ProvidersArray>(
 ): React.FC<PropsWithChildren> {
   return componentsWithProps.reduce((AccumulatedComponents, Provider, idx) => {
     const WrappedComponent: React.FC<PropsWithChildren> = ({ children }) => {
-      const [Component, props = {}, ChildComponent] = Array.isArray(Provider)
+      const [Component, props = {}] = Array.isArray(Provider)
         ? Provider
         : [Provider];
 
       return (
         <AccumulatedComponents>
           <Component {...(props as object)}>{children}</Component>
-          {ChildComponent ? <ChildComponent /> : null}
         </AccumulatedComponents>
       );
     };

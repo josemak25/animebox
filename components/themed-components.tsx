@@ -18,7 +18,7 @@ export function ThemedText({
   variant = "default",
   ...rest
 }: ThemedTextProps) {
-  const { palette, ms } = useStyles();
+  const { fonts, palette, ms } = useStyles();
 
   const textStyles: Record<
     NonNullable<ThemedTextProps["variant"]>,
@@ -44,7 +44,11 @@ export function ThemedText({
 
   return (
     <RNText
-      style={[textStyles[variant], { fontFamily: "SpaceMono" }, style]}
+      style={[
+        textStyles[variant],
+        { fontFamily: fonts.variants.spaceMonoRegular },
+        style,
+      ]}
       {...rest}
     />
   );
