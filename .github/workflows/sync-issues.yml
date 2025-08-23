@@ -36,6 +36,10 @@ jobs:
         with:
           node-version: 20
 
+      - name: Add GitHub Actions modules to package.json
+        run: |
+          yarn add @actions/core @actions/github --dev
+
       # Install dependencies
       - name: 📦 Install dependencies
         run: yarn install --immutable
