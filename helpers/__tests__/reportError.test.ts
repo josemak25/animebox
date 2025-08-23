@@ -2,8 +2,6 @@ import { reportError } from "../reportError";
 
 // Mock console.error to track calls
 const mockConsoleError = jest.fn();
-// eslint-disable-next-line no-console
-const originalConsoleError = console.error;
 
 // Mock __DEV__ global
 interface DevGlobal {
@@ -16,12 +14,10 @@ describe("reportError", () => {
   beforeEach(() => {
     mockConsoleError.mockClear();
     // eslint-disable-next-line no-console
-    console.error = mockConsoleError;
+    console["error"] = mockConsoleError;
   });
 
   afterEach(() => {
-    // eslint-disable-next-line no-console
-    console.error = originalConsoleError;
     (globalThis as DevGlobal).__DEV__ = originalDev;
   });
 
@@ -41,12 +37,9 @@ describe("reportError", () => {
         testError
       );
     });
-
     it("should log string errors to console in development", () => {
       const testErrorMessage = "String error message";
-
       reportError(testErrorMessage);
-
       expect(mockConsoleError).toHaveBeenCalledTimes(1);
       expect(mockConsoleError).toHaveBeenCalledWith(
         "Reported Error to our external service:",

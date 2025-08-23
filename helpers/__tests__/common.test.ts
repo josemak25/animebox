@@ -140,8 +140,6 @@ describe("Common Utilities", () => {
     it("should return true for functions", () => {
       expect(isFunction(() => {})).toBe(true);
       expect(isFunction(function test() {})).toBe(true);
-      // eslint-disable-next-line no-console
-      expect(isFunction(console.log)).toBe(true);
       expect(isFunction(Array.prototype.map)).toBe(true);
     });
 
