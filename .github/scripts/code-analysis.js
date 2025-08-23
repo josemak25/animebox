@@ -21,9 +21,9 @@ function analyzeReactNative({ content, file, isComponent, isTest, analysis }) {
     analysis.reactNative.passed.push(
       `${file.filename}: Uses withThemeStyles for styles`
     );
-  } else {
+  } else if (content.includes("StyleSheet.create")) {
     analysis.reactNative.failed.push(
-      `${file.filename}: Does not use withThemeStyles for styles`
+      `${file.filename}: Uses StyleSheet.create instead of withThemeStyles`
     );
   }
 
