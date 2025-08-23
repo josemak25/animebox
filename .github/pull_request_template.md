@@ -4,7 +4,13 @@
 
 <!-- Briefly describe what this PR does and why it's needed -->
 
-## 🔄 Type of Change
+## � Linked Issue
+
+<!-- REQUIRED: Reference the issue this PR closes. Use the format 'Closes #<issue_number>' -->
+
+Closes #
+
+## �🔄 Type of Change
 
 <!-- Check the relevant option(s) -->
 - [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
@@ -22,11 +28,16 @@
 
 <!-- Describe the tests you ran and how reviewers can test this -->
 
+
 ### Test Cases
 
 - [ ] All existing tests pass
 - [ ] New tests added for new functionality
 - [ ] Manual testing completed
+
+### PR Compliance
+
+- [ ] This PR references an issue using 'Closes #<issue_number>' in the body
 
 ### How to Test
 
