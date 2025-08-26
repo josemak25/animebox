@@ -4,11 +4,13 @@
     "strict": true,
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "typeRoots": ["./types", "./node_modules/@types"]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "__mocks__",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "types/**/*.d.ts"
