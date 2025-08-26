@@ -242,10 +242,15 @@ export class AnimePahe extends AnimeParser {
       };
 
       for (const link of links) {
-        const res = await new Kwik(this.proxyConfig).extract(new URL(link.url));
-        res[0].quality = link.quality;
-        res[0].isDub = link.audio === "eng";
-        iSource.sources.push(res[0]);
+        const [source] = await new Kwik(this.proxyConfig).extract(
+          new URL(link.url)
+        );
+
+        iSource.sources.push({
+          ...source,
+          quality: link.quality,
+          isDub: link.audio === "eng",
+        });
       }
       iSource.download = downloads;
 
@@ -402,7 +407,11 @@ export class AnimePahe extends AnimeParser {
           };
         }
 
-        items.push({ badge, url: href, title: title.trim() });
+        items.push({
+          badge,
+          title: title.trim(),
+          url: `${this.baseUrl}${href}`,
+        });
       });
 
     return items;
