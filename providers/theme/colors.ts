@@ -1,4 +1,4 @@
-import { ScaledSize } from "react-native";
+import { ColorSchemeName, ScaledSize } from "react-native";
 import { EdgeInsets } from "react-native-safe-area-context";
 import type { s, vs, ms, mvs } from "react-native-size-matters";
 
@@ -63,7 +63,7 @@ export interface DefaultTheme {
   // App dark mode condition
   isDarkMode: boolean;
   // Toggle App theme
-  toggleTheme: (theme?: keyof DefaultTheme["colors"]) => void;
+  // toggleTheme: (theme?: keyof DefaultTheme["colors"]) => void;
   // Scale app horizontally and vertically
   s: typeof s;
   // Scale app vertically
@@ -72,6 +72,8 @@ export interface DefaultTheme {
   ms: typeof ms;
   // Scale app moderately on both vertical axis
   mvs: typeof mvs;
+  // App color mode
+  mode: NonNullable<ColorSchemeName>;
   // All Global App palette typings
   palette: typeof DARK_MODE_COLORS | typeof LIGHT_MODE_COLORS;
   // All Global App colors typings

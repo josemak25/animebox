@@ -1,12 +1,11 @@
 import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 
-export default function HomeScreen() {
+export default function BookmarkScreen() {
   const { styles } = useStyles();
-
   return (
     <ThemedView style={styles.container}>
-      <ThemedText variant="title">Home</ThemedText>
+      <ThemedText variant="title">Bookmarks</ThemedText>
     </ThemedView>
   );
 }

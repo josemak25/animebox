@@ -3,12 +3,7 @@ import {
   DefaultTheme as NavigationDefaultTheme,
   ThemeProvider as NavigationThemeProvider,
 } from "@react-navigation/native";
-import React, {
-  useMemo,
-  useCallback,
-  PropsWithChildren,
-  createContext,
-} from "react";
+import React, { useMemo, createContext, PropsWithChildren } from "react";
 import {
   ColorSchemeName,
   useColorScheme,
@@ -48,15 +43,10 @@ export const ThemeContext = createContext<DefaultTheme>({} as DefaultTheme);
  */
 export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const insets = useSafeAreaInsets();
-  const systemTheme = useColorScheme();
   const dimension = useWindowDimensions();
+  const systemTheme = useColorScheme() as NonNullable<ColorSchemeName>;
 
   const isDarkMode = systemTheme === "dark";
-
-  const toggleTheme = useCallback((_mode?: ColorSchemeName) => {
-    // const theme = mode || isDarkMode ? IColorMode.LIGHT : IColorMode.DARK;
-    // return settingsActions.changeColorMode(theme);
-  }, []);
 
   const theme: DefaultTheme = useMemo(
     () => ({
@@ -67,21 +57,15 @@ export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
       insets,
       hexToRGB,
       isDarkMode,
-      toggleTheme,
+      mode: systemTheme,
       adjustColorBrightness,
       fonts: { variants: FONTS },
       palette: isDarkMode ? DARK_MODE_COLORS : LIGHT_MODE_COLORS,
       layout: { radius: ms(8), gutter: ms(16), screen: dimension },
       colors: { light: LIGHT_MODE_COLORS, dark: DARK_MODE_COLORS },
     }),
-    [dimension, insets, isDarkMode, toggleTheme]
+    [dimension, insets, systemTheme, isDarkMode]
   );
-
-  // useEffect(() => {
-  //   if (systemTheme !== settings.colorMode) {
-  //     toggleTheme(systemTheme);
-  //   }
-  // }, [systemTheme, settings.colorMode]);
 
   return (
     <ThemeContext.Provider value={theme}>

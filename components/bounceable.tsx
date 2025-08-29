@@ -115,4 +115,6 @@ const BounceableComponent: React.FC<PropsWithChildren<BounceableProps>> = ({
   );
 };
 
+BounceableComponent.displayName = "BounceableComponent";
+
 export const Bounceable = React.memo(BounceableComponent);

@@ -1,7 +1,7 @@
 module.exports = {
   preset: "jest-expo",
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
-  moduleNameMapper: {
-    "^axios$": "<rootDir>/__mocks__/axios.js",
-  },
+  setupFilesAfterEnv: [
+    "<rootDir>/jest.setup.ts",
+    "./node_modules/react-native-gesture-handler/jestSetup.js",
+  ],
 };
