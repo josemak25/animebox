@@ -3,12 +3,7 @@ import {
   DefaultTheme as NavigationDefaultTheme,
   ThemeProvider as NavigationThemeProvider,
 } from "@react-navigation/native";
-import React, {
-  useMemo,
-  useCallback,
-  PropsWithChildren,
-  createContext,
-} from "react";
+import React, { useMemo, createContext, PropsWithChildren } from "react";
 import {
   ColorSchemeName,
   useColorScheme,
