@@ -32,15 +32,15 @@ export interface AppStateHookSettings {
  * ```tsx
  * const { appState } = useAppState({
  *   onForeground: () => {
- *     console.log('App is now active');
+ *     // App is now active
  *     // Resume timers, refresh data, etc.
  *   },
  *   onBackground: () => {
- *     console.log('App is in background');
+ *     // App is in background
  *     // Pause timers, save state, etc.
  *   },
  *   onChange: (status) => {
- *     console.log('App state changed to:', status);
+ *     // App state changed to: {status}
  *   }
  * });
  *
