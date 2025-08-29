@@ -1,38 +1,17 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 import React from "react";
 
-import { useTheme } from "@/hooks/useTheme";
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-const TabBarIcon = (props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) => <FontAwesome size={28} {...props} />;
+import { BottomNavigator } from "@/components/bottom-navigator";
 
 export default function TabLayout() {
-  const { palette } = useTheme();
-
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: palette.light_blue,
-      }}
+      screenOptions={{ headerShown: false }}
+      tabBar={(props) => <BottomNavigator {...props} />}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Tab One",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="two"
-        options={{
-          title: "Tab Two",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
+      <Tabs.Screen name="index" options={{ title: "Home" }} />
+      <Tabs.Screen name="bookmark" options={{ title: "Bookmark" }} />
+      <Tabs.Screen name="download" options={{ title: "Download" }} />
     </Tabs>
   );
 }
