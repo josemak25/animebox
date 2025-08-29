@@ -92,10 +92,7 @@ export class AnimePahe extends AnimeParser {
     id: string,
     episodePage: number = -1
   ): Promise<IAnimeInfo> => {
-    const animeInfo: IAnimeInfo = {
-      id: id,
-      title: "",
-    };
+    const animeInfo: IAnimeInfo = { id: id, title: "" };
 
     try {
       const res = await this.client.get(`${this.baseUrl}/anime/${id}`, {
@@ -155,7 +152,7 @@ export class AnimePahe extends AnimeParser {
           .replace("Episodes:", "")
       );
       animeInfo.recommendations = [];
-      $("div.anime-recommendation .col-sm-6").each((i, el) => {
+      $("div.anime-recommendation .col-sm-6").each((_i, el) => {
         animeInfo.recommendations?.push({
           id: $(el).find(".col-2 > a").attr("href")?.split("/")[2]!,
           title: $(el).find(".col-2 > a").attr("title")!,

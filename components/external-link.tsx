@@ -37,3 +37,5 @@ export function ExternalLink(
     />
   );
 }
+
+ExternalLink.displayName = "ExternalLink";
