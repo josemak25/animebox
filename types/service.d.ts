@@ -204,3 +204,30 @@ interface ICollection {
     } | null;
   }[];
 }
+
+interface IPagination {
+  /**
+   * The current page number.
+   */
+  currentPage: number;
+  /**
+   * The total number of pages available.
+   */
+  totalPages: number;
+  /**
+   * Indicates if there is a previous page.
+   */
+  hasPrevPage: boolean;
+  /**
+   * Indicates if there is a next page.
+   */
+  hasNextPage: boolean;
+  /**
+   * The previous page number, if available.
+   */
+  prevPage?: number;
+  /**
+   * The next page number, if available.
+   */
+  nextPage?: number;
+}

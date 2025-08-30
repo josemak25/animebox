@@ -64,18 +64,16 @@ export class AnimePahe extends AnimeParser {
         }
       );
 
-      const res = {
-        results: data.data.map((item: Record<string, PropertyKey>) => ({
-          type: item.type,
-          id: item.session,
-          title: item.title,
-          image: item.poster,
-          rating: item.score,
-          releaseDate: item.year,
-        })),
-      };
+      const results = data.data.map((item: Record<string, PropertyKey>) => ({
+        type: item.type,
+        id: item.session,
+        title: item.title,
+        image: item.poster,
+        rating: item.score,
+        releaseDate: item.year,
+      }));
 
-      return res;
+      return results;
     } catch (err) {
       throw new Error((err as Error).message);
     }
@@ -92,13 +90,14 @@ export class AnimePahe extends AnimeParser {
     id: string,
     episodePage: number = -1
   ): Promise<IAnimeInfo> => {
-    const animeInfo: IAnimeInfo = { id: id, title: "" };
+    const animeInfo: IAnimeInfo = { id, title: "" };
 
     try {
-      const res = await this.client.get(`${this.baseUrl}/anime/${id}`, {
+      const { data } = await this.client.get(`${this.baseUrl}/anime/${id}`, {
         headers: this.Headers(id),
       });
-      const $ = load(res.data);
+
+      const $ = load(data);
 
       animeInfo.title = $("div.title-wrapper > h1 > span").first().text();
       animeInfo.image = $("div.anime-poster a").attr("href");
@@ -151,6 +150,7 @@ export class AnimePahe extends AnimeParser {
           .text()
           .replace("Episodes:", "")
       );
+
       animeInfo.recommendations = [];
       $("div.anime-recommendation .col-sm-6").each((_i, el) => {
         animeInfo.recommendations?.push({
@@ -220,11 +220,13 @@ export class AnimePahe extends AnimeParser {
 
       const $ = load(data);
 
-      const links = $("div#resolutionMenu > button").map((_i, el) => ({
-        url: $(el).attr("data-src")!,
-        quality: $(el).text(),
-        audio: $(el).attr("data-audio"),
-      }));
+      const links = $("div#resolutionMenu > button")
+        .map((_i, el) => ({
+          url: $(el).attr("data-src")!,
+          quality: $(el).text(),
+          audio: $(el).attr("data-audio"),
+        }))
+        .get();
 
       const downloads = $("div#pickDownload > a")
         .map((_i, el) => ({
@@ -291,35 +293,6 @@ export class AnimePahe extends AnimeParser {
   };
 
   /**
-   * Returns the HTTP headers for requests to animepahe.ru, including referer and user-agent.
-   *
-   * @param sessionId - The anime session ID, or `false` for generic requests.
-   * @returns An object containing HTTP headers for API/HTML requests.
-   * @private
-   */
-  private Headers(sessionId: string | false) {
-    return {
-      authority: "animepahe.ru",
-      accept: "application/json, text/javascript, */*; q=0.01",
-      "accept-language": "en-US,en;q=0.9",
-      cookie: "__ddg2_=;",
-      dnt: "1",
-      "sec-ch-ua":
-        '"Not A(Brand";v="99", "Microsoft Edge";v="121", "Chromium";v="121"',
-      "sec-ch-ua-mobile": "?0",
-      "sec-ch-ua-platform": '"Windows"',
-      "sec-fetch-dest": "empty",
-      "sec-fetch-mode": "cors",
-      "sec-fetch-site": "same-origin",
-      "x-requested-with": "XMLHttpRequest",
-      referer: sessionId
-        ? `${this.baseUrl}/anime/${sessionId}`
-        : `${this.baseUrl}`,
-      "user-agent": USER_AGENT,
-    };
-  }
-
-  /**
    * Search for anime by query string.
    *
    * @param query - The search query (anime title or keywords).
@@ -346,7 +319,7 @@ export class AnimePahe extends AnimeParser {
         const tabKey = tabId === "hash" ? "#" : tabId.toUpperCase();
 
         // Extract data for this tab
-        const tabData = this.extractTabData($, tabPane);
+        const tabData = this.extractFetchAllAnimeTabData($, tabPane);
 
         if (tabData.length > 0) {
           result[tabKey] = tabData;
@@ -360,6 +333,67 @@ export class AnimePahe extends AnimeParser {
   };
 
   /**
+   * Fetches the latest anime releases from the provider.
+   *
+   * @param page - (Optional) Page number for pagination. Default: 1.
+   * @returns A promise resolving to an array of `IAnimeInfo` objects representing the latest releases.
+   */
+  override fetchLatestReleases = async (
+    page: number = 1
+  ): Promise<IPagination & { data: IRelease[] }> => {
+    const { data } = await this.client.get(`${this.baseUrl}/?page=${page}`, {
+      headers: this.Headers(false),
+    });
+
+    const $ = load(data);
+
+    const results: IRelease[] = [];
+    const pagination = this.extractFetchLatestReleasesPaginationData($);
+
+    $(".episode-wrap").each((_i, element) => {
+      const $episode = $(element);
+
+      // Extract title from the anime title link
+      const $titleLink = $episode.find(".episode-title a");
+      const title = $titleLink.attr("title") || $titleLink.text().trim();
+
+      // Extract anime URL
+      const url = $titleLink.attr("href")!;
+
+      // Extract image URL
+      const $image = $episode.find(".episode-snapshot img");
+      const image = ($image.attr("src") || $image.attr("data-src"))!;
+
+      // Extract video/watch URL and remove /play/ prefix
+      const $playLink = $episode.find(".episode-snapshot a.play");
+      const video_url = $playLink.attr("href")?.replace("/play/", "/")!;
+
+      // Extract episode number
+      const $episodeNumber = $episode.find(".episode-number");
+      let episodeNumber = null;
+      if ($episodeNumber.length > 0) {
+        // Get the text and extract just the number part
+        const episodeText = $episodeNumber.text().trim();
+        const numberMatch = episodeText.match(/(\d+)$/);
+        if (numberMatch) {
+          episodeNumber = parseInt(numberMatch[1]);
+        }
+      }
+
+      results.push({
+        title,
+        duration: 0,
+        snapshot: image,
+        session: video_url,
+        episode: episodeNumber || 0,
+        url: `${this.baseUrl}${url}`,
+      });
+    });
+
+    return { ...pagination, data: results };
+  };
+
+  /**
    * Extracts data from a tab pane element.
    *
    * @param $ - The CheerioAPI instance.
@@ -367,7 +401,69 @@ export class AnimePahe extends AnimeParser {
    * @returns An array of extracted data items.
    * @private
    */
-  private extractTabData($: CheerioAPI, tabPane: never) {
+  private extractFetchLatestReleasesPaginationData($: CheerioAPI) {
+    const pagination: IPagination = {
+      totalPages: 0,
+      currentPage: 0,
+      hasPrevPage: false,
+      hasNextPage: false,
+      prevPage: undefined,
+      nextPage: undefined,
+    };
+
+    // Find pagination container
+    const $paginationNav = $('nav[aria-label="Page navigation"]');
+    const $paginationItems = $paginationNav.find(".page-item");
+
+    $paginationItems.each((_i, item) => {
+      const $item = $(item);
+      const $link = $item.find(".page-link");
+
+      // Check if it's the current page (active item)
+      if ($item.hasClass("active")) {
+        const pageText = $link.text().trim();
+        pagination.currentPage = parseInt(pageText);
+      }
+
+      // Check for prev page
+      if ($link.hasClass("prev-page") && !$item.hasClass("disabled")) {
+        pagination.hasPrevPage = true;
+        const prevPageNum = $link.attr("data-page");
+        if (prevPageNum) {
+          pagination.prevPage = parseInt(prevPageNum);
+        }
+      }
+
+      // Check for next page
+      if ($link.hasClass("next-page") && !$item.hasClass("disabled")) {
+        pagination.hasNextPage = true;
+        const nextPageNum = $link.attr("data-page");
+        if (nextPageNum) {
+          pagination.nextPage = parseInt(nextPageNum);
+        }
+      }
+
+      // Check for last page to get total pages
+      if ($link.attr("title")?.includes("Go to the Last Page")) {
+        const totalPagesNum = $link.attr("data-page");
+        if (totalPagesNum) {
+          pagination.totalPages = parseInt(totalPagesNum);
+        }
+      }
+    });
+
+    return pagination;
+  }
+
+  /**
+   * Extracts data from a tab pane element.
+   *
+   * @param $ - The CheerioAPI instance.
+   * @param tabPane - The tab pane element to extract data from.
+   * @returns An array of extracted data items.
+   * @private
+   */
+  private extractFetchAllAnimeTabData($: CheerioAPI, tabPane: never) {
     const items: ICollection[string] = [];
 
     // Find all rows within this tab pane
@@ -412,6 +508,35 @@ export class AnimePahe extends AnimeParser {
       });
 
     return items;
+  }
+
+  /**
+   * Returns the HTTP headers for requests to animepahe.ru, including referer and user-agent.
+   *
+   * @param sessionId - The anime session ID, or `false` for generic requests.
+   * @returns An object containing HTTP headers for API/HTML requests.
+   * @private
+   */
+  private Headers(sessionId: string | false) {
+    return {
+      authority: "animepahe.ru",
+      accept: "application/json, text/javascript, */*; q=0.01",
+      "accept-language": "en-US,en;q=0.9",
+      cookie: "__ddg2_=;",
+      dnt: "1",
+      "sec-ch-ua":
+        '"Not A(Brand";v="99", "Microsoft Edge";v="121", "Chromium";v="121"',
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": '"Windows"',
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "x-requested-with": "XMLHttpRequest",
+      referer: sessionId
+        ? `${this.baseUrl}/anime/${sessionId}`
+        : `${this.baseUrl}`,
+      "user-agent": USER_AGENT,
+    };
   }
 
   /**

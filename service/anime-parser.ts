@@ -68,4 +68,14 @@ export abstract class AnimeParser extends BaseParser {
    * @returns A promise resolving to an array of `ICollection` objects representing all anime.
    */
   abstract fetchAllAnime(...args: unknown[]): Promise<ICollection>;
+
+  /**
+   * Fetches the latest anime releases from the provider.
+   *
+   * @param args - Additional arguments for provider-specific needs (e.g., pagination, filters).
+   * @returns A promise resolving to a paginated response containing an array of `IRelease` objects.
+   */
+  abstract fetchLatestReleases(
+    page: number
+  ): Promise<IPagination & { data: IRelease[] }>;
 }
