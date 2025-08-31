@@ -1,4 +1,49 @@
 /**
+ * Generate a simple checksum for string content to detect changes.
+ * Uses a basic hashCode algorithm (not cryptographically secure, but fast for change detection)
+ *
+ * @param {string} str - The string to hash (e.g., HTML)
+ * @returns {string} The checksum as a string
+ *
+ * @example
+ * getChecksum('<html>...</html>') // "123456789"
+ */
+export function getChecksum(str: string): string {
+  let hash = 0;
+  if (!str) return hash.toString();
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash.toString();
+}
+
+/**
+ * Splits an array into batches (chunks) of a specified size.
+ *
+ * @template T
+ * @param {T[]} array - The array to split into batches
+ * @param {number} size - The maximum size of each batch
+ * @returns {T[][]} An array of batches (arrays)
+ *
+ * @example
+ * batch([1,2,3,4,5], 2) // [[1,2],[3,4],[5]]
+ */
+export function batch<T>(array: T[], size: number): T[][] {
+  if (!Array.isArray(array)) {
+    throw new TypeError("Input must be an array");
+  }
+  if (typeof size !== "number" || size <= 0) {
+    throw new RangeError("Size must be a positive number");
+  }
+  const result: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size));
+  }
+  return result;
+}
+
+/**
  * Check if value is not null or undefined
  */
 export function isNotNullish<T>(value: T | null | undefined): value is T {

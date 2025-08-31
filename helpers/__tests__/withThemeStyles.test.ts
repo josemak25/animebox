@@ -2,7 +2,7 @@ import { describe, expect, it } from "@jest/globals";
 import { renderHook } from "@testing-library/react-hooks";
 import { waitFor } from "@testing-library/react-native";
 
-import { ThemeProvider } from "@/providers/theme/ThemeProvider";
+import { ThemeProvider } from "@/providers/theme/provider";
 
 import { withThemeStyles } from "../withThemeStyles";
 

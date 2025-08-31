@@ -1,8 +1,10 @@
 import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
+import { useAnimeCollection } from "@/hooks/useAnimeCollection";
 
 export default function HomeScreen() {
   const { styles } = useStyles();
+  const { data } = useAnimeCollection();
 
   return (
     <ThemedView style={styles.container}>

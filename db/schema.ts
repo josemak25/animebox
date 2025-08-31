@@ -1,4 +1,11 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  integer,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
+
+import { generateUUID } from "../helpers/uuid";
 
 /* ************************************************************************************** *
  * **************************                               ***************************** *
@@ -25,13 +32,31 @@ export const animes = sqliteTable("animes", {
 });
 
 export const bookmarks = sqliteTable("bookmarks", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  created_at: text("created_at").notNull(),
-  updated_at: text("updated_at").notNull(),
+  id: text("id")
+    .primaryKey()
+    .$default(() => generateUUID()),
+  created_at: text("created_at").$default(() => new Date().toISOString()),
+  updated_at: text("updated_at").$default(() => new Date().toISOString()),
   anime_id: integer("anime_id")
     .notNull()
     .references(() => animes.id),
 });
+
+export const animeCollection = sqliteTable(
+  "anime_collection",
+  {
+    id: text("id")
+      .primaryKey()
+      .$default(() => generateUUID()),
+    url: text("url").notNull(),
+    tab: text("tab").notNull(),
+    title: text("title").unique().notNull(),
+    badge: text("badge", { mode: "json" }).default(null),
+    created_at: text("created_at").$default(() => new Date().toISOString()),
+    updated_at: text("updated_at").$default(() => new Date().toISOString()),
+  },
+  (table) => [uniqueIndex("title_idx").on(table.title)]
+);
 
 /* ************************************************************************************** *
  * **************************                               ***************************** *

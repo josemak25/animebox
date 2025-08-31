@@ -28,12 +28,27 @@ export const clear: jest.Mock<Promise<void>, []> = jest.fn(async () => {
   Object.keys(store).forEach((key) => delete store[key]);
 });
 
+export const getItemAsync: jest.Mock<
+  Promise<string | null>,
+  [string]
+> = jest.fn(async (key: string) => {
+  return store[key] ?? null;
+});
+
+export const setItemAsync: jest.Mock<Promise<void>, [string, string]> = jest.fn(
+  async (key: string, value: string) => {
+    store[key] = value;
+  }
+);
+
 const kvStore = {
   clear,
   getItem,
   setItem,
   deleteItem,
   getAllKeys,
+  getItemAsync,
+  setItemAsync,
 };
 
 export default kvStore;
