@@ -154,12 +154,12 @@ export const HeadlessBrowserProvider: React.FC<PropsWithChildren> = ({
       // Determine the stale time and last updated time
       const staleTime = cachedPage?.stale_time || DEFAULT_STALE_TIME;
       // Add the stale time to the last updated time
-      const lastUpdatedAt = dayjs(cachedPage?.updated_at || Date.now())
+      const lastUpdatedAt = dayjs(cachedPage?.updated_at)
         .add(staleTime, "millisecond")
         .toISOString();
 
       // Determine if the cache exists and not expired
-      const isCacheFresh = !!cache && dayjs().isBefore(lastUpdatedAt);
+      const isCacheFresh = !!cachedPage && dayjs().isBefore(lastUpdatedAt);
 
       // If cached content is still fresh, use it
       if (isCacheFresh) {

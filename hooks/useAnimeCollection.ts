@@ -1,4 +1,4 @@
-import { or, eq, like } from "drizzle-orm";
+import { eq, like, and } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useEffect } from "react";
 
@@ -17,8 +17,8 @@ export function useAnimeCollection(
       .select()
       .from(schema.animeCollection)
       .where(
-        or(
-          eq(schema.animeCollection.tab, params.tab || "A"),
+        and(
+          eq(schema.animeCollection.tab, params?.tab || "A"),
           like(schema.animeCollection.title, `%${params?.search || ""}%`)
         )
       )
