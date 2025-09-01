@@ -1,0 +1,1 @@
+DROP INDEX `anime_collection_tab_unique`;

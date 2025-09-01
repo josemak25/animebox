@@ -16,10 +16,12 @@ import { adjustColorBrightness, hexToRGB } from "@/helpers/color";
 
 import {
   FONTS,
-  DefaultTheme,
   DARK_MODE_COLORS,
   LIGHT_MODE_COLORS,
+  type DefaultTheme,
 } from "./colors";
+
+export type { DefaultTheme }; // Exporting DefaultTheme type
 
 export const ThemeContext = createContext<DefaultTheme>({} as DefaultTheme);
 

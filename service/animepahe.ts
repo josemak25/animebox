@@ -1,7 +1,7 @@
 import { load } from "react-native-cheerio";
 
 import { AnimeParser } from "./anime-parser";
-import { Kwik } from "./extractor";
+import { KwikExtractor } from "./extractor";
 
 export const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36";
@@ -241,9 +241,7 @@ export class AnimePahe extends AnimeParser {
       };
 
       for (const link of links) {
-        const [source] = await new Kwik(this.proxyConfig).extract(
-          new URL(link.url)
-        );
+        const [source] = await new KwikExtractor().extract(new URL(link.url));
 
         iSource.sources.push({
           ...source,

@@ -1,5 +1,5 @@
 /* global jest */
-export const openDatabase = jest.fn((_name = "default.db") => {
+export const openDatabaseSync = jest.fn((_name = "default.db") => {
   const mockTx = {
     executeSql: jest.fn((sql, _params = [], success, _error) => {
       // Basic SELECT mock
@@ -29,3 +29,5 @@ export const openDatabase = jest.fn((_name = "default.db") => {
     readTransaction: jest.fn((callback) => callback(mockTx)),
   };
 });
+
+export const addDatabaseChangeListener = jest.fn();

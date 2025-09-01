@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "90d32fd0-1ea3-4537-b409-430d51f504ae",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "39a1dc88-c051-42a2-b5a0-487d29299b83",
+  "prevId": "90d32fd0-1ea3-4537-b409-430d51f504ae",
   "tables": {
     "anime_collection": {
       "name": "anime_collection",
@@ -59,13 +59,6 @@
         }
       },
       "indexes": {
-        "anime_collection_tab_unique": {
-          "name": "anime_collection_tab_unique",
-          "columns": [
-            "tab"
-          ],
-          "isUnique": true
-        },
         "anime_collection_title_unique": {
           "name": "anime_collection_title_unique",
           "columns": [
