@@ -11,6 +11,6 @@ const renderWithTheme = (ui: React.ReactElement) =>
 describe("BookmarkScreen", () => {
   it("renders the Bookmarks title", () => {
     const { getByText } = renderWithTheme(<BookmarkScreen />);
-    expect(getByText("Bookmarks")).toBeTruthy();
+    expect(getByText("My Bookmarks")).toBeTruthy();
   });
 });

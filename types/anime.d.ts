@@ -141,7 +141,7 @@ interface IAnimeEpisode {
   /**
    * Other fields
    */
-  [x: string]: PropertyKey;
+  [x: string]: unknown;
 }
 
 enum MediaStatus {
@@ -221,7 +221,7 @@ interface IAnimeResult {
   /**
    * Other fields
    */
-  [x: string]: PropertyKey;
+  [x: string]: unknown;
 }
 
 interface IAnimeInfo extends IAnimeResult {

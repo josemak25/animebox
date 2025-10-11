@@ -45,3 +45,6 @@ yarn-error.*
 .yarn/build-state.yml
 .yarn/patches
 .pnp.*
+
+# WARP
+WARP.md
