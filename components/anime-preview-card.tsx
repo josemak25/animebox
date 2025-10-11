@@ -124,7 +124,7 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
         accessibilityLabel={`${title} poster`}
       >
         {/* Gradient overlay starting from the middle, darkening toward bottom */}
-        <ThemedView style={styles.overlay}>
+        <ThemedView backgroundColor="transparent" style={styles.overlay}>
           <Svg width="100%" height="100%">
             <Defs>
               <SVGLinearGradient id="overlayGrad" x1="0" y1="0" x2="0" y2="1">
@@ -150,10 +150,16 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
         )}
 
         {/* Content Container */}
-        <ThemedView style={styles.contentContainer}>
+        <ThemedView
+          backgroundColor="transparent"
+          style={styles.contentContainer}
+        >
           {/* Series Label */}
           {season && (
-            <ThemedView style={styles.seriesLabel}>
+            <ThemedView
+              style={styles.seriesLabel}
+              backgroundColor="transparent"
+            >
               <Text style={styles.seriesText}>SERIES</Text>
             </ThemedView>
           )}
@@ -165,7 +171,10 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
 
           {/* Season and Episode Info */}
           {(season || episode) && (
-            <ThemedView style={styles.infoContainer}>
+            <ThemedView
+              backgroundColor="transparent"
+              style={styles.infoContainer}
+            >
               {season && (
                 <ThemedText variant="subtitle" style={styles.season}>
                   {season}
@@ -203,7 +212,10 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
           )}
 
           {/* Action Buttons */}
-          <ThemedView style={styles.actionContainer}>
+          <ThemedView
+            backgroundColor="transparent"
+            style={styles.actionContainer}
+          >
             {/* Play Button */}
             <Bounceable
               style={styles.playButton}
