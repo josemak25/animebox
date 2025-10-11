@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import {
-  View,
   ImageBackground,
   ViewStyle,
   Pressable,
@@ -9,7 +8,7 @@ import {
 } from "react-native";
 
 import { Bounceable } from "@/components/bounceable";
-import { ThemedText } from "@/components/themed-components";
+import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 
 interface AnimeBookmarkCardProps {
@@ -76,7 +75,7 @@ export const AnimeBookmarkCard: React.FC<AnimeBookmarkCardProps> = ({
       onPress={onPress}
       style={[styles.container, style]}
     >
-      <View style={styles.cardContainer}>
+      <ThemedView style={styles.cardContainer}>
         <ImageBackground
           source={{ uri: imageSource }}
           style={styles.imageBackground}
@@ -84,10 +83,10 @@ export const AnimeBookmarkCard: React.FC<AnimeBookmarkCardProps> = ({
           accessibilityLabel={`${title} poster`}
         >
           {/* Gradient overlay for title readability */}
-          <View style={styles.overlay} />
+          <ThemedView style={styles.overlay} />
 
           {/* Title overlay at the bottom */}
-          <View style={styles.titleContainer}>
+          <ThemedView style={styles.titleContainer}>
             <ThemedText
               variant="caption"
               style={styles.title}
@@ -95,7 +94,7 @@ export const AnimeBookmarkCard: React.FC<AnimeBookmarkCardProps> = ({
             >
               {title}
             </ThemedText>
-          </View>
+          </ThemedView>
 
           {/* Bookmark indicator */}
           <Pressable
@@ -104,12 +103,12 @@ export const AnimeBookmarkCard: React.FC<AnimeBookmarkCardProps> = ({
             accessibilityRole="button"
             accessibilityLabel={`Remove ${title} from bookmarks`}
           >
-            <View style={styles.bookmarkIcon}>
+            <ThemedView style={styles.bookmarkIcon}>
               <ThemedText style={styles.bookmarkText}>♥</ThemedText>
-            </View>
+            </ThemedView>
           </Pressable>
         </ImageBackground>
-      </View>
+      </ThemedView>
     </Bounceable>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import {
-  View,
   Text,
   ImageBackground,
   ViewStyle,
@@ -15,7 +14,7 @@ import Svg, {
 } from "react-native-svg";
 
 import { Bounceable } from "@/components/bounceable";
-import { ThemedText } from "@/components/themed-components";
+import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 interface AnimePreviewCardProps {
   /**
@@ -80,8 +79,8 @@ interface AnimePreviewCardProps {
  *   season="Season 2"
  *   episode="Episode 8"
  *   releaseInfo="Season 2 concludes Sept 3"
- *   onPlay={() => console.log('Play pressed')}
- *   onAddToList={() => console.log('Add to list pressed')}
+ *   onPlay={() => handlePlay()}
+ *   onAddToList={() => handleAddToList()}
  * />
  */
 export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
@@ -117,7 +116,7 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
   }, [anime.image, anime.cover]);
 
   return (
-    <View style={[styles.container, style]}>
+    <ThemedView style={[styles.container, style]}>
       <ImageBackground
         source={{ uri: imageSource }}
         style={styles.imageBackground}
@@ -125,7 +124,7 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
         accessibilityLabel={`${title} poster`}
       >
         {/* Gradient overlay starting from the middle, darkening toward bottom */}
-        <View style={styles.overlay}>
+        <ThemedView style={styles.overlay}>
           <Svg width="100%" height="100%">
             <Defs>
               <SVGLinearGradient id="overlayGrad" x1="0" y1="0" x2="0" y2="1">
@@ -141,22 +140,22 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
               fill="url(#overlayGrad)"
             />
           </Svg>
-        </View>
+        </ThemedView>
 
         {/* Badge */}
         {badge && (
-          <View style={styles.badge}>
+          <ThemedView style={styles.badge}>
             <Text style={styles.badgeText}>{badge}</Text>
-          </View>
+          </ThemedView>
         )}
 
         {/* Content Container */}
-        <View style={styles.contentContainer}>
+        <ThemedView style={styles.contentContainer}>
           {/* Series Label */}
           {season && (
-            <View style={styles.seriesLabel}>
+            <ThemedView style={styles.seriesLabel}>
               <Text style={styles.seriesText}>SERIES</Text>
-            </View>
+            </ThemedView>
           )}
 
           {/* Title */}
@@ -166,7 +165,7 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
 
           {/* Season and Episode Info */}
           {(season || episode) && (
-            <View style={styles.infoContainer}>
+            <ThemedView style={styles.infoContainer}>
               {season && (
                 <ThemedText variant="subtitle" style={styles.season}>
                   {season}
@@ -177,7 +176,7 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
                   {episode}
                 </ThemedText>
               )}
-            </View>
+            </ThemedView>
           )}
 
           {/* Description */}
@@ -204,7 +203,7 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
           )}
 
           {/* Action Buttons */}
-          <View style={styles.actionContainer}>
+          <ThemedView style={styles.actionContainer}>
             {/* Play Button */}
             <Bounceable
               style={styles.playButton}
@@ -242,10 +241,10 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
                 My List
               </ThemedText>
             </Bounceable>
-          </View>
-        </View>
+          </ThemedView>
+        </ThemedView>
       </ImageBackground>
-    </View>
+    </ThemedView>
   );
 };
 
