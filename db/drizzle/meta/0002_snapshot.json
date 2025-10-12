@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b6157f9e-7f67-4792-96eb-ac9de92fc417",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "87818ef7-9462-418b-bcab-89db72b246b9",
+  "prevId": "a76768aa-e288-482d-89ed-3c698a0afb42",
   "tables": {
     "anime_collection": {
       "name": "anime_collection",
@@ -103,20 +103,6 @@
           "notNull": false,
           "autoincrement": false
         },
-        "duration": {
-          "name": "duration",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "url": {
-          "name": "url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "snapshot": {
           "name": "snapshot",
           "type": "text",
@@ -131,8 +117,22 @@
           "notNull": false,
           "autoincrement": false
         },
+        "duration": {
+          "name": "duration",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "title": {
           "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "url": {
+          "name": "url",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -153,7 +153,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "animes_url_unique": {
+          "name": "animes_url_unique",
+          "columns": [
+            "url"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},

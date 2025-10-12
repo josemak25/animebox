@@ -129,29 +129,6 @@ interface IProviderStats {
   isWorking: boolean;
 }
 
-interface ISearch<T> {
-  /**
-   * The current page of the search results
-   */
-  currentPage?: number;
-  /**
-   * Whether there is a next page of results
-   */
-  hasNextPage?: boolean;
-  /**
-   * The total number of pages available
-   */
-  totalPages?: number;
-  /**
-   * total results must include results from all pages
-   */
-  totalResults?: number;
-  /**
-   * The results of the search
-   */
-  results: T[];
-}
-
 interface IRelease {
   /**
    * The session id of the release
@@ -230,4 +207,18 @@ interface IPagination {
    * The next page number, if available.
    */
   nextPage?: number;
+}
+
+interface ISearch<T>
+  extends Partial<
+    Pick<IPagination, "currentPage" | "hasNextPage" | "totalPages">
+  > {
+  /**
+   * total results must include results from all pages
+   */
+  totalResults?: number;
+  /**
+   * The results of the search
+   */
+  results: T[];
 }

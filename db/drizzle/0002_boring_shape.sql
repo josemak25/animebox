@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `animes_url_unique` ON `animes` (`url`);

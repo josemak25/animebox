@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "39a1dc88-c051-42a2-b5a0-487d29299b83",
-  "prevId": "90d32fd0-1ea3-4537-b409-430d51f504ae",
+  "id": "a76768aa-e288-482d-89ed-3c698a0afb42",
+  "prevId": "b6157f9e-7f67-4792-96eb-ac9de92fc417",
   "tables": {
     "anime_collection": {
       "name": "anime_collection",
@@ -84,22 +84,8 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "disc": {
-          "name": "disc",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "fansub": {
-          "name": "fansub",
-          "type": "text",
-          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
@@ -107,19 +93,19 @@
           "name": "session",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "edition": {
           "name": "edition",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
-        "filler": {
-          "name": "filler",
-          "type": "integer",
+        "url": {
+          "name": "url",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -128,26 +114,26 @@
           "name": "snapshot",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "episode": {
           "name": "episode",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
-        "anime_id": {
-          "name": "anime_id",
+        "duration": {
+          "name": "duration",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
-        "episode2": {
-          "name": "episode2",
-          "type": "integer",
+        "title": {
+          "name": "title",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -156,35 +142,14 @@
           "name": "created_at",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "completed": {
-          "name": "completed",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "anime_title": {
-          "name": "anime_title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "anime_session": {
-          "name": "anime_session",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         }
       },
