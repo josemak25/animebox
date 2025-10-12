@@ -1,6 +1,6 @@
 import { eq, like, and } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { useEffect } from "react";
+import { useCallback } from "react";
 
 import { db, schema } from "@/db";
 import { buildConflictUpdateColumns } from "@/db/utils";
@@ -49,19 +49,13 @@ export function useAnimeCollection(
       .limit(10)
   );
 
-  // Fetch HTML for the anime collection page using the headless browser cache
-  const { html } = useHeadlessBrowser({
-    staleTime: 1000 * 60 * 60 * 24 * 1, // 1 day
-    url: `${HeaderLessParser.BASE_URL}/anime`,
-  });
-
   /**
    * Parses the HTML and upserts the anime collection into the local DB in batches.
    * Uses batch insert to avoid SQLite's variable limit errors.
    *
    * @param {string} h - The HTML string to parse
    */
-  const handleResponse = async (h: string) => {
+  const onSuccess = useCallback(async (h: string) => {
     const parser = new HeaderLessParser();
     const collection = parser.fetchAllAnime(h);
 
@@ -82,14 +76,14 @@ export function useAnimeCollection(
           set: buildConflictUpdateColumns(schema.animeCollection),
         });
     }
-  };
+  }, []);
 
-  // When new HTML is fetched, parse and update the DB
-  useEffect(() => {
-    if (html) {
-      handleResponse(html);
-    }
-  }, [html]);
+  // Fetch HTML for the anime collection page using the headless browser cache
+  const response = useHeadlessBrowser({
+    onSuccess,
+    staleTime: 1000 * 60 * 60 * 24 * 1, // 1 day
+    url: `${HeaderLessParser.BASE_URL}/anime`,
+  });
 
-  return { data };
+  return { ...response, data };
 }

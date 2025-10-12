@@ -14,84 +14,32 @@ import { ThemedView } from "@/components/themed-components";
 import { getChecksum } from "@/helpers/common";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 
-export interface IHeadlessBrowser {
-  /**
-   * Whether the last page load resulted in an error.
-   */
-  isError: boolean;
-  /**
-   * Whether the current page is being loaded.
-   */
-  isLoading: boolean;
-  /**
-   * Whether the last page load was successful.
-   */
-  isSuccess: boolean;
-  /**
-   * The HTML content of the loaded page.
-   */
-  html: string | null;
-  /**
-   * Any error encountered during the loading process.
-   */
-  error: Error | null;
-  /**
-   * The current status of the loading process.
-   */
-  status: "idle" | "loading" | "success" | "error";
-  /**
-   * Loads a new page by URL.
-   */
-  loadPage: (params: {
-    /**
-     * The URL of the page to load.
-     */
-    url: string;
-    /**
-     * Whether to enable caching for the loaded page.
-     */
-    enabled?: boolean;
-    /**
-     * The time at which the cached HTML content is considered stale.
-     */
-    staleTime?: number;
-  }) => void;
-}
-
-export interface IHeadlessCache {
-  [url: string]: {
-    /**
-     * The checksum of the cached HTML content.
-     */
-    checksum: string;
-    /**
-     * The time at which the cached HTML content was last updated.
-     */
-    updated_at: string;
-    /**
-     * The time at which the cached HTML content is considered stale.
-     */
-    stale_time: number;
-    /**
-     * The cached HTML content.
-     */
-    html: string | null;
-  };
-}
-
 export const HeadlessBrowserContext = createContext<IHeadlessBrowser>(
-  {} as IHeadlessBrowser
+  undefined as unknown as IHeadlessBrowser
 );
 
 const INJECTED_JAVASCRIPT = `
-    (function() {
+  (function() {
+    setTimeout(function() {
       window.ReactNativeWebView.postMessage(document.documentElement.innerHTML);
-    })();
-    true;
+    }, 500);
+  })();
+  true;
   `;
 
 const DEFAULT_STALE_TIME = 1000 * 60 * 5; // 5 minutes
 const CACHE_STORAGE_KEY = "HEADLESS_CACHE_KEY";
+
+/**
+ * A function to load the headless browser cache from storage.
+ * @returns {Promise<IHeadlessCache>} The loaded headless cache object.
+ */
+const loadCacheAsync = async (): Promise<IHeadlessCache> => {
+  // Load headless cached contents from storage
+  const result = await Storage.getItemAsync(CACHE_STORAGE_KEY);
+  const cache: IHeadlessCache = JSON.parse(result || "{}");
+  return cache;
+};
 
 /**
  * HeadlessBrowserProvider is a React context provider component that manages the state and logic
@@ -125,8 +73,8 @@ export const HeadlessBrowserProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const { styles } = useStyles();
-  const mainCacheRef = useRef<IHeadlessCache>({});
   const [enabled, setEnabled] = useState(true);
+  const mainCacheRef = useRef<IHeadlessCache>({});
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState<Error | null>(null);
   // Temporary cache reference to be discarded after each page load
@@ -139,18 +87,14 @@ export const HeadlessBrowserProvider: React.FC<PropsWithChildren> = ({
   const isLoading = status === "loading";
   const isSuccess = status === "success";
 
-  const loadCacheAsync = async () => {
-    // Load headless cached contents from storage
-    const result = await Storage.getItemAsync(CACHE_STORAGE_KEY);
-    const cache: IHeadlessCache = JSON.parse(result || "{}");
-    return cache;
-  };
-
   const loadPage = React.useCallback(
-    async (params: Parameters<IHeadlessBrowser["loadPage"]>[number]) => {
+    async (
+      params: Parameters<IHeadlessBrowser["loadPage"]>[number] &
+        NonNullable<Pick<IHeadlessBrowser, "onSuccess">>
+    ) => {
       const cache = await loadCacheAsync();
       // Check if the URL is already cached
-      const cachedPage = cache[params.url];
+      const cachedPage = cache[params.url]!;
       // Determine the stale time and last updated time
       const staleTime = cachedPage?.stale_time || DEFAULT_STALE_TIME;
       // Add the stale time to the last updated time
@@ -177,6 +121,7 @@ export const HeadlessBrowserProvider: React.FC<PropsWithChildren> = ({
         ...cache,
         // Update the stale time for the temporary cached page
         [params.url]: {
+          ...params,
           ...cachedPage,
           stale_time: params.staleTime ?? DEFAULT_STALE_TIME,
         },
@@ -191,7 +136,7 @@ export const HeadlessBrowserProvider: React.FC<PropsWithChildren> = ({
     // Get the checksum of the HTML content
     const checksum = getChecksum(html);
     //  temporarily cached page data via url
-    const temporaryCachedPage = tempCacheRef.current[url as string];
+    const temporaryCachedPage = tempCacheRef.current[url as string]!;
 
     if (checksum === temporaryCachedPage?.checksum) {
       /** If the checksum matches, we return and not update the main cache
@@ -212,11 +157,17 @@ export const HeadlessBrowserProvider: React.FC<PropsWithChildren> = ({
     // Update the main cache reference for the current URL
     mainCacheRef.current[url as string] = payload;
 
+    // Trigger the onSuccess with the loaded HcTML
+    temporaryCachedPage?.onSuccess?.(html);
+
     // Update the cache in storage
     await Storage.setItemAsync(
       CACHE_STORAGE_KEY,
       JSON.stringify(mainCacheRef.current)
     );
+
+    // Clear the page from the temporary cache
+    tempCacheRef.current[url as string] = null;
   };
 
   const value: IHeadlessBrowser = useMemo(
@@ -227,9 +178,8 @@ export const HeadlessBrowserProvider: React.FC<PropsWithChildren> = ({
       loadPage,
       isLoading,
       isSuccess,
-      html: mainCacheRef.current[url as string]?.html || null,
     }),
-    [error, status, isError, loadPage, isLoading, isSuccess, url]
+    [error, status, isError, loadPage, isLoading, isSuccess]
   );
 
   return (
@@ -239,10 +189,12 @@ export const HeadlessBrowserProvider: React.FC<PropsWithChildren> = ({
       {url && enabled ? (
         <ThemedView style={styles.container}>
           <WebView
+            javaScriptEnabled
             source={{ uri: url }}
             onMessage={onMessage}
             injectedJavaScript={INJECTED_JAVASCRIPT}
             onLoadStart={() => setStatus("loading")}
+            injectedJavaScriptBeforeContentLoaded={INJECTED_JAVASCRIPT}
             onError={(e) => {
               setError(new Error(e.nativeEvent.description));
               setStatus("error");
