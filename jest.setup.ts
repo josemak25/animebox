@@ -1,12 +1,23 @@
 import { jest } from "@jest/globals";
 import mockSafeAreaContext from "react-native-safe-area-context/jest/mock";
 
-jest.mock("axios");
+beforeAll(() => {
+  const consoleFuncs = ["error", "warn"] as const;
+  // Suppress console.error output during tests
+  consoleFuncs.forEach((func) =>
+    jest.spyOn(console, func).mockImplementation(() => {})
+  );
+});
 
-jest.mock("expo-sqlite");
+jest.mock("expo-font", () => ({
+  loadAsync: jest.fn(),
+  isLoaded: jest.fn().mockReturnValue(true),
+  useFonts: jest.fn().mockReturnValue([true]),
+}));
 
-jest.mock("react-native-cheerio");
-
-jest.mock("expo-sqlite/kv-store");
+jest.mock("expo-splash-screen", () => ({
+  hideAsync: jest.fn(),
+  preventAutoHideAsync: jest.fn(),
+}));
 
 jest.mock("react-native-safe-area-context", () => mockSafeAreaContext);

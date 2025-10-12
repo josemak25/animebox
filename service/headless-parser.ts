@@ -2,9 +2,6 @@ import { load } from "react-native-cheerio";
 
 import { KwikExtractor } from "./extractor";
 
-export const USER_AGENT =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36";
-
 /**
  * The `AnimePahe` class extends `AnimeParser` and implements scraping and API logic for the animepahe.ru provider.
  * It supports searching, fetching anime info, episode sources, and more, using both API and HTML parsing.
@@ -28,7 +25,7 @@ export class HeaderLessParser {
    * The base URL for all API and HTML requests.
    * @override
    */
-  public static BASE_URL = "https://animepahe.ru";
+  public static BASE_URL = "https://animepahe.si";
 
   /**
    * Fetch streaming and download sources for a specific episode.
@@ -112,11 +109,9 @@ export class HeaderLessParser {
    * Fetches the latest anime releases from the provider.
    *
    * @param page - (Optional) Page number for pagination. Default: 1.
-   * @returns A promise resolving to an array of `IAnimeInfo` objects representing the latest releases.
+   * @returns An array of `IAnimeInfo` objects representing the latest releases.
    */
-  fetchLatestReleases = async (
-    html: string
-  ): Promise<IPagination & { data: IRelease[] }> => {
+  fetchLatestReleases = (html: string): IPagination & { data: IRelease[] } => {
     const $ = load(html);
 
     const results: IRelease[] = [];
@@ -134,7 +129,8 @@ export class HeaderLessParser {
 
       // Extract image URL
       const $image = $episode.find(".episode-snapshot img");
-      const image = ($image.attr("src") || $image.attr("data-src"))!;
+
+      const image = ($image.attr("data-src") || $image.attr("src"))!;
 
       // Extract video/watch URL and remove /play/ prefix
       const $playLink = $episode.find(".episode-snapshot a.play");

@@ -1,12 +1,8 @@
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { render, fireEvent, waitFor } from "@testing-library/react-native";
-import React from "react";
+import { fireEvent, waitFor } from "@testing-library/react-native";
 
 import { BottomNavigator } from "@/components/bottom-navigator";
-import { Providers } from "@/providers";
-
-const renderWithTheme = (ui: React.ReactElement) =>
-  render(<Providers>{ui}</Providers>);
+import { renderWithTheme } from "@/jest.utils";
 
 const mockProps = {
   state: { index: 0, type: "tab", key: "tab-state-0" },

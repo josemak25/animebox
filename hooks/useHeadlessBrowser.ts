@@ -1,9 +1,7 @@
 import { useContext, useEffect, useRef } from "react";
 
-import {
-  IHeadlessBrowser,
-  HeadlessBrowserContext,
-} from "@/providers/headless-browser/provider";
+import { isDeepEqual, omit } from "@/helpers/common";
+import { HeadlessBrowserContext } from "@/providers/headless-browser/provider";
 
 /**
  * Hook for accessing the headless browser context in React components.
@@ -36,9 +34,13 @@ import {
  * ```
  */
 export function useHeadlessBrowser(
-  params: Parameters<IHeadlessBrowser["loadPage"]>[number]
-): Omit<IHeadlessBrowser, "loadPage"> {
-  const urlRef = useRef<string | null>(null);
+  params: Parameters<IHeadlessBrowser["loadPage"]>[number] &
+    NonNullable<Pick<IHeadlessBrowser, "onSuccess">>
+): Omit<IHeadlessBrowser, "loadPage" | "onSuccess"> {
+  const paramsRef = useRef<
+    Parameters<IHeadlessBrowser["loadPage"]>[number] | null
+  >(null);
+
   // Access headless browser context from React context
   const context = useContext(HeadlessBrowserContext);
 
@@ -50,14 +52,14 @@ export function useHeadlessBrowser(
   }
 
   useEffect(() => {
-    // Check if the URL has changed before loading the page
-    if (urlRef.current !== params.url) {
+    // Check if the params have changed before loading the page
+    if (!isDeepEqual(paramsRef.current, omit(params, ["onSuccess"]))) {
       context.loadPage(params);
-      // Update the ref with the new URL
-      urlRef.current = params.url;
+      // Update the ref with the new params
+      paramsRef.current = omit(params, ["onSuccess"]);
     }
   }, [context, params]);
 
   // Return headless browser context object
-  return context;
+  return omit(context, ["loadPage"]);
 }

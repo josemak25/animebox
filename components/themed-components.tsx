@@ -40,14 +40,19 @@ export function ThemedText({
     TextStyle
   > = useMemo(
     () => ({
+      /** Styles for the muted variant */
       muted: { fontSize: ms(16), color: palette[color || "text"] },
+      /** Styles for the default variant */
       default: { fontSize: ms(16), color: palette[color || "text"] },
+      /** Styles for the caption variant */
       caption: { fontSize: ms(14), color: palette[color || "quaternary"] },
+      /** Styles for the title variant */
       title: {
         fontSize: ms(24),
         fontWeight: "bold",
         color: palette[color || "text"],
       },
+      /** Styles for the subtitle variant */
       subtitle: {
         fontSize: ms(18),
         fontWeight: "600",
@@ -86,6 +91,7 @@ export function ThemedView({
 }
 
 const useStyles = withThemeStyles(({ fonts }) => ({
+  /** Common text styles for ThemedText */
   text: {
     fontFamily: fonts.variants.spaceMonoRegular,
   },
