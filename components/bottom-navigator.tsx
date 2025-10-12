@@ -108,6 +108,7 @@ const useStyles = withThemeStyles(({ hexToRGB, ms, layout, palette }) => ({
     right: 0,
     zIndex: 100,
     alignItems: "center",
+    backgroundColor: "transparent",
     position: "absolute",
   },
 

@@ -15,6 +15,7 @@ export const LIGHT_MODE_COLORS = {
   background: "#FFFFFF",
   light_blue: "#007AFF",
   destructive: "#FF3B30",
+  static_white: "#ffffff",
   transparent: "transparent",
   senary: "rgba(37, 41, 46, 0.2)", // hex text with opacity
   septenary: "rgba(37, 41, 46, 0.1)", // hex text with opacity
@@ -33,6 +34,7 @@ export const DARK_MODE_COLORS = {
   background: "#1A1B1F",
   light_blue: "#007AFF",
   destructive: "#FF3B30",
+  static_white: "#ffffff",
   transparent: "transparent",
   senary: "rgba(255, 255, 255, 0.2)", // hex white with opacity
   septenary: "rgba(255, 255, 255, 0.1)", // hex white with opacity

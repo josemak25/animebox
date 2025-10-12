@@ -5,6 +5,6 @@ import BookmarkScreen from "../bookmark";
 describe("BookmarkScreen", () => {
   it("renders the Bookmarks title", () => {
     const { getByText } = renderWithProviders(<BookmarkScreen />);
-    expect(getByText("Bookmarks")).toBeTruthy();
+    expect(getByText("My Bookmarks")).toBeTruthy();
   });
 });
