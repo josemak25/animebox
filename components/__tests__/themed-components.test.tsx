@@ -1,15 +1,9 @@
-import { render } from "@testing-library/react-native";
-import React from "react";
-
 import { ThemedText, ThemedView } from "@/components/themed-components";
-import { Providers } from "@/providers";
-
-const renderWithProviders = (ui: React.ReactElement) =>
-  render(<Providers>{ui}</Providers>);
+import { renderWithTheme } from "@/jest.utils";
 
 describe("Themed components", () => {
   it("renders ThemedText with variants and colors", () => {
-    const { getByText } = renderWithProviders(
+    const { getByText } = renderWithTheme(
       <ThemedText variant="title">Hello World</ThemedText>
     );
 
@@ -18,7 +12,7 @@ describe("Themed components", () => {
   });
 
   it("renders ThemedView with background color", () => {
-    const { getByText } = renderWithProviders(
+    const { getByText } = renderWithTheme(
       <ThemedView backgroundColor="background">
         <ThemedText>Inside</ThemedText>
       </ThemedView>

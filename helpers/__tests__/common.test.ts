@@ -1,10 +1,10 @@
 import {
-  deepClone,
+  noop,
+  omit,
   isEmpty,
   isFunction,
   isNotNullish,
-  noop,
-  safeGet,
+  isDeepEqual,
 } from "../common";
 
 describe("Common Utilities", () => {
@@ -43,99 +43,6 @@ describe("Common Utilities", () => {
     });
   });
 
-  describe("deepClone", () => {
-    it("should clone primitive values", () => {
-      expect(deepClone("hello")).toBe("hello");
-      expect(deepClone(42)).toBe(42);
-      expect(deepClone(true)).toBe(true);
-      expect(deepClone(null)).toBe(null);
-      expect(deepClone(undefined)).toBe(undefined);
-    });
-
-    it("should clone dates", () => {
-      const date = new Date("2023-12-25");
-      const cloned = deepClone(date);
-      expect(cloned).toEqual(date);
-      expect(cloned).not.toBe(date);
-    });
-
-    it("should clone arrays", () => {
-      const arr = [1, 2, [3, 4], { a: 5 }];
-      const cloned = deepClone(arr);
-      expect(cloned).toEqual(arr);
-      expect(cloned).not.toBe(arr);
-      expect(cloned[2]).not.toBe(arr[2]);
-      expect(cloned[3]).not.toBe(arr[3]);
-    });
-
-    it("should clone objects", () => {
-      const obj = {
-        name: "test",
-        nested: { value: 42 },
-        items: [1, 2, 3],
-      };
-      const cloned = deepClone(obj);
-      expect(cloned).toEqual(obj);
-      expect(cloned).not.toBe(obj);
-      expect(cloned.nested).not.toBe(obj.nested);
-      expect(cloned.items).not.toBe(obj.items);
-    });
-
-    it("should handle circular references gracefully", () => {
-      const obj: { name: string; self?: unknown } = { name: "test" };
-      obj.self = obj;
-      // This would cause infinite recursion, so we expect the function to handle it
-      // Note: Our current implementation doesn't handle circular refs, so this test documents the limitation
-      expect(() => deepClone(obj)).toThrow();
-    });
-  });
-
-  describe("safeGet", () => {
-    const testObj = {
-      user: {
-        profile: {
-          name: "John",
-          age: 30,
-        },
-        preferences: {
-          theme: "dark",
-        },
-      },
-      items: [1, 2, 3],
-    };
-
-    it("should get nested properties safely", () => {
-      expect(safeGet(testObj, "user.profile.name")).toBe("John");
-      expect(safeGet(testObj, "user.profile.age")).toBe(30);
-      expect(safeGet(testObj, "user.preferences.theme")).toBe("dark");
-    });
-
-    it("should return undefined for non-existent paths", () => {
-      expect(safeGet(testObj, "user.profile.email")).toBeUndefined();
-      expect(safeGet(testObj, "nonexistent.path")).toBeUndefined();
-    });
-
-    it("should return default value when path doesn't exist", () => {
-      expect(safeGet(testObj, "user.profile.email", "default@email.com")).toBe(
-        "default@email.com"
-      );
-      expect(safeGet(testObj, "nonexistent.path", "default")).toBe("default");
-    });
-
-    it("should handle null/undefined objects", () => {
-      expect(safeGet(null, "some.path", "default")).toBe("default");
-      expect(safeGet(undefined, "some.path", "default")).toBe("default");
-    });
-
-    it("should handle single-level properties", () => {
-      expect(safeGet(testObj, "items")).toEqual([1, 2, 3]);
-    });
-
-    it("should handle empty path", () => {
-      expect(safeGet(testObj, "")).toBeUndefined();
-    });
-  });
-
   describe("isFunction", () => {
     it("should return true for functions", () => {
       expect(isFunction(() => {})).toBe(true);
@@ -164,6 +71,39 @@ describe("Common Utilities", () => {
 
     it("should not throw when called", () => {
       expect(() => noop()).not.toThrow();
+    });
+  });
+
+  describe("isDeepEqual", () => {
+    it("should return true for deeply equal objects", () => {
+      expect(isDeepEqual({ a: 1, b: { c: 2 } }, { a: 1, b: { c: 2 } })).toBe(
+        true
+      );
+      expect(isDeepEqual([1, 2, 3], [1, 2, 3])).toBe(true);
+      expect(isDeepEqual(42, 42)).toBe(true);
+      expect(isDeepEqual("test", "test")).toBe(true);
+    });
+
+    it("should return false for different objects", () => {
+      expect(isDeepEqual({ a: 1 }, { a: 1, b: 2 })).toBe(false);
+      expect(isDeepEqual({ a: 1 }, { a: 2 })).toBe(false);
+      expect(isDeepEqual([1, 2], [2, 1])).toBe(false);
+      expect(isDeepEqual(null, undefined)).toBe(false);
+      expect(isDeepEqual([1, 2, 3], [1, 2])).toBe(false);
+    });
+  });
+
+  describe("omit", () => {
+    it("should omit a single key from an object", () => {
+      expect(omit({ a: 1, b: 2, c: 3 }, "b")).toEqual({ a: 1, c: 3 });
+    });
+
+    it("should omit multiple keys from an object", () => {
+      expect(omit({ a: 1, b: 2, c: 3 }, ["b", "c"])).toEqual({ a: 1 });
+    });
+
+    it("should handle empty keys array", () => {
+      expect(omit({ a: 1, b: 2 }, [])).toEqual({ a: 1, b: 2 });
     });
   });
 });

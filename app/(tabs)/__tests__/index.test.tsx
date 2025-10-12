@@ -1,18 +1,14 @@
-import { render, waitFor } from "@testing-library/react-native";
-import React from "react";
+import { waitFor } from "@testing-library/react-native";
 
-import { Providers } from "@/providers";
+import { renderWithProviders } from "@/jest.utils";
 
 import HomeScreen from "../index";
 
-const renderWithTheme = (ui: React.ReactElement) =>
-  render(<Providers>{ui}</Providers>);
-
 describe("HomeScreen", () => {
   it("renders the Home title", async () => {
-    const { getByText } = renderWithTheme(<HomeScreen />);
+    const { getByText } = renderWithProviders(<HomeScreen />);
     await waitFor(() => {
-      expect(getByText("Home")).toBeTruthy();
+      expect(getByText(/Home/)).toBeTruthy();
     });
   });
 });
