@@ -1,5 +1,3 @@
-// __mocks__/react-native-cheerio.ts
-
 /**
  * Jest mock for the `react-native-cheerio` module.
  * Provides a type-safe, overload-compatible Cheerio API for unit testing.
