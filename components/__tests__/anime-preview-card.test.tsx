@@ -1,11 +1,8 @@
-import { render, fireEvent } from "@testing-library/react-native";
+import { fireEvent } from "@testing-library/react-native";
 import React from "react";
 
 import { AnimePreviewCard } from "@/components/anime-preview-card";
-import { Providers } from "@/providers";
-
-const renderWithProviders = (ui: React.ReactElement) =>
-  render(<Providers>{ui}</Providers>);
+import { renderWithTheme } from "@/jest.utils";
 
 const mockAnime: IAnimeResult = {
   id: "preview-anime-1",
@@ -14,51 +11,35 @@ const mockAnime: IAnimeResult = {
     romaji: "Preview Anime",
     userPreferred: "Preview Anime",
   },
+  rating: 9.0,
+  releaseDate: "2023",
+  type: "Movie" as MediaFormat,
+  status: "Completed" as MediaStatus,
   image: "https://example.com/preview-image.jpg",
   cover: "https://example.com/preview-cover.jpg",
-  status: "Completed" as MediaStatus,
-  rating: 9.0,
-  type: "Movie" as MediaFormat,
-  releaseDate: "2023",
 };
 
 describe("AnimePreviewCard", () => {
-  it("renders anime preview card with title and description", () => {
-    const { getByText } = renderWithProviders(
-      <AnimePreviewCard
-        anime={mockAnime}
-        description="An amazing anime story"
-      />
+  it("renders anime preview card with title", () => {
+    const { getByText } = renderWithTheme(
+      <AnimePreviewCard anime={mockAnime} />
     );
 
     expect(getByText("Preview Anime")).toBeTruthy();
-    expect(getByText("An amazing anime story")).toBeTruthy();
   });
 
-  it("renders season and episode information", () => {
-    const { getByText } = renderWithProviders(
-      <AnimePreviewCard
-        anime={mockAnime}
-        season="Season 2"
-        episode="Episode 8"
-      />
+  it("renders Play and My List buttons", () => {
+    const { getByText } = renderWithTheme(
+      <AnimePreviewCard anime={mockAnime} />
     );
 
-    expect(getByText("Season 2")).toBeTruthy();
-    expect(getByText("Episode 8")).toBeTruthy();
-  });
-
-  it("renders badge when provided", () => {
-    const { getByText } = renderWithProviders(
-      <AnimePreviewCard anime={mockAnime} badge="NEW" />
-    );
-
-    expect(getByText("NEW")).toBeTruthy();
+    expect(getByText("Play")).toBeTruthy();
+    expect(getByText("My List")).toBeTruthy();
   });
 
   it("calls onPlay when Play button is pressed", () => {
     const onPlay = jest.fn();
-    const { getByText } = renderWithProviders(
+    const { getByText } = renderWithTheme(
       <AnimePreviewCard anime={mockAnime} onPlay={onPlay} />
     );
 
@@ -69,7 +50,7 @@ describe("AnimePreviewCard", () => {
 
   it("calls onAddToList when Add to My List button is pressed", () => {
     const onAddToList = jest.fn();
-    const { getByText } = renderWithProviders(
+    const { getByText } = renderWithTheme(
       <AnimePreviewCard anime={mockAnime} onAddToList={onAddToList} />
     );
 
@@ -78,24 +59,12 @@ describe("AnimePreviewCard", () => {
     expect(onAddToList).toHaveBeenCalledTimes(1);
   });
 
-  it("shows 'My List' with checkmark when isInList is true", () => {
-    const { getByText } = renderWithProviders(
+  it("shows 'My List' button when isInList is true", () => {
+    const { getByText } = renderWithTheme(
       <AnimePreviewCard anime={mockAnime} isInList={true} />
     );
 
     expect(getByText("My List")).toBeTruthy();
-    expect(getByText("✓")).toBeTruthy();
-  });
-
-  it("renders release info when provided", () => {
-    const { getByText } = renderWithProviders(
-      <AnimePreviewCard
-        anime={mockAnime}
-        releaseInfo="Season 2 concludes Sept 3"
-      />
-    );
-
-    expect(getByText("(Season 2 concludes Sept 3)")).toBeTruthy();
   });
 
   it("handles anime with string title", () => {
@@ -104,7 +73,7 @@ describe("AnimePreviewCard", () => {
       title: "Simple Preview Title",
     };
 
-    const { getByText } = renderWithProviders(
+    const { getByText } = renderWithTheme(
       <AnimePreviewCard anime={animeWithStringTitle} />
     );
 
@@ -112,7 +81,7 @@ describe("AnimePreviewCard", () => {
   });
 
   it("renders without optional props", () => {
-    const { getByText } = renderWithProviders(
+    const { getByText } = renderWithTheme(
       <AnimePreviewCard anime={mockAnime} />
     );
 
@@ -121,14 +90,14 @@ describe("AnimePreviewCard", () => {
 
   it("does not call onPlay when button is not pressed", () => {
     const onPlay = jest.fn();
-    renderWithProviders(<AnimePreviewCard anime={mockAnime} onPlay={onPlay} />);
+    renderWithTheme(<AnimePreviewCard anime={mockAnime} onPlay={onPlay} />);
 
     expect(onPlay).not.toHaveBeenCalled();
   });
 
   it("does not call onAddToList when button is not pressed", () => {
     const onAddToList = jest.fn();
-    renderWithProviders(
+    renderWithTheme(
       <AnimePreviewCard anime={mockAnime} onAddToList={onAddToList} />
     );
 

@@ -63,6 +63,7 @@ const BounceableComponent: React.FC<PropsWithChildren<BounceableProps>> = ({
     onPressOut: animatedOnPressOut,
   } = useBounceable(animationProps);
 
+  /** Memoized animated component to avoid re-creation on each render */
   const AnimatedComponent = useMemo(() => {
     // Type-safe creation of animated component
     return Animated.createAnimatedComponent(
@@ -72,6 +73,7 @@ const BounceableComponent: React.FC<PropsWithChildren<BounceableProps>> = ({
     );
   }, [createAnimatedComponent]);
 
+  /** Handle press event with haptics */
   const handlePress: typeof onPress = (e) => {
     if (isWithHaptics) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -80,6 +82,7 @@ const BounceableComponent: React.FC<PropsWithChildren<BounceableProps>> = ({
     onPress?.(e);
   };
 
+  /** Handle press-in event with bounce animation */
   const handlePressIn: typeof onPressIn = (e) => {
     if (isBounceable) {
       animatedOnPressIn();
@@ -88,6 +91,7 @@ const BounceableComponent: React.FC<PropsWithChildren<BounceableProps>> = ({
     onPressIn?.(e);
   };
 
+  /** Handle press-out event with bounce animation */
   const handlePressOut: typeof onPressOut = (e) => {
     if (isBounceable) {
       animatedOnPressOut();
