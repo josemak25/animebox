@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, ViewStyle, TextStyle, ImageStyle } from "react-native";
+import { Image, ViewStyle } from "react-native";
 
 import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
@@ -69,18 +69,14 @@ export const DownloadCard: React.FC<DownloadCardProps> = ({
       style={styles.cardContainer}
       accessibilityLabel={`Open ${title}`}
     >
-      {/* ✅ If it's a seasonal show, display layered stack with depth */}
       {seasonal ? (
         <ThemedView style={styles.stackWrapper}>
-          {/* Background layers to simulate stacked cards */}
           <ThemedView style={[styles.stackLayer, styles.layer3]} />
           <ThemedView style={[styles.stackLayer, styles.layer2]} />
 
-          {/* Top visible layer (main image + progress bar) */}
           <ThemedView style={styles.topLayer}>
             <Image source={{ uri: image }} style={styles.cardImage} />
 
-            {/* ✅ Netflix-style progress bar */}
             <ThemedView style={styles.progressContainer}>
               <ThemedView
                 style={[styles.progressBar, { width: `${progress * 100}%` }]}
@@ -89,11 +85,9 @@ export const DownloadCard: React.FC<DownloadCardProps> = ({
           </ThemedView>
         </ThemedView>
       ) : (
-        /* 🟩 Non-seasonal: flat single-layer image */
         <ThemedView style={styles.imageWrapper}>
           <Image source={{ uri: image }} style={styles.cardImage} />
 
-          {/* Progress bar for non-seasonal titles */}
           <ThemedView style={styles.progressContainer}>
             <ThemedView
               style={[styles.progressBar, { width: `${progress * 100}%` }]}
@@ -102,22 +96,18 @@ export const DownloadCard: React.FC<DownloadCardProps> = ({
         </ThemedView>
       )}
 
-      {/* 📄 Text information: title, subtitle, status */}
       <ThemedView style={styles.cardInfo}>
         <ThemedText style={styles.cardTitle}>{title}</ThemedText>
 
-        {/* Subtitle (e.g., "1 Episode", "18+") */}
         {subtitle && (
           <ThemedText style={styles.cardSubtitle}>{subtitle}</ThemedText>
         )}
 
-        {/* Error or status message */}
         {status ? (
           <ThemedText style={styles.cardStatus}>{status}</ThemedText>
         ) : null}
       </ThemedView>
 
-      {/* 🎬 Conditional icon - ▶ for playable / > for multi-season */}
       {hasError && (
         <ThemedText style={styles.playIcon}>{seasonal ? ">" : "▶"}</ThemedText>
       )}
@@ -140,7 +130,7 @@ const useStyles = withThemeStyles(({ palette, s, vs, ms }) => ({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: vs(20),
-  } as ViewStyle,
+  },
 
   /** Thumbnail image styling */
   cardImage: {
@@ -148,7 +138,7 @@ const useStyles = withThemeStyles(({ palette, s, vs, ms }) => ({
     height: "100%",
     borderRadius: ms(6),
     backgroundColor: "#333",
-  } as ImageStyle,
+  },
 
   /** Container holding the progress bar (transparent background) */
   progressContainer: {
@@ -161,40 +151,40 @@ const useStyles = withThemeStyles(({ palette, s, vs, ms }) => ({
     borderBottomLeftRadius: ms(6),
     borderBottomRightRadius: ms(6),
     overflow: "hidden",
-  } as ViewStyle,
+  },
 
   /** Filled portion of the progress bar */
   progressBar: {
     height: "100%",
     backgroundColor: "#e50914", // Netflix red
-  } as ViewStyle,
+  },
 
   /** Wrapper for single flat image (non-seasonal) */
   imageWrapper: {
     position: "relative",
     width: s(90),
     height: vs(60),
-  } as ViewStyle,
+  },
 
   /** Info section next to the image (text content) */
   cardInfo: {
     flex: 1,
     marginLeft: s(12),
-  } as ViewStyle,
+  },
 
   /** Title text styling */
   cardTitle: {
     fontSize: ms(16),
     fontWeight: "600",
     color: palette.text,
-  } as TextStyle,
+  },
 
   /** Subtitle text styling */
   cardSubtitle: {
     fontSize: ms(13),
     color: palette.text,
     marginTop: vs(2),
-  } as TextStyle,
+  },
 
   /** Status or error message text */
   cardStatus: {
@@ -202,14 +192,14 @@ const useStyles = withThemeStyles(({ palette, s, vs, ms }) => ({
     color: "#e74c3c",
     marginTop: vs(2),
     fontWeight: "500",
-  } as TextStyle,
+  },
 
   /** Play or navigation icon styling */
   playIcon: {
     fontSize: ms(20),
     color: palette.text,
     marginRight: s(8),
-  } as TextStyle,
+  },
 
   // --- Layered Card Stack Styles for Seasonal Cards ---
 
@@ -218,7 +208,7 @@ const useStyles = withThemeStyles(({ palette, s, vs, ms }) => ({
     width: s(90),
     height: vs(60),
     position: "relative",
-  } as ViewStyle,
+  },
 
   /** Base style for background layers */
   stackLayer: {
@@ -227,7 +217,7 @@ const useStyles = withThemeStyles(({ palette, s, vs, ms }) => ({
     height: "100%",
     borderRadius: ms(6),
     backgroundColor: "#444",
-  } as ViewStyle,
+  },
 
   /** Middle background layer offset slightly */
   layer2: {
@@ -241,7 +231,7 @@ const useStyles = withThemeStyles(({ palette, s, vs, ms }) => ({
     top: 8,
     right: 8,
     backgroundColor: "#666",
-  } as ViewStyle,
+  },
 
   /** Top layer (main visible image + progress) */
   topLayer: {
@@ -252,5 +242,5 @@ const useStyles = withThemeStyles(({ palette, s, vs, ms }) => ({
     height: "100%",
     borderRadius: ms(6),
     overflow: "hidden",
-  } as ViewStyle,
+  },
 }));
