@@ -33,7 +33,7 @@ export function ThemedText({
   variant = "default",
   ...rest
 }: ThemedTextProps) {
-  const { styles, palette, ms } = useStyles();
+  const { ms, fonts, layout, styles, palette } = useStyles();
 
   const textStyles: Record<
     NonNullable<ThemedTextProps["variant"]>,
@@ -41,28 +41,30 @@ export function ThemedText({
   > = useMemo(
     () => ({
       /** Styles for the muted variant */
-      muted: { fontSize: ms(16), color: palette[color || "text"] },
+      muted: { fontSize: ms(layout.gutter), color: palette[color || "text"] },
       /** Styles for the default variant */
-      default: { fontSize: ms(16), color: palette[color || "text"] },
+      default: { fontSize: ms(layout.gutter), color: palette[color || "text"] },
       /** Styles for the caption variant */
       caption: { fontSize: ms(14), color: palette[color || "quaternary"] },
       /** Styles for the title variant */
       title: {
         fontSize: ms(24),
-        fontWeight: "bold",
+        fontWeight: "700",
         color: palette[color || "text"],
+        fontFamily: fonts.variants.Inter700Bold,
       },
       /** Styles for the subtitle variant */
       subtitle: {
         fontSize: ms(18),
-        fontWeight: "600",
+        fontWeight: "500",
         color: palette[color || "text"],
+        fontFamily: fonts.variants.Inter500Medium,
       },
     }),
-    [color, ms, palette]
+    [ms, layout.gutter, palette, color, fonts.variants]
   );
 
-  return <RNText style={[textStyles[variant], styles.text, style]} {...rest} />;
+  return <RNText style={[styles.text, textStyles[variant], style]} {...rest} />;
 }
 
 /**
@@ -93,6 +95,6 @@ export function ThemedView({
 const useStyles = withThemeStyles(({ fonts }) => ({
   /** Common text styles for ThemedText */
   text: {
-    fontFamily: fonts.variants.spaceMonoRegular,
+    fontFamily: fonts.variants.Inter400Regular,
   },
 }));

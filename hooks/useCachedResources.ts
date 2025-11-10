@@ -1,5 +1,13 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useFonts } from "expo-font";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Inter_300Light } from "@expo-google-fonts/inter/300Light";
+import { Inter_400Regular } from "@expo-google-fonts/inter/400Regular";
+import { Inter_500Medium } from "@expo-google-fonts/inter/500Medium";
+import { Inter_600SemiBold } from "@expo-google-fonts/inter/600SemiBold";
+import { Inter_700Bold } from "@expo-google-fonts/inter/700Bold";
+import { Inter_800ExtraBold } from "@expo-google-fonts/inter/800ExtraBold";
+import { Inter_900Black } from "@expo-google-fonts/inter/900Black";
+import { useFonts } from "@expo-google-fonts/inter/useFonts";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect } from "react";
 
@@ -43,8 +51,15 @@ export const useCachedResources = () => {
 
   // Load fonts asynchronously
   const [isLoaded] = useFonts({
-    [FONTS.spaceMonoRegular]: require("../assets/fonts/SpaceMono-Regular.ttf"),
-    ...FontAwesome.font,
+    [FONTS.Inter300Light]: Inter_300Light,
+    [FONTS.Inter400Regular]: Inter_400Regular,
+    [FONTS.Inter500Medium]: Inter_500Medium,
+    [FONTS.Inter600SemiBold]: Inter_600SemiBold,
+    [FONTS.Inter700Bold]: Inter_700Bold,
+    [FONTS.Inter800ExtraBold]: Inter_800ExtraBold,
+    [FONTS.Inter900Black]: Inter_900Black,
+    ...FontAwesome.font, // Load FontAwesome icons
+    ...Ionicons.font, // Load Ionicons icons
   });
 
   /**

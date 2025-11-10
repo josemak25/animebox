@@ -1,16 +1,17 @@
+import { useFonts } from "@expo-google-fonts/inter/useFonts";
 import { renderHook } from "@testing-library/react-hooks";
-import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
 import { useCachedResources } from "../useCachedResources";
 import { useMigrations } from "../useMigrations";
 
+// Mock useMigrations locally (not in global setup)
 jest.mock("../useMigrations", () => ({
   useMigrations: jest.fn(),
 }));
 
-const mockedUseFonts = useFonts as jest.Mock;
 const mockedUseMigrations = useMigrations as jest.Mock;
+const mockUseFonts = useFonts as jest.Mock;
 
 describe("useCachedResources", () => {
   beforeEach(() => {
@@ -18,7 +19,7 @@ describe("useCachedResources", () => {
   });
 
   it("returns appIsReady true when fonts and migrations are ready", async () => {
-    mockedUseFonts.mockReturnValue([true]);
+    mockUseFonts.mockReturnValue([true]);
     mockedUseMigrations.mockReturnValue({ success: true, error: null });
     const { result } = renderHook(() => useCachedResources());
     expect(result.current.appIsReady).toBe(true);
@@ -26,21 +27,21 @@ describe("useCachedResources", () => {
   });
 
   it("returns appIsReady false if fonts are not loaded", () => {
-    mockedUseFonts.mockReturnValue([false]);
+    mockUseFonts.mockReturnValue([false]);
     mockedUseMigrations.mockReturnValue({ success: true, error: null });
     const { result } = renderHook(() => useCachedResources());
     expect(result.current.appIsReady).toBe(false);
   });
 
   it("returns appIsReady false if migrations are not successful", () => {
-    mockedUseFonts.mockReturnValue([true]);
+    mockUseFonts.mockReturnValue([true]);
     mockedUseMigrations.mockReturnValue({ success: false, error: null });
     const { result } = renderHook(() => useCachedResources());
     expect(result.current.appIsReady).toBe(false);
   });
 
   it("returns error if migrations error exists", () => {
-    mockedUseFonts.mockReturnValue([true]);
+    mockUseFonts.mockReturnValue([true]);
     mockedUseMigrations.mockReturnValue({
       success: false,
       error: new Error("Migration failed"),
@@ -50,7 +51,7 @@ describe("useCachedResources", () => {
   });
 
   it("calls SplashScreen.hideAsync when fonts are loaded", async () => {
-    mockedUseFonts.mockReturnValue([true]);
+    mockUseFonts.mockReturnValue([true]);
     mockedUseMigrations.mockReturnValue({ success: true, error: null });
     renderHook(() => useCachedResources());
     expect(SplashScreen.hideAsync).toHaveBeenCalled();

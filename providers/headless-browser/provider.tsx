@@ -22,7 +22,7 @@ const INJECTED_JAVASCRIPT = `
   (function() {
     setTimeout(function() {
       window.ReactNativeWebView.postMessage(document.documentElement.innerHTML);
-    }, 500);
+    }, 1000);
   })();
   true;
   `;
@@ -87,6 +87,11 @@ export const HeadlessBrowserProvider: React.FC<PropsWithChildren> = ({
   const isLoading = status === "loading";
   const isSuccess = status === "success";
 
+  /**
+   * Loads a web page by URL, utilizing caching to avoid redundant network requests.
+   * If the cached content is still fresh (not stale), it will use the cached version.
+   * Otherwise, it will load the page in the WebView and update the cache accordingly.
+   */
   const loadPage = React.useCallback(
     async (
       params: Parameters<IHeadlessBrowser["loadPage"]>[number] &
@@ -130,6 +135,10 @@ export const HeadlessBrowserProvider: React.FC<PropsWithChildren> = ({
     []
   );
 
+  /**
+   * Handles messages received from the WebView.
+   * Extracts HTML content and updates cache if content has changed.
+   */
   const onMessage = async (e: WebViewMessageEvent) => {
     // Cache the HTML content
     const html = e.nativeEvent.data;
@@ -170,6 +179,10 @@ export const HeadlessBrowserProvider: React.FC<PropsWithChildren> = ({
     tempCacheRef.current[url as string] = null;
   };
 
+  /**
+   * Memoized context value to optimize re-renders.
+   * Updates only when relevant state variables change.
+   */
   const value: IHeadlessBrowser = useMemo(
     () => ({
       error,
@@ -211,7 +224,12 @@ export const HeadlessBrowserProvider: React.FC<PropsWithChildren> = ({
   );
 };
 
+/**
+ * Provides themed styles for the HeadlessBrowser.
+ * Uses withThemeStyles HOC for theme integration.
+ */
 const useStyles = withThemeStyles(() => ({
+  /** Invisible container for the WebView */
   container: {
     width: 0,
     height: 0,

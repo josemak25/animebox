@@ -1,42 +1,16 @@
-import React, { useMemo } from "react";
-import {
-  Text,
-  ImageBackground,
-  ViewStyle,
-  TextStyle,
-  ImageStyle,
-} from "react-native";
-import Svg, {
-  Defs,
-  Stop,
-  Rect,
-  LinearGradient as SVGLinearGradient,
-} from "react-native-svg";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { ImageBackground } from "expo-image";
+import { useMemo } from "react";
 
 import { Bounceable } from "@/components/bounceable";
 import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
+
 interface AnimePreviewCardProps {
   /**
    * Anime data object containing title, image, and other details
    */
   anime: IAnimeResult;
-  /**
-   * Season information (e.g., "Season 2")
-   */
-  season?: string;
-  /**
-   * Episode information (e.g., "Episode 8" or "Season 2 concludes Sept 3")
-   */
-  episode?: string;
-  /**
-   * Release or status information
-   */
-  releaseInfo?: string;
-  /**
-   * Optional short description or tagline
-   */
-  description?: string;
   /**
    * Callback when Play button is pressed
    */
@@ -49,14 +23,6 @@ interface AnimePreviewCardProps {
    * Whether the anime is already in the user's list
    */
   isInList?: boolean;
-  /**
-   * Optional badge text (e.g., "NEW", "TRENDING")
-   */
-  badge?: string;
-  /**
-   * Custom style for the card container
-   */
-  style?: ViewStyle;
 }
 
 /**
@@ -85,23 +51,15 @@ interface AnimePreviewCardProps {
  */
 export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
   anime,
-  season,
-  episode,
-  releaseInfo,
-  description,
   onPlay,
   onAddToList,
   isInList = false,
-  badge,
-  style,
 }) => {
-  const { styles } = useStyles();
+  const { mvs, colors, layout, styles } = useStyles();
 
-  // Extract title from anime object
   const title = useMemo(() => {
-    if (typeof anime.title === "string") {
-      return anime.title;
-    }
+    if (typeof anime.title === "string") return anime.title;
+
     return (
       anime.title?.english ||
       anime.title?.romaji ||
@@ -110,323 +68,125 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
     );
   }, [anime.title]);
 
-  // Image source with fallback
-  const imageSource = useMemo(() => {
-    return anime.image || anime.cover || "";
-  }, [anime.image, anime.cover]);
-
   return (
-    <ThemedView style={[styles.container, style]}>
+    <Bounceable style={styles.container}>
       <ImageBackground
-        source={{ uri: imageSource }}
+        contentFit="cover"
         style={styles.imageBackground}
-        resizeMode="cover"
         accessibilityLabel={`${title} poster`}
+        source={{ uri: anime.image || anime.cover || "" }}
       >
-        {/* Gradient overlay starting from the middle, darkening toward bottom */}
-        <ThemedView backgroundColor="transparent" style={styles.overlay}>
-          <Svg width="100%" height="100%">
-            <Defs>
-              <SVGLinearGradient id="overlayGrad" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor="#000" stopOpacity={0} />
-                <Stop offset="1" stopColor="#000" stopOpacity={1} />
-              </SVGLinearGradient>
-            </Defs>
-            <Rect
-              x="0"
-              y="0"
-              width="100%"
-              height="100%"
-              fill="url(#overlayGrad)"
-            />
-          </Svg>
-        </ThemedView>
+        <ThemedText variant="title" style={styles.title}>
+          {title}
+        </ThemedText>
 
-        {/* Badge */}
-        {badge && (
-          <ThemedView style={styles.badge}>
-            <ThemedText style={styles.badgeText}>{badge}</ThemedText>
-          </ThemedView>
-        )}
-
-        {/* Content Container */}
         <ThemedView
           backgroundColor="transparent"
-          style={styles.contentContainer}
+          style={styles.actionContainer}
         >
-          {/* Series Label */}
-          {season && (
-            <ThemedView
-              style={styles.seriesLabel}
-              backgroundColor="transparent"
-            >
-              <ThemedText style={styles.seriesText}>SERIES</ThemedText>
-            </ThemedView>
-          )}
-
-          {/* Title */}
-          <ThemedText variant="title" style={styles.title}>
-            {title}
-          </ThemedText>
-
-          {/* Season and Episode Info */}
-          {(season || episode) && (
-            <ThemedView
-              backgroundColor="transparent"
-              style={styles.infoContainer}
-            >
-              {season && (
-                <ThemedText variant="subtitle" style={styles.season}>
-                  {season}
-                </ThemedText>
-              )}
-              {episode && (
-                <ThemedText variant="subtitle" style={styles.episode}>
-                  {episode}
-                </ThemedText>
-              )}
-            </ThemedView>
-          )}
-
-          {/* Description */}
-          {description && (
-            <ThemedText
-              variant="default"
-              style={styles.description}
-              //   color="quaternary"
-              numberOfLines={2}
-            >
-              {description}
+          <Bounceable
+            onPress={onPlay}
+            style={styles.button}
+            accessibilityLabel={`Play ${title}`}
+            accessibilityHint="Starts playing the anime"
+          >
+            <Ionicons
+              name="play"
+              size={mvs(layout.gutter)}
+              color={colors.light.black}
+            />
+            <ThemedText variant="subtitle" style={styles.playText}>
+              Play
             </ThemedText>
-          )}
+          </Bounceable>
 
-          {/* Release Info */}
-          {releaseInfo && (
+          <Bounceable
+            onPress={onAddToList}
+            style={[styles.button, styles.addToListButton]}
+            accessibilityLabel={
+              isInList
+                ? `Remove ${title} from list`
+                : `Add ${anime.title} to list`
+            }
+            accessibilityHint={
+              isInList ? "Removes from your list" : "Adds to your watch list"
+            }
+          >
+            <Ionicons
+              size={mvs(layout.gutter)}
+              color={colors.light.white}
+              name={isInList ? "checkmark" : "add"}
+            />
+
             <ThemedText
               variant="subtitle"
-              style={styles.releaseInfo}
-              //   color="quaternary"
+              style={[styles.playText, styles.addToListText]}
             >
-              ({releaseInfo})
+              My List
             </ThemedText>
-          )}
-
-          {/* Action Buttons */}
-          <ThemedView
-            backgroundColor="transparent"
-            style={styles.actionContainer}
-          >
-            {/* Play Button */}
-            <Bounceable
-              style={styles.playButton}
-              onPress={onPlay}
-              accessibilityLabel={`Play ${title}`}
-              accessibilityHint="Starts playing the anime"
-            >
-              <ThemedText style={styles.playIcon}>▶</ThemedText>
-              <ThemedText
-                variant="default"
-                style={styles.playText}
-                color="black"
-              >
-                Play
-              </ThemedText>
-            </Bounceable>
-
-            {/* Add to List Button */}
-            <Bounceable
-              style={styles.listButton}
-              onPress={onAddToList}
-              accessibilityLabel={
-                isInList ? `Remove ${title} from list` : `Add ${title} to list`
-              }
-              accessibilityHint={
-                isInList ? "Removes from your list" : "Adds to your watch list"
-              }
-            >
-              <ThemedText style={styles.listIcon}>
-                {isInList ? "✓" : "+"}
-              </ThemedText>
-              <ThemedText
-                variant="default"
-                style={styles.listText}
-                // color="white"
-              >
-                My List
-              </ThemedText>
-            </Bounceable>
-          </ThemedView>
+          </Bounceable>
         </ThemedView>
       </ImageBackground>
-    </ThemedView>
+    </Bounceable>
   );
 };
 
-const useStyles = withThemeStyles(({ palette, ms, s, vs, layout }) => ({
+const useStyles = withThemeStyles(({ palette, colors, ms, mvs, layout }) => ({
+  /** Card container with border and rounded corners */
   container: {
-    borderRadius: layout.radius * 2,
+    borderWidth: 1.5,
     overflow: "hidden",
-    borderWidth: 1,
     borderColor: palette.senary,
-    backgroundColor: palette.background,
-    shadowColor: palette.black,
-    shadowOffset: {
-      width: 0,
-      height: vs(4),
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: ms(6),
-    elevation: 8,
-  } as ViewStyle,
+    borderRadius: mvs(layout.radius),
+  },
 
+  /** Background image covering entire card */
   imageBackground: {
-    width: "100%",
-    height: vs(400),
     justifyContent: "flex-end",
-  } as ImageStyle,
+    gap: mvs(layout.gutter / 2),
+    padding: mvs(layout.gutter / 2),
+    height: mvs(layout.screen.width / 1.1),
+  },
 
-  overlay: {
-    position: "absolute",
-    top: vs(240),
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 0,
-    pointerEvents: "none",
-  } as ViewStyle,
-
-  badge: {
-    position: "absolute",
-    top: vs(16),
-    right: s(16),
-    backgroundColor: "#E50914",
-    paddingHorizontal: s(8),
-    paddingVertical: vs(4),
-    borderRadius: ms(4),
-  } as ViewStyle,
-
-  badgeText: {
-    fontSize: ms(12),
-    fontWeight: "bold",
-    letterSpacing: 0.5,
-    color: palette.static_white,
-  } as TextStyle,
-
-  contentContainer: {
-    padding: s(24),
-    paddingBottom: vs(16),
-    position: "relative",
-    zIndex: 1,
-  } as ViewStyle,
-
-  seriesLabel: {
-    marginBottom: vs(8),
-  } as ViewStyle,
-
-  seriesText: {
-    color: palette.static_white,
-    fontSize: ms(14),
-    fontWeight: "bold",
-    letterSpacing: 2,
-  } as TextStyle,
-
+  /** Title text styling */
   title: {
-    fontSize: ms(36),
-    fontWeight: "bold",
-    lineHeight: ms(44),
-    marginBottom: vs(2),
-    textShadowRadius: 2,
-    color: palette.static_white,
-    textShadowColor: "rgba(0, 0, 0, 0.7)",
-    textShadowOffset: { width: 1, height: 1 },
-  } as TextStyle,
+    fontSize: mvs(36),
+    lineHeight: mvs(44),
+    color: colors.light.white,
+  },
 
-  infoContainer: {
-    gap: s(8),
-    display: "flex",
-    marginBottom: vs(4),
-    alignItems: "center",
-    flexDirection: "row",
-    color: palette.static_white,
-  } as ViewStyle,
-
-  season: {
-    fontSize: ms(16),
-    fontWeight: "600",
-    marginBottom: vs(4),
-    color: palette.static_white,
-  } as TextStyle,
-
-  episode: {
-    opacity: 1,
-    fontSize: ms(14),
-    color: palette.static_white,
-  } as TextStyle,
-
-  description: {
-    fontSize: ms(14),
-    lineHeight: ms(20),
-    marginBottom: vs(8),
-    color: palette.static_white,
-  } as TextStyle,
-
-  releaseInfo: {
-    opacity: 1,
-    fontSize: ms(14),
-    textAlign: "center",
-    fontStyle: "italic",
-    marginBottom: vs(10),
-    color: palette.static_white,
-  } as TextStyle,
-
+  /** Container for action buttons */
   actionContainer: {
     flexDirection: "row",
-    gap: s(12),
-  } as ViewStyle,
+    gap: ms(layout.gutter / 2),
+  },
 
-  playButton: {
+  /** Common button styles */
+  button: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: palette.white,
-    paddingHorizontal: s(24),
-    paddingVertical: vs(6),
-    borderRadius: ms(6),
-    flex: 1,
     justifyContent: "center",
-  } as ViewStyle,
+    gap: ms(layout.gutter / 4),
+    backgroundColor: colors.light.white,
+    paddingHorizontal: ms(layout.gutter),
+    borderRadius: mvs(layout.radius / 2),
+    paddingVertical: mvs(layout.radius / 1.5),
+  },
 
-  playIcon: {
-    fontSize: ms(16),
-    color: palette.black,
-    marginRight: s(8),
-  } as TextStyle,
-
+  /** Play button text styling */
   playText: {
-    fontSize: ms(16),
-    fontWeight: "600",
-  } as TextStyle,
+    fontSize: ms(14),
+    color: colors.light.black,
+  },
 
-  listButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: palette.black,
-    paddingHorizontal: s(24),
-    paddingVertical: vs(6),
-    borderRadius: ms(6),
-    flex: 1,
-    justifyContent: "center",
-  } as ViewStyle,
+  /** Add to List button specific styles */
+  addToListButton: {
+    backgroundColor: colors.light.black,
+  },
 
-  listIcon: {
-    fontSize: ms(20),
-    color: palette.white,
-    marginRight: s(8),
-    fontWeight: "300",
-  } as TextStyle,
-
-  listText: {
-    fontSize: ms(16),
-    fontWeight: "400",
-    color: palette.white,
-  } as TextStyle,
+  /** Add to List button text styling */
+  addToListText: {
+    color: colors.light.white,
+  },
 }));
