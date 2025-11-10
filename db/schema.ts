@@ -5,7 +5,7 @@ import {
   sqliteTable,
 } from "drizzle-orm/sqlite-core";
 
-import { generateUUID } from "../helpers/uuid";
+import { generateUUID } from "@/helpers/uuid";
 
 /* ************************************************************************************** *
  * **************************                               ***************************** *

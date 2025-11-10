@@ -95,6 +95,7 @@ export const BottomNavigator: React.FC<BottomTabBarProps> = ({
   );
 };
 
+// Set display name for debugging
 BottomNavigator.displayName = "BottomNavigator";
 
 /**

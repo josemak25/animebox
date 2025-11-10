@@ -33,13 +33,16 @@ export default function NotFoundScreen() {
   );
 }
 
-const useStyles = withThemeStyles(({ ms, palette, layout }) => ({
+const useStyles = withThemeStyles(({ layout }) => ({
+  /** Container centers content vertically and horizontally */
   container: {
     flex: 1,
     alignItems: "center",
     padding: layout.gutter,
     justifyContent: "center",
   },
+
+  /** Link styling with top margin */
   link: {
     marginTop: layout.gutter,
     paddingVertical: layout.gutter,

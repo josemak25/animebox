@@ -1,11 +1,8 @@
-import { render, fireEvent } from "@testing-library/react-native";
+import { fireEvent } from "@testing-library/react-native";
 import React from "react";
 
 import { AnimeBookmarkCard } from "@/components/anime-bookmark-card";
-import { Providers } from "@/providers";
-
-const renderWithProviders = (ui: React.ReactElement) =>
-  render(<Providers>{ui}</Providers>);
+import { renderWithTheme } from "@/jest.utils";
 
 const mockAnime: IAnimeResult = {
   id: "test-anime-1",
@@ -24,7 +21,7 @@ const mockAnime: IAnimeResult = {
 
 describe("AnimeBookmarkCard", () => {
   it("renders anime card with title", () => {
-    const { getByText } = renderWithProviders(
+    const { getByText } = renderWithTheme(
       <AnimeBookmarkCard anime={mockAnime} />
     );
 
@@ -33,7 +30,7 @@ describe("AnimeBookmarkCard", () => {
 
   it("calls onPress when card is pressed", () => {
     const onPress = jest.fn();
-    const { getByText } = renderWithProviders(
+    const { getByText } = renderWithTheme(
       <AnimeBookmarkCard anime={mockAnime} onPress={onPress} />
     );
 
@@ -44,7 +41,7 @@ describe("AnimeBookmarkCard", () => {
 
   it("calls onBookmarkPress when bookmark button is pressed", () => {
     const onBookmarkPress = jest.fn();
-    const { getByLabelText } = renderWithProviders(
+    const { getByLabelText } = renderWithTheme(
       <AnimeBookmarkCard anime={mockAnime} onBookmarkPress={onBookmarkPress} />
     );
 
@@ -54,7 +51,7 @@ describe("AnimeBookmarkCard", () => {
   });
 
   it("renders without onPress callback", () => {
-    const { getByText } = renderWithProviders(
+    const { getByText } = renderWithTheme(
       <AnimeBookmarkCard anime={mockAnime} />
     );
 
@@ -67,7 +64,7 @@ describe("AnimeBookmarkCard", () => {
       title: "Simple Title",
     };
 
-    const { getByText } = renderWithProviders(
+    const { getByText } = renderWithTheme(
       <AnimeBookmarkCard anime={animeWithStringTitle} />
     );
 

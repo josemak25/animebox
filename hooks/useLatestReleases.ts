@@ -20,6 +20,11 @@ export function useLatestReleases(options = {}) {
     const parser = new HeaderLessParser();
     const collection = parser.fetchLatestReleases(h);
 
+    // If no data, skip processing
+    if (!collection?.data?.length) {
+      return;
+    }
+
     // Insert each batch into the DB, upserting on title conflict
     await db
       .insert(schema.animes)

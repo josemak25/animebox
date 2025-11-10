@@ -1,9 +1,11 @@
-import React from "react";
-import { ScrollView, View } from "react-native";
+import React, { useCallback } from "react";
+import { ActivityIndicator, FlatList, ListRenderItem } from "react-native";
 
 import { AnimePreviewCard } from "@/components/anime-preview-card";
+import { Bounceable } from "@/components/bounceable";
 import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
+import { useLatestReleases } from "@/hooks/useLatestReleases";
 
 /**
  * Sample anime data for testing and demonstration purposes.
@@ -14,11 +16,7 @@ import { withThemeStyles } from "@/helpers/withThemeStyles";
  */
 const sampleAnime = {
   id: "wednesday-2022",
-  title: {
-    english: "Wednesday",
-    romaji: "Wednesday",
-    userPreferred: "Wednesday",
-  },
+  title: "Wednesday",
   image: "https://image.tmdb.org/t/p/w500/9PFonBhy4cQy7Jz20NpMygczOkv.jpg",
   cover:
     "https://image.tmdb.org/t/p/w1920_and_h800_multi_faces/iHSwvRVsRyxpX7FE7GbviaDvgGZ.jpg",
@@ -28,151 +26,141 @@ const sampleAnime = {
   releaseDate: "2022",
 };
 
-/**
- * HomeScreen - Main landing page of the anime streaming application.
- *
- * This is the primary discovery interface where users first interact with
- * the app's content. Currently features a single featured anime card with
- * Netflix-inspired design patterns.
- *
- * Key features:
- * - Featured anime preview with rich metadata display
- * - Play and "My List" action buttons
- * - Scrollable content area for future content sections
- * - Responsive design with proper safe area handling
- * - Consistent theming throughout the interface
- *
- * Future enhancements could include:
- * - Multiple featured content sections
- * - Trending/popular anime carousels
- * - User personalized recommendations
- * - Continue watching section
- *
- * @returns {JSX.Element} The rendered home screen component
- */
 export default function HomeScreen() {
-  const { styles } = useStyles();
+  const { styles, palette } = useStyles();
+  const { error, isError, isLoading } = useLatestReleases();
 
-  /**
-   * Handles the play button press event.
-   * In production, this would initiate video playback,
-   * potentially navigating to a video player screen.
-   */
-  const handlePlay = () => {
-    // TODO: Implement play functionality
-    // - Navigate to video player
-    // - Track user engagement analytics
-    // - Handle offline/online playback logic
-  };
+  const renderItem: ListRenderItem<IAnimeResult> = useCallback(
+    ({ item }) => (
+      <AnimePreviewCard
+        anime={item}
+        isInList={false}
+        onPlay={() => {}}
+        onAddToList={() => {}}
+      />
+    ),
+    []
+  );
 
-  /**
-   * Handles the "My List" button press event.
-   * Manages adding/removing anime from user's personal watchlist.
-   * Should update local state and sync with backend storage.
-   */
-  const handleAddToList = () => {
-    // TODO: Implement add to list functionality
-    // - Toggle bookmark state in database
-    // - Update UI to reflect current state
-    // - Show confirmation feedback to user
-  };
+  /** Display loading indicator while fetching data */
+  if (isLoading) {
+    return (
+      <ThemedView style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="small" color={palette.text} />
+        <ThemedText variant="caption" style={styles.placeholder}>
+          Loading latest releases...
+        </ThemedText>
+      </ThemedView>
+    );
+  }
+
+  /** Display error message if data fetching fails */
+  if (isError) {
+    return (
+      <ThemedView style={[styles.container, styles.loadingContainer]}>
+        <ThemedText variant="caption" style={styles.placeholder}>
+          Error: {error?.message || "Failed to load latest releases."}
+        </ThemedText>
+
+        <Bounceable onPress={() => {}} style={styles.retryButton}>
+          <ThemedText variant="caption" style={styles.retryText}>
+            Try Again
+          </ThemedText>
+        </Bounceable>
+      </ThemedView>
+    );
+  }
 
   return (
     <ThemedView style={styles.container}>
-      {/* Main header with app title */}
-      <View style={styles.header}>
-        <ThemedText variant="title" style={styles.headerText}>
-          Home
-        </ThemedText>
-      </View>
-
-      {/* Scrollable content area for all home screen sections */}
-      <ScrollView
+      <FlatList
+        data={[]}
+        renderItem={renderItem}
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false} // Clean appearance without scroll indicator
-      >
-        {/* Featured anime card - Netflix-style hero section */}
-        <AnimePreviewCard
-          badge="New" // Promotional badge for new content
-          season="Season 2" // Current season information
-          episode="Episode 8" // Latest episode available
-          onPlay={handlePlay} // Primary action - start watching
-          style={styles.card} // Custom spacing and positioning
-          onAddToList={handleAddToList} // Secondary action - save for later
-          anime={sampleAnime as IAnimeResult} // Main anime data
-          isInList={false} // Current bookmark status
-          releaseInfo="Season 2 concludes Sept 3" // Release schedule info
-          description="Wednesday Addams is sent to Nevermore Academy, a boarding school where she attempts to master her psychic powers, stop a monstrous killing spree, and solve the murder mystery that embroiled her parents." // Plot synopsis
-        />
-        {/* Future sections could include:
-            - Continue Watching carousel
-            - Trending Now section
-            - Recommended for You
-            - New Releases grid
-        */}
-      </ScrollView>
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.contentContainerStyle}
+        ListHeaderComponentStyle={styles.headerComponentStyle}
+        ListHeaderComponent={
+          <AnimePreviewCard
+            isInList={false}
+            onPlay={() => {}}
+            onAddToList={() => {}}
+            anime={sampleAnime as IAnimeResult}
+          />
+        }
+      />
     </ThemedView>
   );
 }
 
+// Set display name for debugging
+HomeScreen.displayName = "HomeScreen";
+
 /**
- * Style definitions for the home screen using theme-aware styling.
- *
- * Leverages the withThemeStyles HOC for consistent theming and responsive
- * scaling across different device sizes. The layout prioritizes content
- * discovery with generous spacing and clear visual hierarchy.
- *
- * Key design principles:
- * - Mobile-first responsive design using scaling functions (s, vs, ms)
- * - Safe area handling for modern devices with notches/dynamic islands
- * - Consistent spacing system throughout the interface
- * - Theme-aware colors that adapt to light/dark modes
- *
- * Style categories:
- * - Layout: Container, scroll view, and content structure
- * - Header: Title and navigation area styling
- * - Content: Featured card and future section preparations
+ * Provides themed styles for the Home screen.
+ * Uses withThemeStyles HOC for theme integration.
  */
-const useStyles = withThemeStyles(({ palette, s, vs, ms, layout, insets }) => ({
-  container: {
-    flex: 1,
-    backgroundColor: palette.background,
-    paddingTop: insets.top + vs(12), // Safe area + additional top spacing
-  },
-  scrollView: {
-    flex: 1,
-    marginBottom: vs(24), // Bottom spacing for tab bar clearance
-  },
-  scrollContent: {
-    paddingBottom: vs(20), // Additional bottom padding for comfortable scrolling
-  },
-  header: {
-    paddingHorizontal: s(20), // Standard horizontal page margins
-    marginBottom: vs(16), // Separation between header and content
-  },
-  headerText: {
-    fontSize: ms(28), // Large, prominent title size
-    fontWeight: "bold", // Strong visual weight for primary heading
-    marginBottom: vs(4), // Minimal bottom spacing
-  },
-  card: {
-    marginHorizontal: s(20), // Consistent with header padding
-    marginBottom: vs(24), // Generous spacing below featured content
-  },
-  // Reserved styles for future content sections
-  section: {
-    paddingHorizontal: s(20), // Consistent horizontal alignment
-    paddingVertical: vs(16), // Vertical section spacing
-  },
-  sectionTitle: {
-    fontSize: ms(22), // Secondary heading size
-    fontWeight: "600", // Medium weight for section headers
-    marginBottom: vs(12), // Space before section content
-  },
-  placeholder: {
-    fontSize: ms(14), // Smaller text for placeholder content
-    textAlign: "center", // Centered alignment for empty states
-    paddingVertical: vs(20), // Vertical padding for placeholder spacing
-  },
-}));
+const useStyles = withThemeStyles(
+  ({ palette, layout, colors, mvs, ms, insets }) => ({
+    /* Overall container for the home screen */
+    container: {
+      flex: 1,
+      paddingTop: mvs(insets.top),
+      backgroundColor: palette.background,
+    },
+
+    /* Scrollable area for all home screen content */
+    scrollView: {
+      flex: 1,
+    },
+
+    /* Content container within the scroll view */
+    contentContainerStyle: {
+      flexGrow: 1,
+      paddingHorizontal: ms(layout.gutter),
+    },
+
+    /* Section container for future content areas */
+    section: {
+      paddingHorizontal: ms(20),
+      paddingVertical: mvs(layout.gutter),
+    },
+
+    /* Section title styling for headers */
+    sectionTitle: {
+      fontSize: ms(22),
+      fontWeight: "600",
+      marginBottom: mvs(12),
+    },
+
+    /* Placeholder text styling for empty states */
+    placeholder: {
+      textAlign: "center",
+      paddingVertical: mvs(20),
+    },
+
+    /* Header component styling with bottom margin */
+    headerComponentStyle: {
+      marginHorizontal: mvs(layout.gutter / 2),
+    },
+
+    /* Centered loading indicator container */
+    loadingContainer: {
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
+    /* Retry button text styling */
+    retryText: {
+      color: colors.light.white,
+    },
+
+    /* Retry button styling */
+    retryButton: {
+      backgroundColor: palette.light_blue,
+      borderRadius: ms(layout.gutter / 2),
+      paddingVertical: mvs(layout.gutter / 2),
+      paddingHorizontal: mvs(layout.gutter * 1.2),
+    },
+  })
+);
