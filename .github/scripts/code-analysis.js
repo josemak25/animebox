@@ -143,8 +143,17 @@ function analyzeCommonIssues({ content, file, analysis }) {
   const isMarkdown = file.filename.endsWith(".md");
   // Skip console check for this script itself to avoid false positives
   const isSelf = file.filename.includes("code-analysis");
+  // Skip console check for Jest setup file (uses console for test output suppression)
+  const isJestSetup =
+    file.filename === "jest.setup.ts" || file.filename === "jest.config.js";
 
-  if (!isMarkdown && !isWorkflowFile && !isOmittedExtension && !isSelf) {
+  if (
+    !isMarkdown &&
+    !isWorkflowFile &&
+    !isOmittedExtension &&
+    !isSelf &&
+    !isJestSetup
+  ) {
     const logger = ["console.log", "console.error", "console.warn"];
     if (logger.some((log) => content.includes(log))) {
       analysis.commonIssues.failed.push(

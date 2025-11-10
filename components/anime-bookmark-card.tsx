@@ -70,11 +70,7 @@ export const AnimeBookmarkCard: React.FC<AnimeBookmarkCardProps> = ({
   }, [anime.image, anime.cover]);
 
   return (
-    <Bounceable
-      // activeScale={0.95}
-      onPress={onPress}
-      style={[styles.container, style]}
-    >
+    <Bounceable onPress={onPress} style={[styles.container, style]}>
       <ThemedView style={styles.cardContainer}>
         <ImageBackground
           source={{ uri: imageSource }}
@@ -82,10 +78,8 @@ export const AnimeBookmarkCard: React.FC<AnimeBookmarkCardProps> = ({
           resizeMode="cover"
           accessibilityLabel={`${title} poster`}
         >
-          {/* Gradient overlay for title readability */}
           <ThemedView style={styles.overlay} />
 
-          {/* Title overlay at the bottom */}
           <ThemedView style={styles.titleContainer}>
             <ThemedText
               variant="caption"
@@ -96,7 +90,6 @@ export const AnimeBookmarkCard: React.FC<AnimeBookmarkCardProps> = ({
             </ThemedText>
           </ThemedView>
 
-          {/* Bookmark indicator */}
           <Pressable
             style={styles.bookmarkButton}
             onPress={onBookmarkPress}

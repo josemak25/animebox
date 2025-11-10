@@ -20,6 +20,18 @@ import * as RN from "react-native";
 import mockSafeAreaContext from "react-native-safe-area-context/jest/mock";
 
 /**
+ * Suppress console error and warning outputs during tests
+ * This helps keep test output clean and focused on test results
+ */
+beforeAll(() => {
+  const consoleFuncs = ["error", "warn"] as const;
+  // Suppress console.error output during tests
+  consoleFuncs.forEach((func) =>
+    jest.spyOn(console, func).mockImplementation(() => {})
+  );
+});
+
+/**
  * Mock expo-font to prevent font loading during tests
  * Returns true to simulate successful font loading
  */
