@@ -1,11 +1,11 @@
 import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { TouchableOpacity, Text } from "react-native";
 
+import { Bounceable } from "@/components/bounceable";
+import { ThemedText } from "@/components/themed-components";
+import { withThemeStyles } from "@/helpers/withThemeStyles";
 import { useCachedResources } from "@/hooks/useCachedResources";
 import { Providers } from "@/providers";
-
-import { withThemeStyles } from "../helpers/withThemeStyles";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -34,9 +34,9 @@ export default function RootLayout() {
             headerBackTitle: "",
             // ✅ Custom back arrow
             headerLeft: () => (
-              <TouchableOpacity onPress={() => router.back()}>
-                <Text style={styles.headerText}>‹</Text>
-              </TouchableOpacity>
+              <Bounceable onPress={() => router.back()}>
+                <ThemedText style={styles.headerText}>‹</ThemedText>
+              </Bounceable>
             ),
           }}
         />

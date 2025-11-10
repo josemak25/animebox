@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  View,
-  Image,
-  Text,
-  ViewStyle,
-  TextStyle,
-  ImageStyle,
-} from "react-native";
+import { Image, ViewStyle, TextStyle, ImageStyle } from "react-native";
 
 import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
@@ -125,7 +118,9 @@ export const DownloadCard: React.FC<DownloadCardProps> = ({
       </ThemedView>
 
       {/* 🎬 Conditional icon - ▶ for playable / > for multi-season */}
-      {hasError && <Text style={styles.playIcon}>{seasonal ? ">" : "▶"}</Text>}
+      {hasError && (
+        <ThemedText style={styles.playIcon}>{seasonal ? ">" : "▶"}</ThemedText>
+      )}
     </Bounceable>
   );
 };

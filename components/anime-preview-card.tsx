@@ -145,7 +145,7 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
         {/* Badge */}
         {badge && (
           <ThemedView style={styles.badge}>
-            <Text style={styles.badgeText}>{badge}</Text>
+            <ThemedText style={styles.badgeText}>{badge}</ThemedText>
           </ThemedView>
         )}
 
@@ -160,7 +160,7 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
               style={styles.seriesLabel}
               backgroundColor="transparent"
             >
-              <Text style={styles.seriesText}>SERIES</Text>
+              <ThemedText style={styles.seriesText}>SERIES</ThemedText>
             </ThemedView>
           )}
 
@@ -223,7 +223,7 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
               accessibilityLabel={`Play ${title}`}
               accessibilityHint="Starts playing the anime"
             >
-              <Text style={styles.playIcon}>▶</Text>
+              <ThemedText style={styles.playIcon}>▶</ThemedText>
               <ThemedText
                 variant="default"
                 style={styles.playText}
@@ -244,7 +244,9 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
                 isInList ? "Removes from your list" : "Adds to your watch list"
               }
             >
-              <Text style={styles.listIcon}>{isInList ? "✓" : "+"}</Text>
+              <ThemedText style={styles.listIcon}>
+                {isInList ? "✓" : "+"}
+              </ThemedText>
               <ThemedText
                 variant="default"
                 style={styles.listText}

@@ -1,11 +1,9 @@
-import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { FlatList, Image } from "react-native";
 
+import { Bounceable } from "@/components/bounceable";
 import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
-
-import { Bounceable } from "../components/bounceable";
 
 /**
  * Episode interface
@@ -81,9 +79,6 @@ const sampleEpisodes: Episode[] = [
  * - title: (optional) title of the show passed through navigation.
  */
 export default function SeasonalEpisodes() {
-  // Extract query params from the route
-  const { title } = useLocalSearchParams<{ title: string }>();
-
   const { styles } = useStyles();
 
   // Get current season number from first episode (fallback to 1)
@@ -147,7 +142,7 @@ export default function SeasonalEpisodes() {
  * Theme-aware styles using dynamic scaling (s, vs, ms) and palette colors.
  * Automatically adapts padding and colors to current theme context.
  */
-const useStyles = withThemeStyles(({ palette, insets, s, vs, ms, mvs }) => ({
+const useStyles = withThemeStyles(({ palette, s, vs, ms }) => ({
   /** Root container for the screen */
   container: {
     flex: 1,
