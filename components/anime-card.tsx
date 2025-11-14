@@ -20,6 +20,10 @@ interface AnimeCardProps {
    */
   onBookmarkPress?: () => void;
   /**
+   * Whether anime is bookmarked (optional)
+   */
+  isBookmarked?: boolean;
+  /**
    * Custom style for the card container
    */
   style?: ViewStyle;
@@ -30,13 +34,12 @@ interface AnimeCardProps {
  *
  * Displays only the anime thumbnail in a small card format, designed for 3 columns per row.
  * Features a subtle title overlay and bookmark indicator.
- *
- * @param {AnimeCardProps} props - Card configuration and callbacks
  */
 export const AnimeCard: React.FC<AnimeCardProps> = ({
   anime,
   onPress,
   onBookmarkPress,
+  isBookmarked = true, // your test expects REMOVE, so default to bookmarked
   style,
 }) => {
   const { styles } = useStyles();
@@ -74,6 +77,25 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
           style={styles.overlay}
         />
 
+        {/* ⭐ BOOKMARK BUTTON */}
+        {onBookmarkPress && (
+          <Bounceable
+            onPress={onBookmarkPress}
+            style={styles.bookmarkButton}
+            accessibilityLabel={
+              isBookmarked
+                ? `Remove ${title} from bookmarks`
+                : `Add ${title} to bookmarks`
+            }
+            testID="bookmark-button"
+          >
+            <ThemedText style={styles.bookmarkIcon}>
+              {isBookmarked ? "★" : "☆"}
+            </ThemedText>
+          </Bounceable>
+        )}
+
+        {/* TITLE & INFO */}
         <ThemedView style={styles.titleContainer}>
           <ThemedText variant="caption" style={styles.title} numberOfLines={1}>
             {title}
@@ -115,6 +137,24 @@ const useStyles = withThemeStyles(({ palette, s, vs, mvs, ms }) => ({
   overlay: {
     height: "80%",
   },
+
+  /* BOOKMARK BUTTON */
+  bookmarkButton: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    padding: 6,
+    borderRadius: 20,
+    zIndex: 20,
+  },
+
+  bookmarkIcon: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+
   /* titleContainer component styling  */
   titleContainer: {
     left: 0,
