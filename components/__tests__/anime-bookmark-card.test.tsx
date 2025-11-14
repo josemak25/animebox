@@ -1,7 +1,7 @@
 import { fireEvent } from "@testing-library/react-native";
 import React from "react";
 
-import { AnimeBookmarkCard } from "@/components/anime-bookmark-card";
+import { AnimeBookmarkCard } from "@/components/anime-card";
 import { renderWithTheme } from "@/jest.utils";
 
 const mockAnime: IAnimeResult = {

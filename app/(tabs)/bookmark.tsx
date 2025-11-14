@@ -2,7 +2,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import React from "react";
 import { FlatList, View, Alert } from "react-native";
 
-import { AnimeBookmarkCard } from "@/components/anime-bookmark-card";
+import { AnimeCard } from "@/components/anime-card";
 import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 
@@ -172,10 +172,10 @@ export default function BookmarkScreen() {
    *
    * @param {Object} props - Render item props from FlatList
    * @param {IAnimeResult} props.item - Anime data to render
-   * @returns {JSX.Element} Rendered AnimeBookmarkCard component
+   * @returns {JSX.Element} Rendered AnimeCard component
    */
   const renderAnimeCard = ({ item }: { item: IAnimeResult }) => (
-    <AnimeBookmarkCard anime={item} onPress={() => handleAnimePress(item)} />
+    <AnimeCard anime={item} onPress={() => handleAnimePress(item)} />
   );
 
   /**

@@ -13,7 +13,7 @@ import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 import { useLatestReleases } from "@/hooks/useLatestReleases";
 
-import { AnimeBookmarkCard } from "../../components/anime-bookmark-card";
+import { AnimeCard } from "../../components/anime-card";
 
 /**
  * Sample anime data for testing and demonstration purposes.
@@ -141,7 +141,7 @@ export default function HomeScreen() {
 
   const renderItem: ListRenderItem<IAnimeResult> = useCallback(
     ({ item }) => (
-      <AnimeBookmarkCard anime={item} onPress={() => handleAnimePress(item)} />
+      <AnimeCard anime={item} onPress={() => handleAnimePress(item)} />
     ),
     []
   );

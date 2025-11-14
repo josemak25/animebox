@@ -6,7 +6,7 @@ import { Bounceable } from "@/components/bounceable";
 import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 
-interface AnimeBookmarkCardProps {
+interface AnimeCardProps {
   /**
    * Anime data object containing title, image, and other details
    */
@@ -26,14 +26,14 @@ interface AnimeBookmarkCardProps {
 }
 
 /**
- * AnimeBookmarkCard - A compact anime card component for bookmark grid display.
+ * AnimeCard - A compact anime card component for bookmark grid display.
  *
  * Displays only the anime thumbnail in a small card format, designed for 3 columns per row.
  * Features a subtle title overlay and bookmark indicator.
  *
- * @param {AnimeBookmarkCardProps} props - Card configuration and callbacks
+ * @param {AnimeCardProps} props - Card configuration and callbacks
  */
-export const AnimeBookmarkCard: React.FC<AnimeBookmarkCardProps> = ({
+export const AnimeCard: React.FC<AnimeCardProps> = ({
   anime,
   onPress,
   onBookmarkPress,
