@@ -1,7 +1,8 @@
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import React from "react";
 import { FlatList, View, Alert } from "react-native";
 
-import { AnimeBookmarkCard } from "@/components/anime-bookmark-card";
+import { AnimeCard } from "@/components/anime-card";
 import { ThemedText, ThemedView } from "@/components/themed-components";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 
@@ -19,7 +20,6 @@ import { withThemeStyles } from "@/helpers/withThemeStyles";
  * - type: media format (TV, Movie, OVA, etc.)
  * - releaseDate: initial release year
  */
-
 const bookmarkedAnime: IAnimeResult[] = [
   {
     id: "one-piece-1",
@@ -36,6 +36,8 @@ const bookmarkedAnime: IAnimeResult[] = [
     rating: 9.0,
     type: "TV" as MediaFormat,
     releaseDate: "1999",
+    season: 1, // <-- season number
+    episode: 50, // <-- example episode count
   },
   {
     id: "one-piece-2",
@@ -52,6 +54,8 @@ const bookmarkedAnime: IAnimeResult[] = [
     rating: 9.0,
     type: "TV" as MediaFormat,
     releaseDate: "1999",
+    season: 1,
+    episode: 1100,
   },
   {
     id: "one-piece-3",
@@ -68,6 +72,8 @@ const bookmarkedAnime: IAnimeResult[] = [
     rating: 9.0,
     type: "TV" as MediaFormat,
     releaseDate: "1999",
+    season: 1,
+    episode: 1460,
   },
   {
     id: "attack-on-titan-1",
@@ -84,6 +90,8 @@ const bookmarkedAnime: IAnimeResult[] = [
     rating: 9.0,
     type: "TV" as MediaFormat,
     releaseDate: "2013",
+    season: 1,
+    episode: 25,
   },
   {
     id: "attack-on-titan-2",
@@ -100,6 +108,8 @@ const bookmarkedAnime: IAnimeResult[] = [
     rating: 9.0,
     type: "TV" as MediaFormat,
     releaseDate: "2013",
+    season: 1,
+    episode: 25,
   },
   {
     id: "spirited-away",
@@ -116,6 +126,8 @@ const bookmarkedAnime: IAnimeResult[] = [
     rating: 9.3,
     type: "Movie" as MediaFormat,
     releaseDate: "2001",
+    season: 1,
+    episode: 1, // Movies usually count as 1 episode
   },
 ];
 
@@ -160,10 +172,10 @@ export default function BookmarkScreen() {
    *
    * @param {Object} props - Render item props from FlatList
    * @param {IAnimeResult} props.item - Anime data to render
-   * @returns {JSX.Element} Rendered AnimeBookmarkCard component
+   * @returns {JSX.Element} Rendered AnimeCard component
    */
   const renderAnimeCard = ({ item }: { item: IAnimeResult }) => (
-    <AnimeBookmarkCard anime={item} onPress={() => handleAnimePress(item)} />
+    <AnimeCard anime={item} onPress={() => handleAnimePress(item)} />
   );
 
   /**
@@ -173,41 +185,49 @@ export default function BookmarkScreen() {
    * @returns {JSX.Element} Empty state component with title and subtitle
    */
   const renderEmptyState = () => (
-    <View style={styles.emptyContainer}>
+    <ThemedView style={styles.emptyContainer}>
       <ThemedText variant="title" style={styles.emptyTitle}>
         No Bookmarks Yet
       </ThemedText>
       <ThemedText variant="subtitle" style={styles.emptySubtitle}>
         Start adding anime to your bookmarks to see them here!
       </ThemedText>
-    </View>
+    </ThemedView>
   );
+
+  const { mvs, layout } = useStyles();
+  const tabBarHeight = useBottomTabBarHeight();
 
   return (
     <ThemedView style={styles.container}>
-      {/* Header section with title and anime count */}
-      <View style={styles.header}>
-        <ThemedText variant="title" style={styles.headerText}>
-          My Bookmarks
-        </ThemedText>
-        {/* Dynamic count indicator - only shown when bookmarks exist */}
-        {bookmarkedAnime.length > 0 && (
-          <ThemedText variant="caption" style={styles.countText}>
-            {bookmarkedAnime.length} anime
-            {bookmarkedAnime.length !== 1 ? "s" : ""}
-          </ThemedText>
-        )}
-      </View>
-
       {/* Main content area - 3-column grid of bookmarked anime */}
       <FlatList
         data={bookmarkedAnime}
+        numColumns={2} // Fixed 3-column layout for optimal mobile viewing
         renderItem={renderAnimeCard}
         keyExtractor={(item) => item.id}
-        numColumns={3} // Fixed 3-column layout for optimal mobile viewing
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={renderEmptyState}
         showsVerticalScrollIndicator={false} // Cleaner visual appearance
+        ListEmptyComponent={renderEmptyState}
+        columnWrapperStyle={styles.columnWrapperStyle}
+        contentContainerStyle={[
+          styles.contentContainerStyle,
+          { paddingBottom: mvs(tabBarHeight + layout.gutter * 2) },
+        ]}
+        ListHeaderComponentStyle={styles.headerComponentStyle}
+        ListHeaderComponent={
+          <ThemedView style={styles.header}>
+            <ThemedText variant="title" style={styles.headerText}>
+              My Bookmarks
+            </ThemedText>
+            {/* Dynamic count indicator - only shown when bookmarks exist */}
+            {bookmarkedAnime.length > 0 && (
+              <ThemedText variant="caption" style={styles.countText}>
+                {bookmarkedAnime.length} anime
+                {bookmarkedAnime.length !== 1 ? "s" : ""}
+              </ThemedText>
+            )}
+          </ThemedView>
+        }
       />
     </ThemedView>
   );
@@ -222,49 +242,69 @@ export default function BookmarkScreen() {
  * Key style groups:
  * - container: Main screen layout with safe area handling
  * - header: Title and count display area
- * - listContent: FlatList content styling with appropriate padding
+ * - contentContainerStyle: FlatList content styling with appropriate padding
  * - empty state: Centered messaging for users with no bookmarks
  */
-const useStyles = withThemeStyles(({ palette, s, vs, ms, insets }) => ({
-  container: {
-    flex: 1,
-    backgroundColor: palette.background,
-    paddingTop: insets.top + vs(12), // Safe area + additional spacing
-  },
-  header: {
-    paddingHorizontal: s(20),
-    marginBottom: vs(16),
-  },
-  headerText: {
-    fontSize: ms(28),
-    fontWeight: "bold",
-    marginBottom: vs(4),
-  },
-  countText: {
-    fontSize: ms(14),
-    opacity: 0.7, // Subtle secondary text appearance
-  },
-  listContent: {
-    paddingHorizontal: s(15), // Slightly less than header for visual balance
-    paddingBottom: vs(20), // Bottom padding for scroll comfort
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: s(40), // Generous horizontal padding for text readability
-    paddingTop: vs(100), // Vertical offset for better visual balance
-  },
-  emptyTitle: {
-    fontSize: ms(24),
-    fontWeight: "600",
-    marginBottom: vs(12),
-    textAlign: "center",
-  },
-  emptySubtitle: {
-    fontSize: ms(16),
-    textAlign: "center",
-    opacity: 0.7, // Consistent with countText for hierarchy
-    lineHeight: ms(22), // Improved readability for longer text
-  },
-}));
+const useStyles = withThemeStyles(
+  ({ palette, layout, mvs, s, vs, ms, insets }) => ({
+    container: {
+      flex: 1,
+      backgroundColor: palette.background,
+      paddingTop: insets.top + vs(12), // Safe area + additional spacing
+    },
+    /* Header component styling  */
+    header: {
+      // paddingHorizontal: s(20),
+      // marginBottom: vs(16),
+    },
+    /* Header text styling */
+    headerText: {
+      fontSize: ms(28),
+      fontWeight: "bold",
+      marginBottom: vs(4),
+    },
+    /* countText styling  */
+    countText: {
+      fontSize: ms(14),
+      opacity: 0.7, // Subtle secondary text appearance
+    },
+    /* contentContainerStyle styling  */
+    contentContainerStyle: {
+      paddingBottom: vs(20), // Bottom padding for scroll comfort
+      flexGrow: 1,
+      gap: mvs(12),
+      backgroundColor: palette.background,
+      paddingHorizontal: ms(layout.gutter),
+    },
+    /* Header component styling with bottom margin */
+    headerComponentStyle: {
+      // marginBottom: mvs(layout.gutter),
+    },
+    /* columnWrapperStyle styling  with gap */
+    columnWrapperStyle: {
+      gap: mvs(12),
+    },
+    /* emptyContainer styling  */
+    emptyContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: s(40), // Generous horizontal padding for text readability
+      paddingTop: vs(100), // Vertical offset for better visual balance
+    },
+    /* emptyTitle styling  */
+    emptyTitle: {
+      fontSize: ms(24),
+      fontWeight: "600",
+      marginBottom: vs(12),
+      textAlign: "center",
+    },
+    /* emptySubtitle styling  */
+    emptySubtitle: {
+      fontSize: ms(16),
+      textAlign: "center",
+      opacity: 0.7, // Consistent with countText for hierarchy
+      lineHeight: ms(22), // Improved readability for longer text
+    },
+  })
+);

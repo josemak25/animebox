@@ -1,7 +1,7 @@
 import { fireEvent } from "@testing-library/react-native";
 import React from "react";
 
-import { AnimeBookmarkCard } from "@/components/anime-bookmark-card";
+import { AnimeCard } from "@/components/anime-card";
 import { renderWithTheme } from "@/jest.utils";
 
 const mockAnime: IAnimeResult = {
@@ -19,11 +19,9 @@ const mockAnime: IAnimeResult = {
   releaseDate: "2024",
 };
 
-describe("AnimeBookmarkCard", () => {
+describe("AnimeCard", () => {
   it("renders anime card with title", () => {
-    const { getByText } = renderWithTheme(
-      <AnimeBookmarkCard anime={mockAnime} />
-    );
+    const { getByText } = renderWithTheme(<AnimeCard anime={mockAnime} />);
 
     expect(getByText("Test Anime")).toBeTruthy();
   });
@@ -31,7 +29,7 @@ describe("AnimeBookmarkCard", () => {
   it("calls onPress when card is pressed", () => {
     const onPress = jest.fn();
     const { getByText } = renderWithTheme(
-      <AnimeBookmarkCard anime={mockAnime} onPress={onPress} />
+      <AnimeCard anime={mockAnime} onPress={onPress} />
     );
 
     const card = getByText("Test Anime");
@@ -42,7 +40,7 @@ describe("AnimeBookmarkCard", () => {
   it("calls onBookmarkPress when bookmark button is pressed", () => {
     const onBookmarkPress = jest.fn();
     const { getByLabelText } = renderWithTheme(
-      <AnimeBookmarkCard anime={mockAnime} onBookmarkPress={onBookmarkPress} />
+      <AnimeCard anime={mockAnime} onBookmarkPress={onBookmarkPress} />
     );
 
     const bookmarkButton = getByLabelText("Remove Test Anime from bookmarks");
@@ -51,9 +49,7 @@ describe("AnimeBookmarkCard", () => {
   });
 
   it("renders without onPress callback", () => {
-    const { getByText } = renderWithTheme(
-      <AnimeBookmarkCard anime={mockAnime} />
-    );
+    const { getByText } = renderWithTheme(<AnimeCard anime={mockAnime} />);
 
     expect(getByText("Test Anime")).toBeTruthy();
   });
@@ -65,7 +61,7 @@ describe("AnimeBookmarkCard", () => {
     };
 
     const { getByText } = renderWithTheme(
-      <AnimeBookmarkCard anime={animeWithStringTitle} />
+      <AnimeCard anime={animeWithStringTitle} />
     );
 
     expect(getByText("Simple Title")).toBeTruthy();
