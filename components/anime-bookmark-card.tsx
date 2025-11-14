@@ -1,11 +1,6 @@
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useMemo } from "react";
-import {
-  ImageBackground,
-  ViewStyle,
-  Pressable,
-  Dimensions,
-  StyleSheet,
-} from "react-native";
+import { ImageBackground, ViewStyle } from "react-native";
 
 import { Bounceable } from "@/components/bounceable";
 import { ThemedText, ThemedView } from "@/components/themed-components";
@@ -29,11 +24,6 @@ interface AnimeBookmarkCardProps {
    */
   style?: ViewStyle;
 }
-
-const { width: screenWidth } = Dimensions.get("window");
-const cardMargin = 10;
-const cardWidth = (screenWidth - cardMargin * 6) / 3; // 3 columns with margins
-const cardHeight = cardWidth * 1.4; // Maintain aspect ratio
 
 /**
  * AnimeBookmarkCard - A compact anime card component for bookmark grid display.
@@ -71,105 +61,87 @@ export const AnimeBookmarkCard: React.FC<AnimeBookmarkCardProps> = ({
 
   return (
     <Bounceable onPress={onPress} style={[styles.container, style]}>
-      <ThemedView style={styles.cardContainer}>
-        <ImageBackground
-          source={{ uri: imageSource }}
-          style={styles.imageBackground}
-          resizeMode="cover"
-          accessibilityLabel={`${title} poster`}
-        >
-          <ThemedView style={styles.overlay} />
+      <ImageBackground
+        resizeMode="cover"
+        source={{ uri: imageSource }}
+        style={styles.imageBackground}
+        accessibilityLabel={`${title} poster`}
+      >
+        <LinearGradient
+          colors={["rgb(0, 0, 0,10)", "rgba(0,0,0,0)"]}
+          start={{ x: 0.5, y: 1 }}
+          end={{ x: 0.5, y: 0 }}
+          style={styles.overlay}
+        />
 
-          <ThemedView style={styles.titleContainer}>
-            <ThemedText
-              variant="caption"
-              style={styles.title}
-              numberOfLines={1}
-            >
-              {title}
-            </ThemedText>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText variant="caption" style={styles.title} numberOfLines={1}>
+            {title}
+          </ThemedText>
+          <ThemedView style={styles.infoRow}>
+            <ThemedText style={styles.subText}>Ss: {anime.season}</ThemedText>
+            <ThemedText style={styles.subText}>Eps: {anime.episode}</ThemedText>
           </ThemedView>
-
-          <Pressable
-            style={styles.bookmarkButton}
-            onPress={onBookmarkPress}
-            accessibilityRole="button"
-            accessibilityLabel={`Remove ${title} from bookmarks`}
-          >
-            <ThemedView style={styles.bookmarkIcon}>
-              <ThemedText style={styles.bookmarkText}>♥</ThemedText>
-            </ThemedView>
-          </Pressable>
-        </ImageBackground>
-      </ThemedView>
+        </ThemedView>
+      </ImageBackground>
     </Bounceable>
   );
 };
 
-const useStyles = withThemeStyles(({ palette, s, vs, ms }) => ({
+const useStyles = withThemeStyles(({ palette, s, vs, mvs, ms }) => ({
+  /* container component styling  */
   container: {
-    margin: s(5),
-  },
-  cardContainer: {
-    width: cardWidth,
-    height: cardHeight,
-    borderRadius: s(8),
-    overflow: "hidden",
-    backgroundColor: palette.senary,
+    flex: 1,
     elevation: 4,
-    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
+    height: mvs(240),
+    overflow: "hidden",
+    borderRadius: s(8),
     shadowRadius: 3.84,
+    shadowOpacity: 0.25,
+    shadowColor: "#000",
+    backgroundColor: palette.senary,
   },
+  /* imageBackground component styling  */
   imageBackground: {
     width: "100%",
     height: "100%",
     justifyContent: "flex-end",
   },
+  /* overlay component styling  */
   overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    height: "80%",
   },
+  /* titleContainer component styling  */
   titleContainer: {
     left: 0,
     right: 0,
     bottom: -1,
     position: "absolute",
-    paddingVertical: vs(6),
+    paddingVertical: vs(7),
     paddingHorizontal: s(8),
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: "transparent",
   },
+  /* title styling  */
   title: {
-    fontSize: ms(11),
     fontWeight: "600",
+    textAlign: "left",
+    fontSize: ms(12.5),
     color: "#FFFFFF",
-    textAlign: "center",
     lineHeight: ms(13),
   },
-  bookmarkButton: {
-    position: "absolute",
-    top: s(8),
-    right: s(8),
-    width: s(24),
-    height: s(24),
-    borderRadius: s(12),
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
-    justifyContent: "center",
-    alignItems: "center",
+  /* infoRow component styling  */
+  infoRow: {
+    flexDirection: "row",
+    backgroundColor: "transparent",
+    justifyContent: "space-between",
   },
-  bookmarkIcon: {
-    width: s(16),
-    height: s(16),
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  bookmarkText: {
-    fontSize: ms(12),
-    color: "#FF6B6B",
-    fontWeight: "bold",
+  /* subText styling  */
+  subText: {
+    color: "#fff",
+    fontSize: ms(11),
   },
 }));

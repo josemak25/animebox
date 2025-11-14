@@ -219,6 +219,14 @@ interface IAnimeResult {
    */
   relationType?: string;
   /**
+   * The season of the anime
+   */
+  season?: number;
+  /**
+   * The episode of the anime
+   */
+  episode?: number;
+  /**
    * Other fields
    */
   [x: string]: unknown;
