@@ -7,32 +7,13 @@ import {
   ListRenderItem,
 } from "react-native";
 
+import { AnimeCard } from "@/components/anime-card";
 import { AnimePreviewCard } from "@/components/anime-preview-card";
 import { Bounceable } from "@/components/bounceable";
 import { ThemedText, ThemedView } from "@/components/themed-components";
+import { AnimeInterface } from "@/db/schema";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 import { useLatestReleases } from "@/hooks/useLatestReleases";
-
-import { AnimeCard } from "../../components/anime-card";
-
-/**
- * Sample anime data for testing and demonstration purposes.
- *
- * This represents the structure expected by AnimePreviewCard component.
- * In production, this would be fetched from an API or database.
- * The data follows the IAnimeResult interface with Netflix-style metadata.
- */
-const sampleAnime = {
-  id: "wednesday-2022",
-  title: "Wednesday",
-  image: "https://image.tmdb.org/t/p/w500/9PFonBhy4cQy7Jz20NpMygczOkv.jpg",
-  cover:
-    "https://image.tmdb.org/t/p/w1920_and_h800_multi_faces/iHSwvRVsRyxpX7FE7GbviaDvgGZ.jpg",
-  status: "Completed",
-  rating: 8.1,
-  type: "TV",
-  releaseDate: "2022",
-};
 
 /**
  * todays Top Picks anime data for testing and demonstration purposes.
@@ -41,109 +22,29 @@ const sampleAnime = {
  * In production, this would be fetched from an API or database.
  * The data follows the IAnimeResult interface with Netflix-style metadata.
  */
-const todaysTopPicks: IAnimeResult[] = [
-  {
-    id: "one-piece-1",
-    title: {
-      english: "One Piece",
-      romaji: "One Piece",
-      userPreferred: "One Piece",
-    },
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-YCDoj1EkAxFn.jpg",
-    cover:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21-wf37VakJmZqs.jpg",
-    status: "Ongoing" as MediaStatus,
-    rating: 9.0,
-    type: "TV" as MediaFormat,
-    releaseDate: "1999",
-    season: 1,
-    episode: 50,
-  },
-  {
-    id: "one-piece-2",
-    title: {
-      english: "One Piece",
-      romaji: "One Piece",
-      userPreferred: "One Piece",
-    },
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-YCDoj1EkAxFn.jpg",
-    cover:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21-wf37VakJmZqs.jpg",
-    status: "Ongoing" as MediaStatus,
-    rating: 9.0,
-    type: "TV" as MediaFormat,
-    releaseDate: "1999",
-    season: 1,
-    episode: 1100,
-  },
-  {
-    id: "one-piece-3",
-    title: {
-      english: "One Piece",
-      romaji: "One Piece",
-      userPreferred: "One Piece",
-    },
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-YCDoj1EkAxFn.jpg",
-    cover:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21-wf37VakJmZqs.jpg",
-    status: "Ongoing" as MediaStatus,
-    rating: 9.0,
-    type: "TV" as MediaFormat,
-    releaseDate: "1999",
-    season: 1,
-    episode: 1460,
-  },
-  {
-    id: "attack-on-titan-1",
-    title: {
-      english: "Attack on Titan",
-      romaji: "Shingeki no Kyojin",
-      userPreferred: "Attack on Titan",
-    },
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-C6FPmWm59CyP.jpg",
-    cover:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/banner/16498-8jpFCOcDmneX.jpg",
-    status: "Completed" as MediaStatus,
-    rating: 9.0,
-    type: "TV" as MediaFormat,
-    releaseDate: "2013",
-    season: 1,
-    episode: 25,
-  },
-  {
-    id: "spirited-away",
-    title: {
-      english: "Spirited Away",
-      romaji: "Sen to Chihiro no Kamikakushi",
-      userPreferred: "Spirited Away",
-    },
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-YCDoj1EkAxFn.jpg",
-    cover:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/banner/199-H5uL7MdIbOPj.jpg",
-    status: "Completed" as MediaStatus,
-    rating: 9.3,
-    type: "Movie" as MediaFormat,
-    releaseDate: "2001",
-    season: 1,
-    episode: 1,
-  },
-];
 
 export default function HomeScreen() {
-  const { styles, mvs, layout, palette } = useStyles();
   const tabBarHeight = useBottomTabBarHeight();
-  const { error, isError, isLoading } = useLatestReleases();
+  const { styles, mvs, layout, palette } = useStyles();
+  const { data, error, isError, isLoading } = useLatestReleases();
 
-  const renderItem: ListRenderItem<IAnimeResult> = useCallback(
-    ({ item }) => (
-      <AnimeCard anime={item} onPress={() => handleAnimePress(item)} />
-    ),
-    []
+  const handleAnimePress = (anime: AnimeInterface) => {
+    // TODO: Navigate to anime details page
+    Alert.alert(
+      "Anime Selected",
+      `Selected: ${typeof anime.title === "string" ? anime.title : anime.title || "Unknown"}`
+    );
+  };
+
+  const renderItem: ListRenderItem<AnimeInterface> = useCallback(
+    ({ item, index }) => {
+      if (data.length - 1 === index && index % 2 !== 0) {
+        return <ThemedView style={styles.emptyCardPlaceholder} />;
+      }
+
+      return <AnimeCard anime={item} onPress={() => handleAnimePress(item)} />;
+    },
+    [data.length, styles.emptyCardPlaceholder]
   );
 
   /** Display loading indicator while fetching data */
@@ -175,18 +76,10 @@ export default function HomeScreen() {
     );
   }
 
-  const handleAnimePress = (anime: IAnimeResult) => {
-    // TODO: Navigate to anime details page
-    Alert.alert(
-      "Anime Selected",
-      `Selected: ${typeof anime.title === "string" ? anime.title : anime.title?.english || "Unknown"}`
-    );
-  };
-
   return (
     <FlatList
+      data={data}
       numColumns={2}
-      data={todaysTopPicks}
       renderItem={renderItem}
       style={styles.container}
       showsVerticalScrollIndicator={false}
@@ -197,12 +90,14 @@ export default function HomeScreen() {
       ]}
       ListHeaderComponentStyle={styles.headerComponentStyle}
       ListHeaderComponent={
-        <AnimePreviewCard
-          isInList={false}
-          onPlay={() => {}}
-          onAddToList={() => {}}
-          anime={sampleAnime as IAnimeResult}
-        />
+        data[0] ? (
+          <AnimePreviewCard
+            anime={data[0]}
+            isInList={false}
+            onPlay={() => {}}
+            onAddToList={() => {}}
+          />
+        ) : null
       }
     />
   );
@@ -253,6 +148,12 @@ const useStyles = withThemeStyles(
     placeholder: {
       textAlign: "center",
       paddingVertical: mvs(20),
+    },
+
+    /* emptyCardPlaceholder container styling for empty card */
+    emptyCardPlaceholder: {
+      flex: 1,
+      opacity: 0,
     },
 
     /* Header component styling with bottom margin */

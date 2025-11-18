@@ -1,135 +1,12 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import React from "react";
-import { FlatList, View, Alert } from "react-native";
+import React, { useCallback } from "react";
+import { FlatList, Alert, ListRenderItem } from "react-native";
 
 import { AnimeCard } from "@/components/anime-card";
 import { ThemedText, ThemedView } from "@/components/themed-components";
+import { AnimeInterface } from "@/db/schema";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
-
-/**
- * Sample bookmarked anime data for demonstration purposes.
- * In a production app, this would be retrieved from the database or API.
- *
- * Each anime object follows the IAnimeResult interface with required fields:
- * - id: unique identifier
- * - title: localized title variants (english, romaji, userPreferred)
- * - image: poster/cover image URL
- * - cover: banner image URL
- * - status: current airing status
- * - rating: user/critic rating score
- * - type: media format (TV, Movie, OVA, etc.)
- * - releaseDate: initial release year
- */
-const bookmarkedAnime: IAnimeResult[] = [
-  {
-    id: "one-piece-1",
-    title: {
-      english: "One Piece",
-      romaji: "One Piece",
-      userPreferred: "One Piece",
-    },
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-YCDoj1EkAxFn.jpg",
-    cover:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21-wf37VakJmZqs.jpg",
-    status: "Ongoing" as MediaStatus,
-    rating: 9.0,
-    type: "TV" as MediaFormat,
-    releaseDate: "1999",
-    season: 1, // <-- season number
-    episode: 50, // <-- example episode count
-  },
-  {
-    id: "one-piece-2",
-    title: {
-      english: "One Piece",
-      romaji: "One Piece",
-      userPreferred: "One Piece",
-    },
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-YCDoj1EkAxFn.jpg",
-    cover:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21-wf37VakJmZqs.jpg",
-    status: "Ongoing" as MediaStatus,
-    rating: 9.0,
-    type: "TV" as MediaFormat,
-    releaseDate: "1999",
-    season: 1,
-    episode: 1100,
-  },
-  {
-    id: "one-piece-3",
-    title: {
-      english: "One Piece",
-      romaji: "One Piece",
-      userPreferred: "One Piece",
-    },
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-YCDoj1EkAxFn.jpg",
-    cover:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21-wf37VakJmZqs.jpg",
-    status: "Ongoing" as MediaStatus,
-    rating: 9.0,
-    type: "TV" as MediaFormat,
-    releaseDate: "1999",
-    season: 1,
-    episode: 1460,
-  },
-  {
-    id: "attack-on-titan-1",
-    title: {
-      english: "Attack on Titan",
-      romaji: "Shingeki no Kyojin",
-      userPreferred: "Attack on Titan",
-    },
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-C6FPmWm59CyP.jpg",
-    cover:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/banner/16498-8jpFCOcDmneX.jpg",
-    status: "Completed" as MediaStatus,
-    rating: 9.0,
-    type: "TV" as MediaFormat,
-    releaseDate: "2013",
-    season: 1,
-    episode: 25,
-  },
-  {
-    id: "attack-on-titan-2",
-    title: {
-      english: "Attack on Titan",
-      romaji: "Shingeki no Kyojin",
-      userPreferred: "Attack on Titan",
-    },
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-C6FPmWm59CyP.jpg",
-    cover:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/banner/16498-8jpFCOcDmneX.jpg",
-    status: "Completed" as MediaStatus,
-    rating: 9.0,
-    type: "TV" as MediaFormat,
-    releaseDate: "2013",
-    season: 1,
-    episode: 25,
-  },
-  {
-    id: "spirited-away",
-    title: {
-      english: "Spirited Away",
-      romaji: "Sen to Chihiro no Kamikakushi",
-      userPreferred: "Spirited Away",
-    },
-    image:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-YCDoj1EkAxFn.jpg",
-    cover:
-      "https://s4.anilist.co/file/anilistcdn/media/anime/banner/199-H5uL7MdIbOPj.jpg",
-    status: "Completed" as MediaStatus,
-    rating: 9.3,
-    type: "Movie" as MediaFormat,
-    releaseDate: "2001",
-    season: 1,
-    episode: 1, // Movies usually count as 1 episode
-  },
-];
+import { useLatestReleases } from "@/hooks/useLatestReleases";
 
 /**
  * BookmarkScreen - User's personal anime bookmarks collection display.
@@ -150,6 +27,7 @@ const bookmarkedAnime: IAnimeResult[] = [
  */
 export default function BookmarkScreen() {
   const { styles } = useStyles();
+  const { data } = useLatestReleases();
 
   /**
    * Handles anime card press events.
@@ -158,26 +36,24 @@ export default function BookmarkScreen() {
    *
    * @param {IAnimeResult} anime - The selected anime object
    */
-  const handleAnimePress = (anime: IAnimeResult) => {
+  const handleAnimePress = (anime: AnimeInterface) => {
     // TODO: Navigate to anime details page
     Alert.alert(
       "Anime Selected",
-      `Selected: ${typeof anime.title === "string" ? anime.title : anime.title?.english || "Unknown"}`
+      `Selected: ${typeof anime.title === "string" ? anime.title : anime.title}`
     );
   };
 
-  /**
-   * Renders individual anime bookmark card.
-   * Used as the renderItem prop for the FlatList component.
-   *
-   * @param {Object} props - Render item props from FlatList
-   * @param {IAnimeResult} props.item - Anime data to render
-   * @returns {JSX.Element} Rendered AnimeCard component
-   */
-  const renderAnimeCard = ({ item }: { item: IAnimeResult }) => (
-    <AnimeCard anime={item} onPress={() => handleAnimePress(item)} />
-  );
+  const renderItem: ListRenderItem<AnimeInterface> = useCallback(
+    ({ item, index }) => {
+      if (data.length - 1 === index && index % 2 !== 0) {
+        return <ThemedView style={styles.emptyCardPlaceholder} />;
+      }
 
+      return <AnimeCard anime={item} onPress={() => handleAnimePress(item)} />;
+    },
+    [data.length, styles.emptyCardPlaceholder]
+  );
   /**
    * Renders empty state when no bookmarks exist.
    * Provides helpful messaging to guide new users.
@@ -202,9 +78,9 @@ export default function BookmarkScreen() {
     <ThemedView style={styles.container}>
       {/* Main content area - 3-column grid of bookmarked anime */}
       <FlatList
-        data={bookmarkedAnime}
+        data={data}
         numColumns={2} // Fixed 3-column layout for optimal mobile viewing
-        renderItem={renderAnimeCard}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false} // Cleaner visual appearance
         ListEmptyComponent={renderEmptyState}
@@ -220,10 +96,10 @@ export default function BookmarkScreen() {
               My Bookmarks
             </ThemedText>
             {/* Dynamic count indicator - only shown when bookmarks exist */}
-            {bookmarkedAnime.length > 0 && (
+            {data.length > 0 && (
               <ThemedText variant="caption" style={styles.countText}>
-                {bookmarkedAnime.length} anime
-                {bookmarkedAnime.length !== 1 ? "s" : ""}
+                {data.length} anime
+                {data.length !== 1 ? "s" : ""}
               </ThemedText>
             )}
           </ThemedView>
@@ -305,6 +181,12 @@ const useStyles = withThemeStyles(
       textAlign: "center",
       opacity: 0.7, // Consistent with countText for hierarchy
       lineHeight: ms(22), // Improved readability for longer text
+    },
+
+    /* emptyCardPlaceholder container styling for empty card */
+    emptyCardPlaceholder: {
+      flex: 1,
+      opacity: 0,
     },
   })
 );

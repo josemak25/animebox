@@ -4,13 +4,14 @@ import { ImageBackground, ViewStyle } from "react-native";
 
 import { Bounceable } from "@/components/bounceable";
 import { ThemedText, ThemedView } from "@/components/themed-components";
+import { AnimeInterface } from "@/db/schema";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 
 interface AnimeCardProps {
   /**
    * Anime data object containing title, image, and other details
    */
-  anime: IAnimeResult;
+  anime: AnimeInterface;
   /**
    * Callback when card is pressed
    */
@@ -45,33 +46,37 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
   const { styles } = useStyles();
 
   // Extract title from anime object
-  const title = useMemo(() => {
-    if (typeof anime.title === "string") {
-      return anime.title;
-    }
-    return (
-      anime.title?.english ||
-      anime.title?.romaji ||
-      anime.title?.userPreferred ||
-      "Unknown Title"
-    );
-  }, [anime.title]);
+  // const title = useMemo(() => {
+  //   if (typeof anime.title === "string") {
+  //     return anime.title;
+  //   }
+  //   return (
+  //     anime.title?.english ||
+  //     anime.title?.romaji ||
+  //     anime.title?.userPreferred ||
+  //     "Unknown Title"
+  //   );
+  // }, [anime.title]);
 
   // Image source with fallback
-  const imageSource = useMemo(() => {
-    return anime.image || anime.cover || "";
-  }, [anime.image, anime.cover]);
+  // const imageSource = useMemo(() => {
+  //   return anime.image || anime.cover || anime.snapshot;
+  // }, [anime.image, anime.cover, anime.snapshot]);
 
   return (
     <Bounceable onPress={onPress} style={[styles.container, style]}>
       <ImageBackground
         resizeMode="cover"
-        source={{ uri: imageSource }}
+        source={{ uri: anime.snapshot! }}
         style={styles.imageBackground}
-        accessibilityLabel={`${title} poster`}
+        accessibilityLabel={`${anime.title} poster`}
       >
         <LinearGradient
-          colors={["rgb(0, 0, 0,10)", "rgba(0,0,0,0)"]}
+          colors={[
+            "rgb(0, 0, 0, 1)",
+            "rgba(0, 0, 0, .81)",
+            "rgba(0,0,0, .018)",
+          ]}
           start={{ x: 0.5, y: 1 }}
           end={{ x: 0.5, y: 0 }}
           style={styles.overlay}
@@ -84,8 +89,8 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
             style={styles.bookmarkButton}
             accessibilityLabel={
               isBookmarked
-                ? `Remove ${title} from bookmarks`
-                : `Add ${title} to bookmarks`
+                ? `Remove ${anime.title} from bookmarks`
+                : `Add ${anime.title} to bookmarks`
             }
             testID="bookmark-button"
           >
@@ -98,10 +103,10 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
         {/* TITLE & INFO */}
         <ThemedView style={styles.titleContainer}>
           <ThemedText variant="caption" style={styles.title} numberOfLines={1}>
-            {title}
+            {anime.title}
           </ThemedText>
           <ThemedView style={styles.infoRow}>
-            <ThemedText style={styles.subText}>Ss: {anime.season}</ThemedText>
+            <ThemedText style={styles.subText}>Ss: {anime.duration}</ThemedText>
             <ThemedText style={styles.subText}>Eps: {anime.episode}</ThemedText>
           </ThemedView>
         </ThemedView>
