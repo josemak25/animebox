@@ -2,23 +2,20 @@ import { fireEvent } from "@testing-library/react-native";
 import React from "react";
 
 import { AnimeCard } from "@/components/anime-card";
+import { AnimeInterface } from "@/db/schema";
 import { renderWithTheme } from "@/jest.utils";
 
-const mockAnime: IAnimeResult = {
+const mockAnime: AnimeInterface = {
   id: "card-anime-1",
-  title: {
-    english: "Card Anime",
-    romaji: "Card Anime",
-    userPreferred: "Card Anime",
-  },
-  rating: 8.5,
-  releaseDate: "2022",
-  type: "TV" as MediaFormat,
-  status: "Releasing" as MediaStatus,
-  image: "https://example.com/card-image.jpg",
-  cover: "https://example.com/card-cover.jpg",
-  season: 1,
+  title: "Card Anime",
+  snapshot: "https://example.com/card-image.jpg",
   episode: 12,
+  duration: 24,
+  session: null,
+  edition: null,
+  url: "https://example.com/card-anime-1",
+  created_at: null,
+  updated_at: null,
 };
 
 describe("AnimeCard", () => {

@@ -2,21 +2,20 @@ import { fireEvent } from "@testing-library/react-native";
 import React from "react";
 
 import { AnimePreviewCard } from "@/components/anime-preview-card";
+import { AnimeInterface } from "@/db/schema";
 import { renderWithTheme } from "@/jest.utils";
 
-const mockAnime: IAnimeResult = {
+const mockAnime: AnimeInterface = {
   id: "preview-anime-1",
-  title: {
-    english: "Preview Anime",
-    romaji: "Preview Anime",
-    userPreferred: "Preview Anime",
-  },
-  rating: 9.0,
-  releaseDate: "2023",
-  type: "Movie" as MediaFormat,
-  status: "Completed" as MediaStatus,
-  image: "https://example.com/preview-image.jpg",
-  cover: "https://example.com/preview-cover.jpg",
+  title: "Preview Anime",
+  snapshot: "https://example.com/preview-image.jpg",
+  episode: 1,
+  duration: 120,
+  session: null,
+  edition: null,
+  url: "https://example.com/preview",
+  created_at: null,
+  updated_at: null,
 };
 
 describe("AnimePreviewCard", () => {
