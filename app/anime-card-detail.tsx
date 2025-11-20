@@ -9,7 +9,7 @@ function AnimeCardDetail() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText>flying</ThemedText>
+      <ThemedText>Card view</ThemedText>
     </ThemedView>
   );
 }
