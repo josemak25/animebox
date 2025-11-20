@@ -1,16 +1,17 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useMemo } from "react";
+import React from "react";
 import { ImageBackground, ViewStyle } from "react-native";
 
 import { Bounceable } from "@/components/bounceable";
 import { ThemedText, ThemedView } from "@/components/themed-components";
+import { AnimeInterface } from "@/db/schema";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 
 interface AnimeCardProps {
   /**
    * Anime data object containing title, image, and other details
    */
-  anime: IAnimeResult;
+  anime: AnimeInterface;
   /**
    * Callback when card is pressed
    */
@@ -45,63 +46,48 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
   const { styles } = useStyles();
 
   // Extract title from anime object
-  const title = useMemo(() => {
-    if (typeof anime.title === "string") {
-      return anime.title;
-    }
-    return (
-      anime.title?.english ||
-      anime.title?.romaji ||
-      anime.title?.userPreferred ||
-      "Unknown Title"
-    );
-  }, [anime.title]);
+  // const title = useMemo(() => {
+  //   if (typeof anime.title === "string") {
+  //     return anime.title;
+  //   }
+  //   return (
+  //     anime.title?.english ||
+  //     anime.title?.romaji ||
+  //     anime.title?.userPreferred ||
+  //     "Unknown Title"
+  //   );
+  // }, [anime.title]);
 
   // Image source with fallback
-  const imageSource = useMemo(() => {
-    return anime.image || anime.cover || "";
-  }, [anime.image, anime.cover]);
+  // const imageSource = useMemo(() => {
+  //   return anime.image || anime.cover || anime.snapshot;
+  // }, [anime.image, anime.cover, anime.snapshot]);
 
   return (
     <Bounceable onPress={onPress} style={[styles.container, style]}>
       <ImageBackground
         resizeMode="cover"
-        source={{ uri: imageSource }}
+        source={{ uri: anime.snapshot! }}
         style={styles.imageBackground}
-        accessibilityLabel={`${title} poster`}
+        accessibilityLabel={`${anime.title} poster`}
       >
         <LinearGradient
-          colors={["rgb(0, 0, 0,10)", "rgba(0,0,0,0)"]}
+          colors={[
+            "rgb(0, 0, 0, 1)",
+            "rgba(0, 0, 0, .81)",
+            "rgba(0,0,0, .018)",
+          ]}
           start={{ x: 0.5, y: 1 }}
           end={{ x: 0.5, y: 0 }}
           style={styles.overlay}
         />
 
-        {/* ⭐ BOOKMARK BUTTON */}
-        {onBookmarkPress && (
-          <Bounceable
-            onPress={onBookmarkPress}
-            style={styles.bookmarkButton}
-            accessibilityLabel={
-              isBookmarked
-                ? `Remove ${title} from bookmarks`
-                : `Add ${title} to bookmarks`
-            }
-            testID="bookmark-button"
-          >
-            <ThemedText style={styles.bookmarkIcon}>
-              {isBookmarked ? "★" : "☆"}
-            </ThemedText>
-          </Bounceable>
-        )}
-
-        {/* TITLE & INFO */}
         <ThemedView style={styles.titleContainer}>
           <ThemedText variant="caption" style={styles.title} numberOfLines={1}>
-            {title}
+            {anime.title}
           </ThemedText>
           <ThemedView style={styles.infoRow}>
-            <ThemedText style={styles.subText}>Ss: {anime.season}</ThemedText>
+            <ThemedText style={styles.subText}>Ss: {anime.duration}</ThemedText>
             <ThemedText style={styles.subText}>Eps: {anime.episode}</ThemedText>
           </ThemedView>
         </ThemedView>
@@ -127,32 +113,17 @@ const useStyles = withThemeStyles(({ palette, s, vs, mvs, ms }) => ({
     shadowColor: "#000",
     backgroundColor: palette.senary,
   },
+
   /* imageBackground component styling  */
   imageBackground: {
     width: "100%",
     height: "100%",
     justifyContent: "flex-end",
   },
+
   /* overlay component styling  */
   overlay: {
     height: "80%",
-  },
-
-  /* BOOKMARK BUTTON */
-  bookmarkButton: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    padding: 6,
-    borderRadius: 20,
-    zIndex: 20,
-  },
-
-  bookmarkIcon: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
   },
 
   /* titleContainer component styling  */
@@ -165,6 +136,7 @@ const useStyles = withThemeStyles(({ palette, s, vs, mvs, ms }) => ({
     paddingHorizontal: s(8),
     backgroundColor: "transparent",
   },
+
   /* title styling  */
   title: {
     fontWeight: "600",
@@ -173,12 +145,14 @@ const useStyles = withThemeStyles(({ palette, s, vs, mvs, ms }) => ({
     color: "#FFFFFF",
     lineHeight: ms(13),
   },
+
   /* infoRow component styling  */
   infoRow: {
     flexDirection: "row",
     backgroundColor: "transparent",
     justifyContent: "space-between",
   },
+
   /* subText styling  */
   subText: {
     color: "#fff",

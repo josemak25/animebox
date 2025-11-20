@@ -1,16 +1,16 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ImageBackground } from "expo-image";
-import { useMemo } from "react";
 
 import { Bounceable } from "@/components/bounceable";
 import { ThemedText, ThemedView } from "@/components/themed-components";
+import { AnimeInterface } from "@/db/schema";
 import { withThemeStyles } from "@/helpers/withThemeStyles";
 
 interface AnimePreviewCardProps {
   /**
    * Anime data object containing title, image, and other details
    */
-  anime: IAnimeResult;
+  anime: AnimeInterface;
   /**
    * Callback when Play button is pressed
    */
@@ -57,27 +57,16 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
 }) => {
   const { mvs, colors, layout, styles } = useStyles();
 
-  const title = useMemo(() => {
-    if (typeof anime.title === "string") return anime.title;
-
-    return (
-      anime.title?.english ||
-      anime.title?.romaji ||
-      anime.title?.userPreferred ||
-      "Unknown Title"
-    );
-  }, [anime.title]);
-
   return (
     <Bounceable style={styles.container}>
       <ImageBackground
         contentFit="cover"
         style={styles.imageBackground}
-        accessibilityLabel={`${title} poster`}
-        source={{ uri: anime.image || anime.cover || "" }}
+        accessibilityLabel={`${anime.title} poster`}
+        source={{ uri: anime.snapshot! }}
       >
         <ThemedText variant="title" style={styles.title}>
-          {title}
+          {anime.title}
         </ThemedText>
 
         <ThemedView
@@ -87,7 +76,7 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
           <Bounceable
             onPress={onPlay}
             style={styles.button}
-            accessibilityLabel={`Play ${title}`}
+            accessibilityLabel={`Play ${anime.title}`}
             accessibilityHint="Starts playing the anime"
           >
             <Ionicons
@@ -105,7 +94,7 @@ export const AnimePreviewCard: React.FC<AnimePreviewCardProps> = ({
             style={[styles.button, styles.addToListButton]}
             accessibilityLabel={
               isInList
-                ? `Remove ${title} from list`
+                ? `Remove ${anime.title} from list`
                 : `Add ${anime.title} to list`
             }
             accessibilityHint={
