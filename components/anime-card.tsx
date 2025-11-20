@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useMemo } from "react";
+import React from "react";
 import { ImageBackground, ViewStyle } from "react-native";
 
 import { Bounceable } from "@/components/bounceable";
@@ -82,25 +82,6 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
           style={styles.overlay}
         />
 
-        {/* ⭐ BOOKMARK BUTTON */}
-        {onBookmarkPress && (
-          <Bounceable
-            onPress={onBookmarkPress}
-            style={styles.bookmarkButton}
-            accessibilityLabel={
-              isBookmarked
-                ? `Remove ${anime.title} from bookmarks`
-                : `Add ${anime.title} to bookmarks`
-            }
-            testID="bookmark-button"
-          >
-            <ThemedText style={styles.bookmarkIcon}>
-              {isBookmarked ? "★" : "☆"}
-            </ThemedText>
-          </Bounceable>
-        )}
-
-        {/* TITLE & INFO */}
         <ThemedView style={styles.titleContainer}>
           <ThemedText variant="caption" style={styles.title} numberOfLines={1}>
             {anime.title}
@@ -132,32 +113,17 @@ const useStyles = withThemeStyles(({ palette, s, vs, mvs, ms }) => ({
     shadowColor: "#000",
     backgroundColor: palette.senary,
   },
+
   /* imageBackground component styling  */
   imageBackground: {
     width: "100%",
     height: "100%",
     justifyContent: "flex-end",
   },
+
   /* overlay component styling  */
   overlay: {
     height: "80%",
-  },
-
-  /* BOOKMARK BUTTON */
-  bookmarkButton: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    padding: 6,
-    borderRadius: 20,
-    zIndex: 20,
-  },
-
-  bookmarkIcon: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
   },
 
   /* titleContainer component styling  */
@@ -170,6 +136,7 @@ const useStyles = withThemeStyles(({ palette, s, vs, mvs, ms }) => ({
     paddingHorizontal: s(8),
     backgroundColor: "transparent",
   },
+
   /* title styling  */
   title: {
     fontWeight: "600",
@@ -178,12 +145,14 @@ const useStyles = withThemeStyles(({ palette, s, vs, mvs, ms }) => ({
     color: "#FFFFFF",
     lineHeight: ms(13),
   },
+
   /* infoRow component styling  */
   infoRow: {
     flexDirection: "row",
     backgroundColor: "transparent",
     justifyContent: "space-between",
   },
+
   /* subText styling  */
   subText: {
     color: "#fff",

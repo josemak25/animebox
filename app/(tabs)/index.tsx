@@ -1,11 +1,7 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useRouter } from "expo-router";
 import React, { useCallback } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  ListRenderItem,
-} from "react-native";
+import { ActivityIndicator, FlatList, ListRenderItem } from "react-native";
 
 import { AnimeCard } from "@/components/anime-card";
 import { AnimePreviewCard } from "@/components/anime-preview-card";
@@ -24,17 +20,10 @@ import { useLatestReleases } from "@/hooks/useLatestReleases";
  */
 
 export default function HomeScreen() {
+  const router = useRouter();
   const tabBarHeight = useBottomTabBarHeight();
   const { styles, mvs, layout, palette } = useStyles();
   const { data, error, isError, isLoading } = useLatestReleases();
-
-  const handleAnimePress = (anime: AnimeInterface) => {
-    // TODO: Navigate to anime details page
-    Alert.alert(
-      "Anime Selected",
-      `Selected: ${typeof anime.title === "string" ? anime.title : anime.title || "Unknown"}`
-    );
-  };
 
   const renderItem: ListRenderItem<AnimeInterface> = useCallback(
     ({ item, index }) => {
@@ -42,9 +31,19 @@ export default function HomeScreen() {
         return <ThemedView style={styles.emptyCardPlaceholder} />;
       }
 
-      return <AnimeCard anime={item} onPress={() => handleAnimePress(item)} />;
+      return (
+        <AnimeCard
+          anime={item}
+          onPress={() =>
+            router.push({
+              pathname: "/anime-card-detail",
+              params: { id: item.id }, // pass any details you need
+            })
+          }
+        />
+      );
     },
-    [data.length, styles.emptyCardPlaceholder]
+    [data.length, router, styles.emptyCardPlaceholder]
   );
 
   /** Display loading indicator while fetching data */
